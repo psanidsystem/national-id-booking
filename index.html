@@ -431,7 +431,6 @@ function checkSlots(){
 
 document.addEventListener("DOMContentLoaded", function(){
 
-  const formContainer = document.getElementById("formContainer");
   const privacyModal = document.getElementById("privacyModal");
 	
   // Show privacy on load
@@ -615,18 +614,11 @@ window.closeSlip = function() {
   document.getElementById("slipModal").style.display = "none";
   showCheckmark();
 };
-closeAllModals();
-
-  // 🔥 restore form
-  const formContainer = document.getElementById("formContainer");
-  formContainer.style.filter = "none";
-  formContainer.style.pointerEvents = "auto";
-}
-	
 </script>
 </body>
 
 </html>
+
 
 
 
