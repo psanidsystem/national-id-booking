@@ -294,3 +294,8 @@ select {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+.blurred {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
