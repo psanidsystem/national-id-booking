@@ -457,22 +457,26 @@ document.addEventListener("DOMContentLoaded", function(){
 
   serviceSelect.addEventListener("change", function(){
 
-    const selected = this.value;
-	  
-    });
-	
-    const modalMap = {
-      "National ID Registration": "nidModal",
-      "Correction/Updating of Demographic Information": "updateModal",
-      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
-      "Retrieval of TRN / Other Concern": "trnModal"
-    };
+  const selected = this.value;
 
-    if (modalMap[selected]) {
-      document.getElementById(modalMap[selected]).style.display = "flex";
-    }
+  // Close ONLY service-related modals
+  document.getElementById("nidModal").style.display = "none";
+  document.getElementById("updateModal").style.display = "none";
+  document.getElementById("ephilidModal").style.display = "none";
+  document.getElementById("trnModal").style.display = "none";
 
-  });
+  const modalMap = {
+    "National ID Registration": "nidModal",
+    "Correction/Updating of Demographic Information": "updateModal",
+    "Request National ID in Paper Format (ePhilID)": "ephilidModal",
+    "Retrieval of TRN / Other Concern": "trnModal"
+  };
+
+  if (modalMap[selected]) {
+    document.getElementById(modalMap[selected]).style.display = "flex";
+  }
+
+});
 
   // CLOSE MODALS
   window.closeNidModal = () =>
@@ -623,6 +627,7 @@ closeAllModals();
 </body>
 
 </html>
+
 
 
 
