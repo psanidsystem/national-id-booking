@@ -299,3 +299,8 @@ select {
   pointer-events: none;
   user-select: none;
 }
+.blur-background {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
