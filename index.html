@@ -373,7 +373,7 @@ const EXEC_URL = "https://script.google.com/macros/s/AKfycbzgSBClRp_iBkRBBCCrH2X
 // SLOT CHECK
 // ===============================
 
-function function checkSlots(){
+function checkSlots(){
 
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
@@ -406,19 +406,6 @@ function function checkSlots(){
     console.error("Slot fetch error:", err);
   });
 
-}
-// ===============================
-// SUCCESS CHECKMARK
-// ===============================
-
-function showCheckmark() {
-
-  const overlay = document.getElementById("checkmarkOverlay");
-  overlay.style.display = "flex";
-
-  setTimeout(function(){
-    overlay.style.display = "none";
-  }, 2000);
 }
 
 
@@ -617,3 +604,4 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
