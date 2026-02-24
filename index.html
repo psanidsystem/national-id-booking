@@ -433,7 +433,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   const formContainer = document.getElementById("formContainer");
   const privacyModal = document.getElementById("privacyModal");
-
+document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
   // Show privacy on load
   privacyModal.style.display = "flex";
   formContainer.style.filter = "blur(3px)";
@@ -622,6 +622,7 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
 
 
 
