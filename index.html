@@ -388,8 +388,16 @@ function checkSlots(){
 
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
+  const info = document.getElementById("serviceInfoText");
 
-  if(!service || !date) return;
+  if(!service || !date){
+    info.innerHTML = "";
+    return;
+  }
+
+  // 🔵 Show loading message immediately
+  info.innerHTML = "⏳ Checking available slots...";
+  info.style.color = "#555";
 
   fetch(EXEC_URL, {
     method: "POST",
@@ -402,23 +410,20 @@ function checkSlots(){
   .then(res => res.json())
   .then(data => {
 
-    console.log("Slot API response:", data);
-
-    const info = document.getElementById("serviceInfoText");
-
     info.innerHTML = `
       👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
       🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
     `;
 
     info.style.color = data.remaining <= 0 ? "red" : "green";
+
   })
   .catch(err => {
-    console.error("Slot fetch error:", err);
+    info.innerHTML = "⚠ Unable to check availability.";
+    info.style.color = "red";
   });
 
 }
-
 
 // ===============================
 // DOM READY
@@ -615,6 +620,7 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
 
 
 
