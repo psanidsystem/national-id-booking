@@ -460,11 +460,13 @@ document.addEventListener("DOMContentLoaded", function(){
     const selected = this.value;
 
     document.querySelectorAll(".modal").forEach(function(modal){
-      if(modal.id !== "privacyModal"){
-        modal.style.display = "none";
-      }
+  modal.style.display = "none";
     });
 
+	  function clearAllModals(){
+  document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+}
+	
     const modalMap = {
       "National ID Registration": "nidModal",
       "Correction/Updating of Demographic Information": "updateModal",
@@ -620,6 +622,7 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
 
 
 
