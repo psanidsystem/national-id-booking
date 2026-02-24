@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>National ID Appointment System</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- ================= FORM ================= -->
+<div class="container" id="formContainer">
+  <div class="card header">
+    <div class="logos">
+      <img class="logo" src="logo-psa.png">
+		<img class="logo" src="logo-partner.png">
+    </div>
+    <h2>National ID System</h2>
+    <p>Appointment Request<br>Philippine Statistics Authority - Cebu</p>
+  </div>
+
+  <div class="card">
+    <label>Select Services</label>
+    <select id="service">
+      <option></option>
+      <option>National ID Registration</option>
+      <option>Correction/Updating of Demographic Information</option>
+      <option>Request National ID in Paper Format (ePhilID)</option>
+      <option>Retrieval of TRN / Other Concern</option>
+    </select>
+    <div class="service-info">
+    <small id="serviceInfoText" style="color:#555;"></small>
+    </div>
+    <label>Full Name</label>
+    <input id="fullname">
+
+    <label>Email Address (optional)</label>
+    <input id="email" placeholder="example@gmail.com">
+
+    <label>Mobile Number (optional)</label>
+    <input id="phone" placeholder="09XXXXXXXXX">
+
+    <label>Preferred Date</label>
+    <input type="date" id="date">
+
+    <button type="button" onclick="submitForm()">Submit Appointment Request</button>
+  </div>
+  
+</div>
+
+<!-- ================= PRIVACY NOTICE ================= -->
+<div class="modal" id="privacyModal">
+  <div class="modal-content">
+    <h2>Privacy Notice – National ID Appointment System</h2>
+
+<p>
+This system collects and processes limited personal information solely for the purpose of
+scheduling, managing, and confirming National ID System appointments, in accordance with
+the <b>Data Privacy Act of 2012 (RA 10173)</b> and applicable
+<b>Philippine Statistics Authority (PSA) policies</b>.
+</p>
+
+<p>
+The personal data collected include your <b>full name</b>, <b>email address or mobile number</b>,
+<b>selected service</b>, and <b>preferred appointment schedule</b>.
+</p>
+
+<p>
+Your personal data shall be used exclusively for appointment management and communication
+purposes. These data are stored securely and protected by appropriate
+<b>administrative, technical, and physical safeguards</b>.
+</p>
+
+<p>
+Your personal data will not be shared or disclosed to unauthorized parties, except to
+<b>authorized PSA personnel</b> or when required by law.
+</p>
+
+<p>
+As a data subject, you have the right to <b>access</b>, <b>correct</b>, or <b>request deletion</b>
+of your personal data, subject to applicable laws and regulations.
+</p>
+
+<p>
+For data privacy concerns, you may contact the <b>PSA Data Protection Officer</b> through
+the official PSA communication channels.
+</p>
+
+<p>
+By proceeding, you confirm that you have read, understood, and voluntarily consent to the
+collection and processing of your personal data for the stated purpose.
+</p>
+
+
+<button type="button" onclick="agreePrivacy()">I Agree</button>
+  </div>
+</div>
+<!-- ================= SUPPORTING DOCUMENTS ================= -->
+<div class="modal" id="nidModal" style="display:none;">
+  <div class="modal-content docs">
+
+    <h3>Supporting Documents – Filipino Citizens</h3>
+
+    <h4>PRIMARY SUPPORTING DOCUMENTS</h4>
+    <p>The registrant is encouraged to bring any of the following:</p>
+    <ul>
+      <li>PSA-issued Certificate of Live Birth and one (1) government-issued identification document which bears a full name, front-facing photograph, and signature or thumb mark;</li>
+      <li>Philippine Passport or ePassport issued by the Department of Foreign Affairs (DFA)</li>
+      <li>UMID (GSIS or SSS)</li>
+      <li>Unified Multi-purpose ldentification (UMID) Card issued by the Government Service lnsurance System (GSIS) or Social Security Systen (SSS)</li>
+      <li>Student’s License Permit or Non- Professional/Professional Driver’s License issued by the LTO</li>
+    </ul>
+
+    <p class="note">
+      In case there is/are discrepancy/ies in the entry/ies in PSA-issued Certificate of Live Birth and the government-issued ID presented, the entry/ies in the PSA-issued Certificate of Live Birth shall prevail.
+    </p>
+
+    <h4>SECONDARY SUPPORTING DOCUMENTS</h4>
+    <ul>
+      <li>PSA-issued Certificate of Live Birth/National Statistics Office (NSO)-issued Certificate of Live Blrth with Birth Reference Number (BreN)</li>
+      <li>Local Civil Registry Office (LCRO)-issued Certificate of Live Birth</li>
+      <li>PSA-issued Report of Birth</li>
+      <li>PSA-issued Certificate of Foundling</li>
+      <li>Integrated Bar of the Philippines (IBP) Identification Card</li>
+      <li>Professional Regulatory Commission (PRC) ID</li>
+      <li>Seaman’s Book (Seafarer’s Record Book)</li>
+      <li>Overseas Workers Welfare Administration (OWWA) ID</li>
+      <li>Senior Citizen’s lD issued by the Office of Senior Citizens Affairs (OSCA) and/or LocalGovernment Units (LGU)</li>
+      <li>Social Security System (SSS) lD</li>
+      <li>Pantawid Pamilyang Pilipino Program (4Ps) ID</li>
+      <li>License to Own or Possess Firearms (LTOPF)</li>
+      <li>National Bureau of lnvestigation (NBl) Clearance</li>
+      <li>Police Clearance/ID</li>
+      <li>Solo Parent’s ID</li>
+      <li>Person with Disability (PWD) lD issued by the National Council of Disability Affairs (NCDA) or its regional counterpart, Office of the Mayor, Department of Social Welfare and Development (DSWD) Office and other participating organizations with a Memorandum of Agreement with the Department of Health (DOH)</li>
+      <li>Voter’s lD issued by the Commission on Elections (COMELEC)</li>
+      <li>Postal lD issued by the Philippine Postal Corporation (PhlPost)</li>
+      <li>Taxpayer ldentification Number (TlN) ID</li>
+      <li>PhilHealth ID</li>
+      <li>Special Resident Retiree’s Visa (SRRV) issued by the Philippine Retirement Authority (PRA)</li>
+      <li>National ID from other countries</li>
+      <li>Residence ID from other countries</li>
+      <li>Professional ldentification Card issued by the Maritime lndustry Authority (MARINA)</li>
+      <li>Eligibility Card issued by the Civil Service Commission</li>
+      <li>Dependent’s lD lssued by the Armed Forces of the Philippines (AFP) and Philippine National Police (PNP)</li>
+      
+    </ul>
+
+    <h4>The following identification documents shall be accepted as secondary supporting documents provided that they have a front-facing photograph, signature/thumbmark, full name, permanent address, and date of birth.</h4>
+    <ul>
+      <li>Employee ID</li>
+      <li>School ID (for pre-school, elementary and signature/thumbmark of the lD owner is not required)</li>
+      <li>City / Municipal ID</li>
+      <li>Barangay Clearance / Certificate / ID</li>
+      <li>Barangay ID</li>
+      <li>Voter’s Certification issued by the COMELEC</li>
+      <li>Prison Record or Certificate of Detention</li>
+    </ul>
+
+    <p class="note">
+      Please ensure you bring the appropriate documents to avoid rescheduling.
+    </p>
+
+    <button type="button" onclick="closeNidModal()">I Understand</button>
+  </div>
+</div>
+
+<!-- ================= DEMOGRAPHIC UPDATE MODAL ================= -->
+<div class="modal" id="updateModal" style="display:none;">
+  <div class="modal-content docs">
+
+    <h3>Updating of Demographic Information</h3>
+    <p><strong>Fields to be Changed and List of Identification and/or Supporting Documents</strong></p>
+
+    <h4>1. First Name (includes suffix/middle name)</h4>
+    <ul>
+      <li>Certificate of Live Birth issued by PSA, NSO, or LCRO</li>
+      <li>Report of Birth issued by PSA or PFSP</li>
+      <li>Mother’s Certificate of Live Birth or Report of Birth</li>
+      <li>Certificate/Report of Marriage of parents (for middle name correction)</li>
+    </ul>
+
+    <h4>2. Last Name</h4>
+    <ul>
+      <li>Certificate/Report of Birth</li>
+      <li>Certificate/Report of Marriage</li>
+      <li>Certificate of Death (for widowed women)</li>
+      <li>Certificate of Dissolution of Marriage (NCIP)</li>
+    </ul>
+
+    <h4>3. Sex</h4>
+    <ul>
+      <li>Certificate/Report of Birth</li>
+      <li>Annotated Certificate of Live Birth</li>
+    </ul>
+
+    <h4>4. Date of Birth</h4>
+    <ul>
+      <li>Certificate/Report of Birth</li>
+      <li>Annotated Certificate of Live Birth (administrative/judicial correction)</li>
+    </ul>
+
+    <h4>5. Place of Birth</h4>
+    <ul>
+      <li>Certificate/Report of Birth</li>
+      <li>Annotated Certificate of Live Birth</li>
+    </ul>
+
+    <h4>6. Blood Type</h4>
+    <ul>
+      <li>Blood typing result</li>
+    </ul>
+
+    <h4>7. Permanent/Present Address</h4>
+    <ul>
+      <li>Barangay Certificate/ID</li>
+      <li>Proof of billing (at least 3 months)</li>
+      <li>Any supporting document showing updated address</li>
+    </ul>
+
+    <h4>8. Marital Status</h4>
+    <p>Please bring appropriate Marriage, Death, Annulment, Divorce, or CEMAR documents depending on the type of update.</p>
+
+    <p class="note">
+      Please bring the complete ORIGINAL COPY and valid supporting documents to avoid rescheduling.
+    </p>
+
+    <button type="button" onclick="closeUpdateModal()">I Understand</button>
+
+  </div>
+</div>
+
+<!-- ================= EPHILID MODAL ================= -->
+<div class="modal" id="ephilidModal" style="display:none;">
+  <div class="modal-content docs">
+
+    <h3>Important Reminder – ePhilID Printing</h3>
+
+    <p>
+      Clients requesting the printing of their <b>ePhilID (National ID in paper format)</b>
+      are required to present their official <b>transaction slip or reference number</b>
+      during their appointment.
+    </p>
+
+    <h4>If claiming through an Authorized Representative:</h4>
+    <ul>
+      <li>Signed Authorization Letter from the registered person</li>
+      <li>Valid government-issued ID of the authorized representative</li>
+      <li>Copy of a valid ID of the registered person</li>
+    </ul>
+
+    <h4>If the registered person is a Minor:</h4>
+    <ul>
+      <li>Birth Certificate of the minor</li>
+      <li>Valid government-issued ID of the parent or legal guardian</li>
+      <li>Supporting document establishing guardianship (if applicable)</li>
+    </ul>
+
+    <p class="note">
+      Appointments may be rescheduled if the required documents are not presented.
+    </p>
+
+    <p>
+      In compliance with the <b>Data Privacy Act of 2012 (RA 10173)</b>,
+      all personal information collected for verification purposes shall remain
+      confidential and used solely for processing the request.
+    </p>
+
+    <button type="button" onclick="closeEphilidModal()">I Understand</button>
+
+  </div>
+</div>
+
+<!-- ================= TRN / OTHER CONCERN MODAL ================= -->
+<div class="modal" id="trnModal" style="display:none;">
+  <div class="modal-content">
+
+    <h3>Important Reminder – TRN Retrieval / Other Concern</h3>
+
+    <p>
+      If you have lost your <b>Transaction Reference Number (TRN)</b>,
+      please be prepared to provide the following details during your visit:
+    </p>
+
+    <ul>
+      <li>First Name</li>
+      <li>Middle Name</li>
+      <li>Last Name</li>
+      <li>Suffix (if applicable)</li>
+      <li>Date of Birth (MM/DD/YYYY)</li>
+      <li>Sex (Male/Female)</li>
+    </ul>
+
+    <p>
+      In compliance with the <b>Data Privacy Act of 2012 (RA 10173)</b>,
+      all information provided will remain confidential and shall be used
+      solely for the processing and verification of your request.
+    </p>
+
+    <p class="note">
+      For other concerns not related to TRN retrieval, you may proceed directly
+      to the assigned personnel at the Fixed Registration Center (FRC) for assistance.
+    </p>
+
+    <button type="button" onclick="closeTrnModal()">I Understand</button>
+
+  </div>
+</div>
+
+<!-- ================= CONFIRM ================= -->
+<div class="modal" id="confirmModal" style="display:none;">
+  <div class="modal-content">
+    <h2>Confirm Appointment</h2>
+    <p><b>Name:</b> <span id="cName"></span></p>
+    <p><b>Service:</b> <span id="cService"></span></p>
+    <p><b>Date:</b> <span id="cDate"></span></p>
+    <div class="actions">
+      <button type="button" class="secondary" onclick="confirmModal.style.display='none'">Cancel</button>
+      <button type="button" onclick="confirmSubmit()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SLIP ================= -->
+<div class="modal" id="slipModal" style="display:none;">
+  <div class="modal-content" id="slipContent">
+    <h2>National ID Appointment Slip</h2>
+    <p><b>Reference:</b> <span id="sRef"></span></p>
+    <p><b>Name:</b> <span id="sName"></span></p>
+    <p><b>Date:</b> <span id="sDate"></span></p>
+    <p><b>Center:</b><br>
+      National ID - Fixed Registration Center,
+      3rd Floor, Gaisano Capital South, Cebu City
+    </p>
+    <div class="actions">
+      <button type="button" onclick="printSlip()">Print</button>
+      <button type="button" onclick="downloadSlip()">Download</button>
+      <button type="button" class="secondary" onclick="closeSlip()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CHECKMARK ================= -->
+<div id="checkmarkOverlay" class="checkmark-overlay">
+  <div class="checkmark-circle">
+    <div class="checkmark"></div>
+  </div>
+  <p class="checkmark-text">Booking Completed!</p>
+</div>
+
+<!-- ================= SYSTEM MESSAGE MODAL ================= -->
+<div id="systemModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3 id="systemTitle">Notice</h3>
+    <p id="systemMessage"></p>
+    <div class="actions">
+      <button type="button" onclick="closeSystemModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ===============================
+// GLOBAL CONFIG
+// ===============================
+
+const EXEC_URL = "https://script.google.com/macros/s/AKfycbzgSBClRp_iBkRBBCCrH2Xb-nPUCyWtAHiHhACY6VJdKdOaW94v8Wst1LScQMgVOq-mOQ/exec";
+
+
+// ===============================
+// SLOT CHECK
+// ===============================
+
+function checkSlots(){
+
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+  
+  .then(data => {
+  console.log("Slot API response:", data);
+
+  if(!service || !date) return;
+
+  fetch(EXEC_URL, {
+  method: "POST",
+  body: JSON.stringify({
+    action: "slots",
+    date: date,
+    service: service
+  })
+})
+.then(res => res.json())
+.then(data => {
+
+  const info = document.getElementById("serviceInfoText");
+
+  info.innerHTML = `
+    👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
+    🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
+  `;
+
+  info.style.color = data.remaining <= 0 ? "red" : "green";
+})
+.catch(err => {
+  console.error("Slot fetch error:", err);
+});
+}
+
+
+// ===============================
+// SUCCESS CHECKMARK
+// ===============================
+
+function showCheckmark() {
+
+  const overlay = document.getElementById("checkmarkOverlay");
+  overlay.style.display = "flex";
+
+  setTimeout(function(){
+    overlay.style.display = "none";
+  }, 2000);
+}
+
+
+// ===============================
+// DOM READY
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const formContainer = document.getElementById("formContainer");
+  const privacyModal = document.getElementById("privacyModal");
+
+  // Show privacy on load
+  privacyModal.style.display = "flex";
+  formContainer.style.filter = "blur(3px)";
+  formContainer.style.pointerEvents = "none";
+
+  window.agreePrivacy = function(){
+    privacyModal.style.display = "none";
+    formContainer.style.filter = "none";
+    formContainer.style.pointerEvents = "auto";
+  };
+
+  // SLOT LISTENERS
+  document.getElementById("service")
+    .addEventListener("change", checkSlots);
+
+  document.getElementById("date")
+    .addEventListener("change", checkSlots);
+
+  // SERVICE MODALS
+  const serviceSelect = document.getElementById("service");
+
+  serviceSelect.addEventListener("change", function(){
+
+    const selected = this.value;
+
+    document.querySelectorAll(".modal").forEach(function(modal){
+      if(modal.id !== "privacyModal"){
+        modal.style.display = "none";
+      }
+    });
+
+    const modalMap = {
+      "National ID Registration": "nidModal",
+      "Correction/Updating of Demographic Information": "updateModal",
+      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
+      "Retrieval of TRN / Other Concern": "trnModal"
+    };
+
+    if (modalMap[selected]) {
+      document.getElementById(modalMap[selected]).style.display = "flex";
+    }
+
+  });
+
+  // CLOSE MODALS
+  window.closeNidModal = () =>
+    document.getElementById("nidModal").style.display = "none";
+
+  window.closeUpdateModal = () =>
+    document.getElementById("updateModal").style.display = "none";
+
+  window.closeEphilidModal = () =>
+    document.getElementById("ephilidModal").style.display = "none";
+
+  window.closeTrnModal = () =>
+    document.getElementById("trnModal").style.display = "none";
+
+  window.closeSystemModal = () =>
+    document.getElementById("systemModal").style.display = "none";
+
+
+  // ===============================
+  // BOOKING
+  // ===============================
+
+  window.submitForm = function(){
+
+    const service = document.getElementById("service").value;
+    const fullname = document.getElementById("fullname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const date = document.getElementById("date").value;
+
+    if(!service || !fullname || !date){
+      showSystemMessage("Missing Fields",
+        "Please complete all required fields.");
+      return;
+    }
+
+    if(!email && !phone){
+      showSystemMessage("Contact Required",
+        "Provide at least email OR mobile number.");
+      return;
+    }
+
+    fetch(EXEC_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        service,
+        fullname,
+        email,
+        phone,
+        date
+      })
+    })
+    .then(res => res.json())
+    .then(r => {
+
+      if(r.status === "duplicate_name"){
+        return showSystemMessage("Duplicate Appointment",
+          "You already have an appointment on this date.");
+      }
+
+      if(r.status === "duplicate_email"){
+        return showSystemMessage("Duplicate Email",
+          "This email already has an appointment.");
+      }
+
+      if(r.status === "duplicate_phone"){
+        return showSystemMessage("Duplicate Phone",
+          "This mobile number already has an appointment.");
+      }
+
+      if(r.status === "daily_full"){
+        return showSystemMessage("Fully Booked",
+          "This service is fully booked on this date.");
+      }
+
+      if(r.status === "success"){
+
+        document.getElementById("sRef").textContent = r.refCode;
+        document.getElementById("sName").textContent = fullname;
+        document.getElementById("sDate").textContent = date;
+
+        document.getElementById("slipModal").style.display = "flex";
+
+        document.getElementById("service").value = "";
+        document.getElementById("fullname").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("date").value = "";
+      }
+
+    })
+    .catch(() => {
+      showSystemMessage("System Error",
+        "Unable to connect to server.");
+    });
+
+  };
+
+  function showSystemMessage(title, message){
+    document.getElementById("systemTitle").textContent = title;
+    document.getElementById("systemMessage").textContent = message;
+    document.getElementById("systemModal").style.display = "flex";
+  }
+
+});
+
+
+// ===============================
+// PRINT / DOWNLOAD
+// ===============================
+
+window.printSlip = function() {
+  window.print();
+  document.getElementById("slipModal").style.display = "none";
+  showCheckmark();
+};
+
+window.downloadSlip = function() {
+
+  const slip = document.getElementById("slipContent");
+
+  html2canvas(slip).then(function(canvas) {
+
+    const link = document.createElement("a");
+    link.download = "National_ID_Appointment.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    document.getElementById("slipModal").style.display = "none";
+    showCheckmark();
+  });
+
+};
+
+window.closeSlip = function() {
+  document.getElementById("slipModal").style.display = "none";
+  showCheckmark();
+};
+
+</script>
+</body>
+</html>
