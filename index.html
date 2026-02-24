@@ -373,42 +373,40 @@ const EXEC_URL = "https://script.google.com/macros/s/AKfycbzgSBClRp_iBkRBBCCrH2X
 // SLOT CHECK
 // ===============================
 
-function checkSlots(){
+function function checkSlots(){
 
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
-  
-  .then(data => {
-  console.log("Slot API response:", data);
 
   if(!service || !date) return;
 
   fetch(EXEC_URL, {
-  method: "POST",
-  body: JSON.stringify({
-    action: "slots",
-    date: date,
-    service: service
+    method: "POST",
+    body: JSON.stringify({
+      action: "slots",
+      date: date,
+      service: service
+    })
   })
-})
-.then(res => res.json())
-.then(data => {
+  .then(res => res.json())
+  .then(data => {
 
-  const info = document.getElementById("serviceInfoText");
+    console.log("Slot API response:", data);
 
-  info.innerHTML = `
-    👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
-    🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
-  `;
+    const info = document.getElementById("serviceInfoText");
 
-  info.style.color = data.remaining <= 0 ? "red" : "green";
-})
-.catch(err => {
-  console.error("Slot fetch error:", err);
-});
+    info.innerHTML = `
+      👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
+      🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
+    `;
+
+    info.style.color = data.remaining <= 0 ? "red" : "green";
+  })
+  .catch(err => {
+    console.error("Slot fetch error:", err);
+  });
+
 }
-
-
 // ===============================
 // SUCCESS CHECKMARK
 // ===============================
@@ -617,4 +615,5 @@ window.closeSlip = function() {
 
 </script>
 </body>
+
 </html>
