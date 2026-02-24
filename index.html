@@ -21,31 +21,43 @@
   </div>
 
   <div class="card">
-    <label>Select Services</label>
-    <select id="service">
-      <option></option>
-      <option>National ID Registration</option>
-      <option>Correction/Updating of Demographic Information</option>
-      <option>Request National ID in Paper Format (ePhilID)</option>
-      <option>Retrieval of TRN / Other Concern</option>
-    </select>
-	<label>Preferred Date</label>
-	<input type="date" id="date">
-    <div class="service-info">
-    <small id="serviceInfoText" style="color:#555;"></small>
-    </div>
-    <label>Full Name</label>
-    <input id="fullname">
 
-    <label>Email Address (optional)</label>
-    <input id="email" placeholder="example@gmail.com">
+  <!-- SERVICE -->
+  <label for="service">Select Services</label>
+  <select id="service" required>
+    <option value="">-- Select Service --</option>
+    <option>National ID Registration</option>
+    <option>Correction/Updating of Demographic Information</option>
+    <option>Request National ID in Paper Format (ePhilID)</option>
+    <option>Retrieval of TRN / Other Concern</option>
+  </select>
 
-    <label>Mobile Number (optional)</label>
-    <input id="phone" placeholder="09XXXXXXXXX">
+  <!-- DATE -->
+  <label for="date">Preferred Date</label>
+  <input type="date" id="date" required>
 
-    <button type="button" onclick="submitForm()">Submit Appointment Request</button>
+  <!-- SLOT INFO -->
+  <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
+    <small id="serviceInfoText" style="color:#555; display:block;"></small>
   </div>
-  
+
+  <!-- FULL NAME -->
+  <label for="fullname">Full Name</label>
+  <input id="fullname" type="text" required>
+
+  <!-- EMAIL -->
+  <label for="email">Email Address (optional)</label>
+  <input id="email" type="email" placeholder="example@gmail.com">
+
+  <!-- PHONE -->
+  <label for="phone">Mobile Number (optional)</label>
+  <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+
+  <!-- SUBMIT -->
+  <button type="button" onclick="submitForm()">
+    Submit Appointment Request
+  </button>
+
 </div>
 
 <!-- ================= PRIVACY NOTICE ================= -->
@@ -603,6 +615,7 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
 
 
 
