@@ -458,9 +458,7 @@ document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
   serviceSelect.addEventListener("change", function(){
 
     const selected = this.value;
-
-    document.querySelectorAll(".modal").forEach(function(modal){
-  modal.style.display = "none";
+	  
     });
 
 	  function clearAllModals(){
@@ -617,11 +615,19 @@ window.closeSlip = function() {
   document.getElementById("slipModal").style.display = "none";
   showCheckmark();
 };
+closeAllModals();
 
+  // 🔥 restore form
+  const formContainer = document.getElementById("formContainer");
+  formContainer.style.filter = "none";
+  formContainer.style.pointerEvents = "auto";
+}
+	
 </script>
 </body>
 
 </html>
+
 
 
 
