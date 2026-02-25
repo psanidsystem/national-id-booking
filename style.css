@@ -520,6 +520,22 @@ select {
   opacity: 1;
   transform: translateX(-50%) translateY(-2px);
 }
+.has-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.has-tooltip:hover::before {
+  opacity: 1;
+}
 
 
 
