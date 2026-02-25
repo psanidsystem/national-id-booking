@@ -467,6 +467,9 @@ const calendar = flatpickr("#date", {
       else dot.classList.add("many");
 
       dayElem.appendChild(dot);
+		if (slotData[date] === 0) {
+  dayElem.classList.add("flatpickr-disabled");
+}
     }
   },
 
@@ -675,6 +678,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
