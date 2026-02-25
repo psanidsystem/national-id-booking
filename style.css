@@ -338,6 +338,9 @@ select {
   color: #ffffff !important;
   font-weight: 700;
 }
+.flatpickr-current-month {
+  text-transform: uppercase;
+}
 
 .flatpickr-prev-month,
 .flatpickr-next-month {
@@ -402,6 +405,7 @@ select {
   100% { opacity: 1; transform: scale(1); }
 }
 backdrop-filter: blur(10px);
+
 
 
 
