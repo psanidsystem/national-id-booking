@@ -444,7 +444,36 @@ const calendar = flatpickr("#date", {
   dateFormat: "Y-m-d",
   minDate: "today",
   disableMobile: true,
-  monthSelectorType: "static", // 🔥 THIS FIXES IT
+  monthSelectorType: "static",
+
+  onDayCreate: function(dObj, dStr, fp, dayElem) {
+
+    const date = dayElem.dateObj.toISOString().split("T")[0];
+
+    // Example demo slot data
+    const slotData = {
+      "2026-02-25": 10,
+      "2026-02-26": 3,
+      "2026-02-27": 0
+    };
+
+    if (slotData[date] !== undefined) {
+
+      let dot = document.createElement("span");
+      dot.classList.add("slot-dot");
+
+      if (slotData[date] === 0) {
+        dot.classList.add("full");
+      } else if (slotData[date] <= 3) {
+        dot.classList.add("few");
+      } else {
+        dot.classList.add("many");
+      }
+
+      dayElem.appendChild(dot);
+    }
+  },
+
   onChange: function(selectedDates, dateStr) {
     checkSlots();
   }
@@ -650,6 +679,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
