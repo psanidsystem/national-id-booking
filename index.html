@@ -448,31 +448,34 @@ const calendar = flatpickr("#date", {
 
   onDayCreate: function(dObj, dStr, fp, dayElem) {
 
-    const date = dayElem.dateObj.toISOString().split("T")[0];
+  const year = dayElem.dateObj.getFullYear();
+  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
 
-    // Example demo slot data
-    const slotData = {
-      "2026-02-25": 10,
-      "2026-02-26": 3,
-      "2026-02-27": 0
-    };
+  const date = `${year}-${month}-${day}`;
 
-    if (slotData[date] !== undefined) {
+  const slotData = {
+    "2026-02-25": 10,
+    "2026-02-26": 3,
+    "2026-02-27": 0
+  };
 
-      let dot = document.createElement("span");
-      dot.classList.add("slot-dot");
+  if (slotData[date] !== undefined) {
 
-      if (slotData[date] === 0) {
-        dot.classList.add("full");
-      } else if (slotData[date] <= 3) {
-        dot.classList.add("few");
-      } else {
-        dot.classList.add("many");
-      }
+    const dot = document.createElement("span");
+    dot.classList.add("slot-dot");
 
-      dayElem.appendChild(dot);
+    if (slotData[date] === 0) {
+      dot.classList.add("full");
+    } else if (slotData[date] <= 3) {
+      dot.classList.add("few");
+    } else {
+      dot.classList.add("many");
     }
-  },
+
+    dayElem.appendChild(dot);
+  }
+},
 
   onChange: function(selectedDates, dateStr) {
     checkSlots();
@@ -679,6 +682,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
