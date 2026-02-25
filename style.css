@@ -30,7 +30,8 @@ label {
   display: block;
 }
 
-input, select {
+.card input,
+.card select {
   width: 100%;
   padding: 10px;
   margin-top: 6px;
@@ -407,7 +408,29 @@ select {
 .flatpickr-calendar {
   backdrop-filter: blur(10px);
 }
+/* ===== FIX MONTH DROPDOWN VISIBILITY ===== */
 
+.flatpickr-monthDropdown-months {
+  background: #1e5aa8 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+}
+
+.flatpickr-monthDropdown-month {
+  background: #1e5aa8 !important;
+  color: #ffffff !important;
+}
+
+.flatpickr-monthDropdown-month:hover {
+  background: #17407c !important;
+}
+.flatpickr-current-month select {
+  background: transparent;
+  color: white;
+  font-weight: 700;
+  border: none;
+}
 
 
 
