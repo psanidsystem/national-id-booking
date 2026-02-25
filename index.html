@@ -447,14 +447,20 @@ const DEFAULT_SLOTS = {
   "Request National ID in Paper Format (ePhilID)": 50,
   "Retrieval of TRN / Other Concern": 50
 };
+
 const calendar = flatpickr("#date", {
   dateFormat: "Y-m-d",
   minDate: "today",
   disableMobile: true,
   monthSelectorType: "static",
 
-  onMonthChange: fetchMonthlyData,
-  onOpen: fetchMonthlyData,
+  onReady: function(selectedDates, dateStr, instance) {
+    fetchMonthlyData(instance);
+  },
+
+  onMonthChange: function(selectedDates, dateStr, instance) {
+    fetchMonthlyData(instance);
+  },
 
   onDayCreate: function(dObj, dStr, fp, dayElem) {
 
@@ -470,7 +476,7 @@ const calendar = flatpickr("#date", {
     const booked = monthlyBooked[date] || 0;
     const remaining = base - booked;
 
-    if (booked > 0 || remaining === 0) {
+    if (booked > 0 || remaining <= 0) {
 
       const dot = document.createElement("span");
       dot.classList.add("slot-dot");
@@ -481,17 +487,17 @@ const calendar = flatpickr("#date", {
 
       dayElem.appendChild(dot);
 
-      if (remaining <= 0) {
-        dayElem.setAttribute("data-tooltip", "Fully booked");
-      } else {
-        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-      }
+      dayElem.setAttribute(
+        "data-tooltip",
+        remaining <= 0 ? "Fully booked" : `${remaining} slots left`
+      );
 
       dayElem.classList.add("has-tooltip");
     }
   }
 });
-	function fetchMonthlyData(selectedDates, dateStr, instance){
+	
+	function fetchMonthlyData(instance){
 
   const service = document.getElementById("service").value;
   if (!service) return;
@@ -511,19 +517,11 @@ const calendar = flatpickr("#date", {
   .then(data => {
     monthlyBooked = data || {};
     instance.redraw();
+  })
+  .catch(err => {
+    console.log("Monthly fetch error:", err);
   });
 }
-document.getElementById("service").addEventListener("change", function() {
-  calendar.redraw();
-});
-  // Privacy Modal on Load
-  formContainer.classList.add("blurred");
-  privacyModal.style.display = "flex";
-
-  window.agreePrivacy = function(){
-    privacyModal.style.display = "none";
-    formContainer.classList.remove("blurred");
-  };
 	document.getElementById("service").addEventListener("change", function(){
   monthlyBooked = {};
   calendar.redraw();
@@ -720,6 +718,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
