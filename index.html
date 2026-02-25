@@ -56,9 +56,10 @@
   <input id="phone" type="tel" placeholder="09XXXXXXXXX">
 
   <!-- SUBMIT -->
-  <button type="button" onclick="submitForm()">
-    Submit Appointment Request
-  </button>
+<button type="button" id="submitBtn" onclick="submitForm()">
+  <span id="btnText">Submit Appointment Request</span>
+  <span id="btnLoader" class="loading" style="display:none;"></span>
+</button>
 
 </div>
 
@@ -501,85 +502,90 @@ document.addEventListener("DOMContentLoaded", function(){
 
   window.submitForm = function(){
 
-    const service = document.getElementById("service").value;
-    const fullname = document.getElementById("fullname").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const date = document.getElementById("date").value;
+  const btn = document.getElementById("submitBtn");
+  const btnText = document.getElementById("btnText");
+  const loader = document.getElementById("btnLoader");
 
-    if(!service || !fullname || !date){
-      showSystemMessage("Missing Fields",
-        "Please complete all required fields.");
-      return;
-    }
+  const service = document.getElementById("service").value;
+  const fullname = document.getElementById("fullname").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const date = document.getElementById("date").value;
 
-    if(!email && !phone){
-      showSystemMessage("Contact Required",
-        "Provide at least email OR mobile number.");
-      return;
-    }
-
-    fetch(EXEC_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        service,
-        fullname,
-        email,
-        phone,
-        date
-      })
-    })
-    .then(res => res.json())
-    .then(r => {
-
-      if(r.status === "duplicate_name"){
-        return showSystemMessage("Duplicate Appointment",
-          "You already have an appointment on this date.");
-      }
-
-      if(r.status === "duplicate_email"){
-        return showSystemMessage("Duplicate Email",
-          "This email already has an appointment.");
-      }
-
-      if(r.status === "duplicate_phone"){
-        return showSystemMessage("Duplicate Phone",
-          "This mobile number already has an appointment.");
-      }
-
-      if(r.status === "daily_full"){
-        return showSystemMessage("Fully Booked",
-          "This service is fully booked on this date.");
-      }
-
-      if(r.status === "success"){
-
-        document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname;
-        document.getElementById("sDate").textContent = date;
-
-        document.getElementById("slipModal").style.display = "flex";
-
-        document.getElementById("service").value = "";
-        document.getElementById("fullname").value = "";
-        document.getElementById("email").value = "";
-        document.getElementById("phone").value = "";
-        document.getElementById("date").value = "";
-      }
-
-    })
-    .catch(() => {
-      showSystemMessage("System Error",
-        "Unable to connect to server.");
-    });
-
-  };
-
-  function showSystemMessage(title, message){
-    document.getElementById("systemTitle").textContent = title;
-    document.getElementById("systemMessage").textContent = message;
-    document.getElementById("systemModal").style.display = "flex";
+  if(!service || !fullname || !date){
+    showSystemMessage("Missing Fields",
+      "Please complete all required fields.");
+    return;
   }
+
+  if(!email && !phone){
+    showSystemMessage("Contact Required",
+      "Provide at least email OR mobile number.");
+    return;
+  }
+
+  // 🔥 SHOW LOADER
+  btn.disabled = true;
+  btnText.style.display = "none";
+  loader.style.display = "inline-block";
+
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      service,
+      fullname,
+      email,
+      phone,
+      date
+    })
+  })
+  .then(res => res.json())
+  .then(r => {
+
+    // 🔥 HIDE LOADER
+    btn.disabled = false;
+    btnText.style.display = "inline";
+    loader.style.display = "none";
+
+    if(r.status === "duplicate_name"){
+      return showSystemMessage("Duplicate Appointment",
+        "You already have an appointment on this date.");
+    }
+
+    if(r.status === "duplicate_email"){
+      return showSystemMessage("Duplicate Email",
+        "This email already has an appointment.");
+    }
+
+    if(r.status === "duplicate_phone"){
+      return showSystemMessage("Duplicate Phone",
+        "This mobile number already has an appointment.");
+    }
+
+    if(r.status === "daily_full"){
+      return showSystemMessage("Fully Booked",
+        "This service is fully booked on this date.");
+    }
+
+    if(r.status === "success"){
+      document.getElementById("sRef").textContent = r.refCode;
+      document.getElementById("sName").textContent = fullname;
+      document.getElementById("sDate").textContent = date;
+
+      document.getElementById("slipModal").style.display = "flex";
+    }
+
+  })
+  .catch(() => {
+
+    btn.disabled = false;
+    btnText.style.display = "inline";
+    loader.style.display = "none";
+
+    showSystemMessage("System Error",
+      "Unable to connect to server.");
+  });
+};
 
 
 // ===============================
@@ -633,6 +639,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
