@@ -331,8 +331,12 @@ select {
   color: #ffffff !important;
 }
 
-.flatpickr-current-month .cur-month {
+.flatpickr-current-month {
+  text-align: center;
+  font-size: 18px;
   font-weight: 700;
+  letter-spacing: 1px;
+}
 }
 
 .flatpickr-current-month input.cur-year {
@@ -431,6 +435,7 @@ select {
   font-weight: 700;
   border: none;
 }
+
 
 
 
