@@ -384,15 +384,15 @@ select {
 
 /* Today */
 .flatpickr-day.today {
-  border: 2px solid #1e5aa8;
+  border: 2px solid rgba(30, 90, 168, 0.6);
 }
 
 /* Selected day */
 .flatpickr-day.selected {
   background: #1e5aa8;
-  border-color: #1e5aa8;
   color: white;
-  box-shadow: 0 4px 12px rgba(30, 90, 168, 0.4);
+  border: none;
+  box-shadow: 0 6px 16px rgba(30, 90, 168, 0.35);
 }
 
 /* Disabled days */
@@ -434,6 +434,23 @@ select {
   color: white;
   font-weight: 700;
   border: none;
+}
+.flatpickr-months {
+  background: linear-gradient(135deg, #1e5aa8, #2f5fa5);
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.flatpickr-current-month {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.flatpickr-current-month .cur-year {
+  font-weight: 500;
+  opacity: 0.85;
 }
 
 
