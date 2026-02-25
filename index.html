@@ -435,8 +435,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
   const formContainer = document.getElementById("formContainer");
   const privacyModal = document.getElementById("privacyModal");
+  const serviceSelect = document.getElementById("service");
 
-  // Blur form using class
+  // Privacy Modal on Load
   formContainer.classList.add("blurred");
   privacyModal.style.display = "flex";
 
@@ -445,38 +446,34 @@ document.addEventListener("DOMContentLoaded", function(){
     formContainer.classList.remove("blurred");
   };
 
-});
-
-  // SLOT LISTENERS
+  // Slot Listeners
   document.getElementById("service")
     .addEventListener("change", checkSlots);
 
   document.getElementById("date")
     .addEventListener("change", checkSlots);
 
-  // SERVICE MODALS
-  const serviceSelect = document.getElementById("service");
-
+  // Service Modal Listener
   serviceSelect.addEventListener("change", function(){
 
-  const selected = this.value;
+    const selected = this.value;
 
-  // Close ONLY service-related modals
-  document.getElementById("nidModal").style.display = "none";
-  document.getElementById("updateModal").style.display = "none";
-  document.getElementById("ephilidModal").style.display = "none";
-  document.getElementById("trnModal").style.display = "none";
+    // Close all service modals
+    ["nidModal","updateModal","ephilidModal","trnModal"]
+      .forEach(id => document.getElementById(id).style.display = "none");
 
-  const modalMap = {
-    "National ID Registration": "nidModal",
-    "Correction/Updating of Demographic Information": "updateModal",
-    "Request National ID in Paper Format (ePhilID)": "ephilidModal",
-    "Retrieval of TRN / Other Concern": "trnModal"
-  };
+    const modalMap = {
+      "National ID Registration": "nidModal",
+      "Correction/Updating of Demographic Information": "updateModal",
+      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
+      "Retrieval of TRN / Other Concern": "trnModal"
+    };
 
-  if (modalMap[selected]) {
-    document.getElementById(modalMap[selected]).style.display = "flex";
-  }
+    if (modalMap[selected]) {
+      document.getElementById(modalMap[selected]).style.display = "flex";
+    }
+
+  });
 
 });
 
@@ -620,6 +617,7 @@ window.closeSlip = function() {
 </body>
 
 </html>
+
 
 
 
