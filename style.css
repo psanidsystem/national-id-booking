@@ -304,3 +304,35 @@ select {
   pointer-events: none;
   user-select: none;
 }
+/* ===== CUSTOM CALENDAR THEME ===== */
+
+.flatpickr-calendar {
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.flatpickr-day.selected {
+  background: #2f5fa5;
+  border-color: #2f5fa5;
+}
+
+.flatpickr-day.today {
+  border-color: #2f5fa5;
+}
+
+.flatpickr-months {
+  background: #2f5fa5;
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: white;
+  font-weight: bold;
+}
+
+.flatpickr-weekday {
+  color: #2f5fa5;
+  font-weight: 600;
+}
