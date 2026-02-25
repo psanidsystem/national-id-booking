@@ -316,26 +316,39 @@ select {
   font-family: "Segoe UI", sans-serif;
 }
 
-/* HEADER */
+/* ===== IMPROVED HEADER VISIBILITY ===== */
+
 .flatpickr-months {
-  background: linear-gradient(135deg, #1e5aa8, #2f5fa5);
-  color: white;
-  padding: 10px 0;
+  background: #1e5aa8;
+  padding: 14px 0;
 }
 
 .flatpickr-current-month {
-  font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff !important;
+}
+
+.flatpickr-current-month .cur-month {
+  font-weight: 700;
 }
 
 .flatpickr-current-month input.cur-year {
-  color: white;
-  font-weight: 600;
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  top: 12px;
 }
 
 .flatpickr-prev-month svg,
 .flatpickr-next-month svg {
-  fill: white;
+  fill: #ffffff !important;
+  width: 18px;
+  height: 18px;
 }
 
 /* WEEKDAYS */
@@ -389,5 +402,6 @@ select {
   100% { opacity: 1; transform: scale(1); }
 }
 backdrop-filter: blur(10px);
+
 
 
