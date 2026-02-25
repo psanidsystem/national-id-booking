@@ -523,8 +523,14 @@ const calendar = flatpickr("#date", {
   });
 }
 document.getElementById("service").addEventListener("change", function(){
-  const fp = calendar;
-  fetchMonthlyData(fp);
+
+  monthlyBooked = {};
+
+  calendar.clear();
+  calendar.redraw();
+
+  fetchMonthlyData(calendar);
+
 });
 
   // Slot Listeners
@@ -718,6 +724,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
