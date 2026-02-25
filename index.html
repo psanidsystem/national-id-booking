@@ -447,35 +447,44 @@ const calendar = flatpickr("#date", {
   monthSelectorType: "static",
 
   onDayCreate: function(dObj, dStr, fp, dayElem) {
-    const year = dayElem.dateObj.getFullYear();
-    const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
-    const date = `${year}-${month}-${day}`;
 
-    const slotData = {
-      "2026-02-25": 10,
-      "2026-02-26": 3,
-      "2026-02-27": 0
-    };
+  const year = dayElem.dateObj.getFullYear();
+  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
+  const date = `${year}-${month}-${day}`;
 
-    if (slotData[date] !== undefined) {
-      const dot = document.createElement("span");
-      dot.classList.add("slot-dot");
+  const slotData = {
+    "2026-02-25": 10,
+    "2026-02-26": 3,
+    "2026-02-27": 0
+  };
 
-      if (slotData[date] === 0) dot.classList.add("full");
-      else if (slotData[date] <= 3) dot.classList.add("few");
-      else dot.classList.add("many");
+  if (slotData[date] !== undefined) {
 
-      dayElem.appendChild(dot);
-		if (slotData[date] === 0) {
-  dayElem.classList.add("flatpickr-disabled");
-}
+    const slots = slotData[date];
+
+    // ===== DOT =====
+    const dot = document.createElement("span");
+    dot.classList.add("slot-dot");
+
+    if (slots === 0) dot.classList.add("full");
+    else if (slots <= 3) dot.classList.add("few");
+    else dot.classList.add("many");
+
+    dayElem.appendChild(dot);
+
+    // ===== TOOLTIP TEXT =====
+    if (slots === 0) {
+      dayElem.setAttribute("data-tooltip", "Fully booked");
+    } else if (slots <= 3) {
+      dayElem.setAttribute("data-tooltip", `${slots} slots left`);
+    } else {
+      dayElem.setAttribute("data-tooltip", `${slots} slots available`);
     }
-  },
 
-  onMonthChange: function() {
-    calendar.redraw();
+    dayElem.classList.add("has-tooltip");
   }
+}
 });
 
   // Privacy Modal on Load
@@ -678,6 +687,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
