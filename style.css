@@ -459,25 +459,28 @@ select {
 
 .slot-dot {
   position: absolute;
-  bottom: 4px;
+  bottom: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   pointer-events: none;
 }
 
 .slot-dot.many {
-  background: #16a34a; /* green */
+  background: #16a34a;
+  box-shadow: 0 0 4px rgba(22,163,74,0.6);
 }
 
 .slot-dot.few {
-  background: #f59e0b; /* orange */
+  background: #f59e0b;
+  box-shadow: 0 0 4px rgba(245,158,11,0.6);
 }
 
 .slot-dot.full {
-  background: #dc2626; /* red */
+  background: #dc2626;
+  box-shadow: 0 0 4px rgba(220,38,38,0.6);
 }
 
 /* Make day relative for positioning */
@@ -488,6 +491,7 @@ select {
 .flatpickr-day {
   position: relative !important;
 }
+
 
 
 
