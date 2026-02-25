@@ -450,7 +450,7 @@ const DEFAULT_SLOTS = {
 
 const calendar = flatpickr("#date", {
   dateFormat: "Y-m-d",
-  minDate: "2026-02-01",
+  minDate: "today",
   disableMobile: true,
   monthSelectorType: "static",
 
@@ -464,33 +464,39 @@ const calendar = flatpickr("#date", {
 
   onDayCreate: function(dObj, dStr, fp, dayElem) {
 
-    const year = dayElem.dateObj.getFullYear();
-    const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
-    const date = `${year}-${month}-${day}`;
+  const year = dayElem.dateObj.getFullYear();
+  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
+  const date = `${year}-${month}-${day}`;
 
-    const service = document.getElementById("service").value;
-    if (!service) return;
+  const service = document.getElementById("service").value;
+  if (!service) return;
 
-    const base = DEFAULT_SLOTS[service] || 0;
-    const booked = monthlyBooked[date] || 0;
-    const remaining = base - booked;
+  const base = DEFAULT_SLOTS[service] || 0;
+  const booked = monthlyBooked[date] || 0;
+  const remaining = base - booked;
 
-    if (booked > 0 || remaining <= 0) {
+  const dot = document.createElement("span");
+  dot.classList.add("slot-dot");
 
-      const dot = document.createElement("span");
-      dot.classList.add("slot-dot");
+  if (remaining <= 0) {
+    dot.classList.add("full");
+    dayElem.classList.add("flatpickr-disabled");
+    dayElem.style.pointerEvents = "none";
+    dayElem.setAttribute("data-tooltip", "Fully booked");
+  } 
+  else if (remaining <= 3) {
+    dot.classList.add("few");
+    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+  } 
+  else {
+    dot.classList.add("many");
+    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+  }
 
-      if (remaining <= 0) dot.classList.add("full");
-      else if (remaining <= 3) dot.classList.add("few");
-      else dot.classList.add("many");
-
-      dayElem.appendChild(dot);
-
-      dayElem.setAttribute(
-        "data-tooltip",
-        remaining <= 0 ? "Fully booked" : `${remaining} slots left`
-      );
+  dayElem.appendChild(dot);
+  dayElem.classList.add("has-tooltip");
+}
 
       dayElem.classList.add("has-tooltip");
     }
@@ -718,6 +724,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
