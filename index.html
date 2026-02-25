@@ -439,12 +439,22 @@ document.addEventListener("DOMContentLoaded", function(){
   const formContainer = document.getElementById("formContainer");
   const privacyModal = document.getElementById("privacyModal");
   const serviceSelect = document.getElementById("service");
+let monthlyBooked = {};
 
+const DEFAULT_SLOTS = {
+  "National ID Registration": 32,
+  "Correction/Updating of Demographic Information": 16,
+  "Request National ID in Paper Format (ePhilID)": 50,
+  "Retrieval of TRN / Other Concern": 50
+};
 const calendar = flatpickr("#date", {
   dateFormat: "Y-m-d",
   minDate: "today",
   disableMobile: true,
   monthSelectorType: "static",
+
+  onMonthChange: fetchMonthlyData,
+  onOpen: fetchMonthlyData,
 
   onDayCreate: function(dObj, dStr, fp, dayElem) {
 
@@ -453,37 +463,56 @@ const calendar = flatpickr("#date", {
     const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
     const date = `${year}-${month}-${day}`;
 
-    const slotData = {
-      "2026-02-25": 10,
-      "2026-02-26": 3,
-      "2026-02-27": 0
-    };
+    const service = document.getElementById("service").value;
+    if (!service) return;
 
-    if (slotData[date] !== undefined) {
+    const base = DEFAULT_SLOTS[service] || 0;
+    const booked = monthlyBooked[date] || 0;
+    const remaining = base - booked;
 
-      const slots = slotData[date];
+    if (booked > 0 || remaining === 0) {
 
       const dot = document.createElement("span");
       dot.classList.add("slot-dot");
 
-      if (slots === 0) dot.classList.add("full");
-      else if (slots <= 3) dot.classList.add("few");
+      if (remaining <= 0) dot.classList.add("full");
+      else if (remaining <= 3) dot.classList.add("few");
       else dot.classList.add("many");
 
       dayElem.appendChild(dot);
 
-      if (slots === 0) {
+      if (remaining <= 0) {
         dayElem.setAttribute("data-tooltip", "Fully booked");
-      } else if (slots <= 3) {
-        dayElem.setAttribute("data-tooltip", `${slots} slots left`);
       } else {
-        dayElem.setAttribute("data-tooltip", `${slots} slots available`);
+        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
       }
 
       dayElem.classList.add("has-tooltip");
     }
   }
 });
+	function fetchMonthlyData(selectedDates, dateStr, instance){
+
+  const service = document.getElementById("service").value;
+  if (!service) return;
+
+  const currentMonth = instance.currentYear + "-" +
+    String(instance.currentMonth + 1).padStart(2, '0');
+
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "monthlySlots",
+      service: service,
+      month: currentMonth
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    monthlyBooked = data || {};
+    instance.redraw();
+  });
+}
 document.getElementById("service").addEventListener("change", function() {
   calendar.redraw();
 });
@@ -495,6 +524,10 @@ document.getElementById("service").addEventListener("change", function() {
     privacyModal.style.display = "none";
     formContainer.classList.remove("blurred");
   };
+	document.getElementById("service").addEventListener("change", function(){
+  monthlyBooked = {};
+  calendar.redraw();
+});
 
   // Slot Listeners
   document.getElementById("service")
@@ -687,6 +720,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
