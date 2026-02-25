@@ -6,6 +6,7 @@
   <title>National ID Appointment System</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
@@ -36,7 +37,7 @@
 
   <!-- DATE -->
   <label for="date">Preferred Date</label>
-  <input type="date" id="date" required>
+  <input type="text" id="date" placeholder="Select appointment date" readonly>
 
   <!-- SLOT INFO -->
   <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
@@ -439,6 +440,15 @@ document.addEventListener("DOMContentLoaded", function(){
   const privacyModal = document.getElementById("privacyModal");
   const serviceSelect = document.getElementById("service");
 
+	flatpickr("#date", {
+  dateFormat: "Y-m-d",
+  minDate: "today",
+  disableMobile: true,
+  onChange: function(selectedDates, dateStr) {
+    checkSlots();
+  }
+});
+
   // Privacy Modal on Load
   formContainer.classList.add("blurred");
   privacyModal.style.display = "flex";
@@ -639,6 +649,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
