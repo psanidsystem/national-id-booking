@@ -462,7 +462,14 @@ const calendar = flatpickr("#date", {
     fetchMonthlyData(instance);
   },
 
-  onDayCreate: function(dObj, dStr, fp, dayElem) {
+  const today = new Date();
+today.setHours(0,0,0,0);
+
+if (dayElem.dateObj < today) {
+  dayElem.classList.add("flatpickr-disabled");
+  dayElem.style.pointerEvents = "none";
+  return; // 🔥 stop processing
+}
 
     const year = dayElem.dateObj.getFullYear();
     const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
@@ -724,6 +731,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
