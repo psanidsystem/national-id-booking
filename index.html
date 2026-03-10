@@ -345,14 +345,15 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
 	<p class="slip-subtitle">Philippine Statistics Authority – Cebu</p>
 	<div class="slip-divider"></div>
     <p><b>Reference:</b> <span id="sRef"></span></p>
-    <p><b>Booking Time:</b> <span id="sTimestamp"></span></p>
-    <p><b>Name:</b> <span id="sName"></span></p>
-    <p><b>Date:</b> <span id="sDate"></span></p>
-
-    <p><b>Center:</b><br>
-      National ID - Fixed Registration Center,<br>
-      3rd Floor, Gaisano Capital South, Cebu City
-    </p>
+	<p><b>Booking Time:</b> <span id="sTimestamp"></span></p>
+	<p><b>Name:</b> <span id="sName"></span></p>
+	<p><b>Date:</b> <span id="sDate"></span></p>
+	<p><b>Office Hours:</b> 8:00 AM to 5:00 PM</p>
+	
+	<p><b>Center:</b><br>
+	  National ID - Fixed Registration Center,<br>
+	  3rd Floor, Gaisano Capital South, Cebu City
+	</p>
 
     <div class="actions">
       <button type="button" onclick="printSlip()">Print</button>
@@ -454,7 +455,8 @@ function openConfirmModal() {
 
 function confirmSubmit() {
   closeModal("confirmModal");
-  submitForm();
+ 
+	submitForm();
 }
 
 function checkSlots() {
@@ -505,6 +507,20 @@ function showCheckmark() {
   setTimeout(() => {
     overlay.style.display = "none";
   }, 2000);
+}
+
+function formatAppointmentDate(dateStr) {
+  const months = [
+    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+  ];
+
+  const parts = dateStr.split("-");
+  const year = parts[0];
+  const month = months[parseInt(parts[1], 10) - 1];
+  const day = parts[2];
+
+  return `${day} ${month} ${year}`;
 }
 
 function resetForm() {
@@ -610,10 +626,10 @@ window.submitForm = function() {
   const now = new Date();
   const timestamp = now.toLocaleString();
 
-  document.getElementById("sRef").textContent = r.refCode;
-  document.getElementById("sName").textContent = fullname;
-  document.getElementById("sDate").textContent = date;
-  document.getElementById("sTimestamp").textContent = timestamp;
+	document.getElementById("sRef").textContent = r.refCode;
+	document.getElementById("sName").textContent = fullname;
+	document.getElementById("sDate").textContent = formatAppointmentDate(date);
+	document.getElementById("sTimestamp").textContent = timestamp;
 
   openModal("slipModal");
 }
@@ -770,6 +786,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
