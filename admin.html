@@ -6,1106 +6,863 @@
   <title>National ID Admin Dashboard</title>
   <style>
     :root {
-  --bg: #f3f6fb;
-  --card: #ffffff;
-  --primary: #1e5aa8;
-  --primary-dark: #17407c;
-  --primary-soft: #eaf2ff;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #d8e3f0;
-  --shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
-  --shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.04);
-  --radius: 18px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, #f7f9fd 0%, #f3f6fb 100%);
-  color: var(--text);
-}
-
-.hidden {
-  display: none !important;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 230px 1fr;
-  min-height: 100vh;
-}
-
-/* SIDEBAR */
-.sidebar {
-  background: linear-gradient(180deg, #153d77 0%, #1e5aa8 100%);
-  color: #fff;
-  padding: 22px 12px;
-  border-right: 1px solid rgba(255,255,255,0.08);
-  box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-  padding: 6px 8px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-}
-
-.brand img {
-  width: 54px;
-  height: 54px;
-  object-fit: contain;
-  background: rgba(255,255,255,0.12);
-  border-radius: 14px;
-  padding: 6px;
-}
-
-.brand h1 {
-  font-size: 18px;
-  line-height: 1.05;
-  margin: 0;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.brand p {
-  margin: 5px 0 0;
-  font-size: 12px;
-  line-height: 1.35;
-  opacity: 0.9;
-}
-
-.nav-group {
-  display: grid;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.nav-btn {
-  border: none;
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  text-align: left;
-  padding: 14px 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-}
-
-.nav-btn:hover {
-  background: rgba(255,255,255,0.16);
-  transform: translateX(2px);
-}
-
-.nav-btn.active {
-  background: rgba(255,255,255,0.22);
-  color: #fff;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.15),
-    inset 4px 0 0 #ffffff,
-    0 8px 18px rgba(0,0,0,0.08);
-}
-
-/* MAIN CONTENT */
-.content {
-  padding: 26px 22px 28px;
-  display: grid;
-  gap: 20px;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.title-wrap h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
-  letter-spacing: -0.02em;
-}
-
-.title-wrap p {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 15px;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-/* BUTTONS */
-.btn {
-  border: none;
-  border-radius: 14px;
-  padding: 12px 18px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(30, 90, 168, 0.18);
-}
-
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #eef4fb;
-  color: var(--primary);
-  border: 1px solid #d8e4f5;
-}
-
-.btn-secondary:hover {
-  background: #e7effa;
-  transform: translateY(-1px);
-}
-
-/* METRIC CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 18px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-}
-
-.metric-label {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.metric-value {
-  font-size: 34px;
-  font-weight: 700;
-  color: var(--primary);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.metric-sub {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-    /* METRIC CARDS UPGRADE */
-.metric-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  padding: 20px 18px 18px;
-  min-height: 122px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid var(--border);
-}
-
-.metric-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-}
-
-.metric-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
-}
-
-.metric-total {
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-}
-
-.metric-total::before {
-  background: #1e5aa8;
-}
-
-.metric-today {
-  background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%);
-}
-
-.metric-today::before {
-  background: #0891b2;
-}
-
-.metric-pending {
-  background: linear-gradient(180deg, #ffffff 0%, #fffaf0 100%);
-}
-
-.metric-pending::before {
-  background: #f59e0b;
-}
-
-.metric-slots {
-  background: linear-gradient(180deg, #ffffff 0%, #f7f8ff 100%);
-}
-
-.metric-slots::before {
-  background: #6366f1;
-}
-
-.metric-label {
-  color: #667085;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 14px;
-}
-
-.metric-value {
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  margin-bottom: 10px;
-}
-
-.metric-total .metric-value {
-  color: #1e5aa8;
-}
-
-.metric-today .metric-value {
-  color: #0891b2;
-}
-
-.metric-pending .metric-value {
-  color: #d97706;
-}
-
-.metric-slots .metric-value {
-  color: #4f46e5;
-}
-
-.metric-sub {
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-/* PANEL LAYOUT */
-.panel-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
-}
-
-.panel-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.panel-title h3 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 700;
-  color: #111827;
-}
-
-/* INPUTS / FILTERS */
-.filters {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.field {
-  display: grid;
-  gap: 6px;
-}
-
-.field label {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.field input,
-.field select,
-.search-input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #fff;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.field input:focus,
-.field select:focus,
-.search-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(30, 90, 168, 0.08);
-  background: #fff;
-}
-
-.search-input::placeholder,
-.field input::placeholder {
-  color: #9aa5b1;
-}
-
-/* TABLES */
-.table-wrap {
-  overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fff;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 980px;
-  background: #fff;
-}
-
-th,
-td {
-  padding: 16px 12px;
-  border-bottom: 1px solid #edf2f7;
-  text-align: left;
-  font-size: 14px;
-  vertical-align: middle;
-}
-
-th {
-  background: #f8fbff;
-  color: #667085;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
-
-tbody tr {
-  transition: background 0.15s ease;
-}
-
-tbody tr:hover {
-  background: #fbfdff;
-}
-
-/* BADGES */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 64px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.badge-confirmed {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-pending {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.badge-cancelled {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-/* ACTION MINI BUTTONS */
-.row-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.mini-btn {
-  border: none;
-  border-radius: 10px;
-  padding: 7px 11px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.mini-btn:hover {
-  transform: translateY(-1px);
-}
-
-.mini-edit {
-  background: #dbe8ff;
-  color: #1d4ed8;
-}
-
-.mini-slot {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.mini-delete {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* SLOT LIST */
-.stack {
-  display: grid;
-  gap: 16px;
-}
-
-.slot-list {
-  display: grid;
-  gap: 10px;
-}
-
-.slot-item {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  background: #fbfdff;
-}
-
-.slot-item strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 15px;
-}
-
-.slot-meta {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.slot-pill {
-  padding: 7px 11px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  background: #eff6ff;
-  color: var(--primary);
-  white-space: nowrap;
-}
-
-/* MODALS */
-.modal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  background: rgba(15, 23, 42, 0.5);
-  padding: 20px;
-  z-index: 9999;
-}
-
-.modal.open {
-  display: flex;
-}
-
-.modal-card {
-  width: 100%;
-  max-width: 720px;
-  max-height: 90vh;
-  overflow: auto;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  border: 1px solid var(--border);
-  padding: 24px;
-}
-
-.modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.modal-head h3 {
-  margin: 0;
-  color: var(--primary);
-  font-size: 20px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.form-grid .full {
-  grid-column: 1 / -1;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-/* NOTICES */
-.notice {
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 13px;
-  margin-bottom: 16px;
-  display: none;
-  border: 1px solid transparent;
-}
-
-.notice.show {
-  display: block;
-}
-
-.notice.success {
-  background: #dcfce7;
-  color: #166534;
-  border-color: #bbf7d0;
-}
-
-.notice.error {
-  background: #fee2e2;
-  color: #991b1b;
-  border-color: #fecaca;
-}
-
-/* SETTINGS PAGE CARD */
-#settingsSection .card p {
-  margin-top: 0;
-  margin-bottom: 16px;
-  color: #475467;
-}
-
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  .cards,
-  .panel-grid,
-  .filters,
-  .form-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 820px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    padding-bottom: 14px;
-  }
-
-  .cards,
-  .panel-grid,
-  .filters,
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .content {
-    padding: 18px;
-  }
-
-  .actions {
-    width: 100%;
-  }
-
-  .actions .btn {
-    flex: 1 1 auto;
-  }
-
-  .metric-value {
-    font-size: 30px;
-  }
-
-  .title-wrap h2 {
-    font-size: 22px;
-  }
-}
-
-    /* Improve dashboard vertical spacing */
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-  margin-bottom: 26px;   /* space between metrics and next section */
-}
-
-/* Main panel layout spacing */
-
-.panel-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 22px;             /* more breathing room */
-  margin-top: 4px;
-}
-
-/* Card internal spacing */
-
-.card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 22px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-}
-
-/* Section headers spacing */
-
-.panel-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-/* Search bar spacing */
-
-.search-input {
-  margin-left: 10px;
-  max-width: 360px;
-}
-
-/* Improve table padding */
-
-th,
-td {
-  padding: 18px 14px;
-}
-
-    /* DASHBOARD LAYOUT ENHANCEMENT */
-.dashboard-filter-card {
-  padding: 18px 22px;
-  margin-bottom: 2px;
-}
-
-.dashboard-filter-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.dashboard-filter-bar h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: #111827;
-}
-
-.dashboard-filter-bar p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.compact-field {
-  min-width: 230px;
-  max-width: 260px;
-}
-
-.cards {
-  margin-bottom: 4px;
-}
-
-.dashboard-main-grid {
-  align-items: start;
-}
-
-/* SERVICE BREAKDOWN LOOK */
-.service-breakdown {
-  display: grid;
-  gap: 12px;
-}
-
-.service-breakdown .slot-item {
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
-}
-
-.service-breakdown .slot-item strong {
-  font-size: 15px;
-  margin-bottom: 5px;
-}
-
-.service-breakdown .slot-meta {
-  font-size: 12px;
-  color: #667085;
-}
-
-.service-breakdown .slot-pill {
-  min-width: 92px;
-  text-align: center;
-  background: #edf4ff;
-  color: #1e5aa8;
-  font-weight: 700;
-}
-
-/* MAKE SEARCH ALIGN BETTER */
-.panel-title .search-input {
-  max-width: 360px;
-  margin-left: auto;
-}
-
-/* BETTER SPACING INSIDE DASHBOARD */
-#dashboardSection {
-  display: grid;
-  gap: 18px;
-}
-
-/* QUICK SLOT CARD BUTTON FULL WIDTH LOOKS BETTER */
-#saveQuickSlotBtn {
-  margin-top: 6px;
-  width: 100%;
-}
-
-/* IMPROVE RIGHT COLUMN CARD BALANCE */
-.stack .card {
-  padding: 20px;
-}
-
-/* MOBILE */
-@media (max-width: 820px) {
-  .dashboard-filter-bar {
-    align-items: stretch;
-  }
-
-  .compact-field {
-    min-width: 100%;
-    max-width: 100%;
-  }
-
-  .panel-title .search-input {
-    max-width: 100%;
-    margin-left: 0;
-  }
-}
-
-    /* =========================
-   NEXT UI PASS
-========================= */
-
-/* Sidebar buttons with icons */
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nav-icon {
-  width: 20px;
-  text-align: center;
-  font-size: 15px;
-  opacity: 0.95;
-}
-
-/* Topbar buttons stronger polish */
-.actions .btn {
-  min-width: 124px;
-}
-
-.actions .btn-primary {
-  box-shadow: 0 10px 22px rgba(30, 90, 168, 0.22);
-}
-
-.actions .btn-secondary {
-  background: #f3f7fd;
-}
-
-/* Dashboard title polish */
-.title-wrap h2 {
-  font-size: 22px;
-  line-height: 1.15;
-}
-
-.title-wrap p {
-  max-width: 760px;
-  line-height: 1.5;
-}
-
-/* Card polish */
-.card {
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
-}
-
-/* Table polish */
-.table-wrap {
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th {
-  background: #f7faff;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-tbody tr:nth-child(even) {
-  background: #fcfdff;
-}
-
-tbody tr:hover {
-  background: #f8fbff;
-}
-
-td {
-  color: #1f2937;
-}
-
-/* Search field better alignment */
-.search-input {
-  min-width: 260px;
-}
-
-/* Booking / slot rows */
-.row-actions {
-  gap: 6px;
-}
-
-.mini-btn {
-  padding: 7px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  box-shadow: none;
-}
-
-.mini-edit {
-  background: #e7efff;
-  color: #1d4ed8;
-}
-
-.mini-delete {
-  background: #fee9e9;
-  color: #b91c1c;
-}
-
-.mini-slot {
-  background: #dcfce7;
-  color: #166534;
-}
-
-/* Empty states */
-.empty-state {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px;
-  border: 1px dashed #cbd5e1;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #fbfdff 0%, #f8fbff 100%);
-}
-
-.empty-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #eef4ff;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.empty-state strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 15px;
-  color: #111827;
-}
-
-.empty-state p {
-  margin: 0;
-  color: #667085;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* Better default row messages inside tbody */
-tbody td[colspan] {
-  padding: 22px 16px;
-  color: #64748b;
-  text-align: center;
-  background: #fbfdff;
-}
-
-/* Slot cards on right */
-.slot-item {
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.slot-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
-}
-
-/* Dashboard filter polish */
-.dashboard-filter-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-}
-
-.dashboard-filter-bar h3 {
-  font-size: 18px;
-  margin-bottom: 4px;
-}
-
-.dashboard-filter-bar p {
-  font-size: 13px;
-  color: #667085;
-}
-
-/* Settings page */
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 18px;
-}
-
-.settings-card {
-  min-height: 260px;
-}
-
-.settings-text {
-  margin-top: 0;
-  margin-bottom: 18px;
-  color: #475467;
-  line-height: 1.7;
-  font-size: 14px;
-}
-
-.settings-info-list {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.settings-info-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #fbfdff;
-}
-
-.settings-info-item strong {
-  color: #111827;
-  font-size: 14px;
-}
-
-.settings-info-item span {
-  color: #667085;
-  font-size: 13px;
-  text-align: right;
-}
-
-.settings-actions {
-  margin-top: auto;
-}
-
-/* Buttons inside cards */
-.card .btn-primary,
-.card .btn-secondary {
-  border-radius: 14px;
-}
-
-/* Better responsive rules */
-@media (max-width: 1100px) {
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 820px) {
-  .brand h1 {
-    font-size: 17px;
-  }
-
-  .nav-btn {
-    font-size: 14px;
-    padding: 13px 14px;
-  }
-
-  .search-input {
-    min-width: 100%;
-  }
-
-  .settings-info-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .settings-info-item span {
-    text-align: left;
-  }
-}
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --primary: #1e5aa8;
+      --primary-dark: #17407c;
+      --primary-soft: #eaf2ff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d8e3f0;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+      --shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.04);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7f9fd 0%, #f3f6fb 100%);
+      color: var(--text);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #153d77 0%, #1e5aa8 100%);
+      color: #fff;
+      padding: 22px 12px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 6px 8px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .brand img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 6px;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      line-height: 1.05;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      opacity: 0.9;
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .nav-btn {
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.16);
+      transform: translateX(2px);
+    }
+
+    .nav-btn.active {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.15),
+        inset 4px 0 0 #ffffff,
+        0 8px 18px rgba(0,0,0,0.08);
+    }
+
+    .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 15px;
+      opacity: 0.95;
+    }
+
+    .content {
+      padding: 26px 22px 28px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .title-wrap h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .title-wrap p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(30, 90, 168, 0.22);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f3f7fd;
+      color: var(--primary);
+      border: 1px solid #d8e4f5;
+    }
+
+    .btn-secondary:hover {
+      background: #e7effa;
+      transform: translateY(-1px);
+    }
+
+    .actions .btn {
+      min-width: 124px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 4px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .metric-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      padding: 20px 18px 18px;
+      min-height: 122px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--border);
+    }
+
+    .metric-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+    }
+
+    .metric-total {
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+
+    .metric-total::before {
+      background: #1e5aa8;
+    }
+
+    .metric-today {
+      background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%);
+    }
+
+    .metric-today::before {
+      background: #0891b2;
+    }
+
+    .metric-pending {
+      background: linear-gradient(180deg, #ffffff 0%, #fffaf0 100%);
+    }
+
+    .metric-pending::before {
+      background: #f59e0b;
+    }
+
+    .metric-slots {
+      background: linear-gradient(180deg, #ffffff 0%, #f7f8ff 100%);
+    }
+
+    .metric-slots::before {
+      background: #6366f1;
+    }
+
+    .metric-label {
+      color: #667085;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .metric-value {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .metric-total .metric-value {
+      color: #1e5aa8;
+    }
+
+    .metric-today .metric-value {
+      color: #0891b2;
+    }
+
+    .metric-pending .metric-value {
+      color: #d97706;
+    }
+
+    .metric-slots .metric-value {
+      color: #4f46e5;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 22px;
+      margin-top: 4px;
+    }
+
+    .dashboard-main-grid {
+      align-items: start;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select,
+    .search-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(30, 90, 168, 0.08);
+      background: #fff;
+    }
+
+    .search-input::placeholder,
+    .field input::placeholder {
+      color: #9aa5b1;
+    }
+
+    .panel-title .search-input {
+      max-width: 360px;
+      margin-left: auto;
+      min-width: 260px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 980px;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 18px 14px;
+      border-bottom: 1px solid #edf2f7;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f7faff;
+      color: #64748b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fcfdff;
+    }
+
+    tbody tr:hover {
+      background: #f8fbff;
+    }
+
+    tbody td[colspan] {
+      padding: 22px 16px;
+      color: #64748b;
+      text-align: center;
+      background: #fbfdff;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-confirmed {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .mini-edit {
+      background: #e7efff;
+      color: #1d4ed8;
+    }
+
+    .mini-slot {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .mini-delete {
+      background: #fee9e9;
+      color: #b91c1c;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .slot-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .slot-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      background: #fbfdff;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .slot-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .slot-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .slot-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .slot-pill {
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eff6ff;
+      color: var(--primary);
+      white-space: nowrap;
+      min-width: 92px;
+      text-align: center;
+    }
+
+    .dashboard-filter-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+      padding: 18px 22px;
+      margin-bottom: 2px;
+    }
+
+    .dashboard-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-filter-bar h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      color: #111827;
+    }
+
+    .dashboard-filter-bar p {
+      margin: 0;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    .compact-field {
+      min-width: 230px;
+      max-width: 260px;
+    }
+
+    #dashboardSection {
+      display: grid;
+      gap: 18px;
+    }
+
+    .service-breakdown {
+      display: grid;
+      gap: 12px;
+    }
+
+    .service-breakdown .slot-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    .service-breakdown .slot-item strong {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .service-breakdown .slot-meta {
+      font-size: 12px;
+      color: #667085;
+    }
+
+    .service-breakdown .slot-pill {
+      background: #edf4ff;
+      color: #1e5aa8;
+    }
+
+    #saveQuickSlotBtn {
+      margin-top: 6px;
+      width: 100%;
+    }
+
+    .empty-state {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fbfdff 0%, #f8fbff 100%);
+    }
+
+    .empty-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef4ff;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: #111827;
+    }
+
+    .empty-state p {
+      margin: 0;
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 18px;
+    }
+
+    .settings-card {
+      min-height: 260px;
+    }
+
+    .settings-text {
+      margin-top: 0;
+      margin-bottom: 18px;
+      color: #475467;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .settings-info-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .settings-info-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fbfdff;
+    }
+
+    .settings-info-item strong {
+      color: #111827;
+      font-size: 14px;
+    }
+
+    .settings-info-item span {
+      color: #667085;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .settings-actions {
+      margin-top: auto;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 720px;
+      max-height: 90vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+      border: 1px solid var(--border);
+      padding: 24px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .notice.success {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .notice.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    @media (max-width: 1100px) {
+      .cards,
+      .panel-grid,
+      .filters,
+      .form-grid,
+      .settings-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        padding-bottom: 14px;
+      }
+
+      .cards,
+      .panel-grid,
+      .filters,
+      .form-grid,
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 18px;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .actions .btn {
+        flex: 1 1 auto;
+      }
+
+      .metric-value {
+        font-size: 30px;
+      }
+
+      .brand h1 {
+        font-size: 17px;
+      }
+
+      .nav-btn {
+        font-size: 14px;
+        padding: 13px 14px;
+      }
+
+      .dashboard-filter-bar {
+        align-items: stretch;
+      }
+
+      .compact-field {
+        min-width: 100%;
+        max-width: 100%;
+      }
+
+      .panel-title .search-input {
+        max-width: 100%;
+        min-width: 100%;
+        margin-left: 0;
+      }
+
+      .settings-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .settings-info-item span {
+        text-align: left;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1119,34 +876,33 @@ tbody td[colspan] {
         </div>
       </div>
 
-    <div class="nav-group">
+      <div class="nav-group">
+        <button class="nav-btn active" data-section="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </button>
 
-    <button class="nav-btn active" data-section="dashboard">
-    <span class="nav-icon">📊</span>
-    <span>Dashboard</span>
-    </button>
-    
-    <button class="nav-btn" data-section="bookings">
-    <span class="nav-icon">📋</span>
-    <span>Bookings</span>
-    </button>
-    
-    <button class="nav-btn" data-section="slots">
-    <span class="nav-icon">🗓️</span>
-    <span>Slot Management</span>
-    </button>
-    
-    <button class="nav-btn" data-section="availability">
-    <span class="nav-icon">📅</span>
-    <span>Availability</span>
-    </button>
-    
-    <button class="nav-btn" data-section="settings">
-    <span class="nav-icon">⚙️</span>
-    <span>Settings</span>
-    </button>
-    
-    </div>
+        <button class="nav-btn" data-section="bookings">
+          <span class="nav-icon">📋</span>
+          <span>Bookings</span>
+        </button>
+
+        <button class="nav-btn" data-section="slots">
+          <span class="nav-icon">🗓️</span>
+          <span>Slot Management</span>
+        </button>
+
+        <button class="nav-btn" data-section="availability">
+          <span class="nav-icon">📅</span>
+          <span>Availability</span>
+        </button>
+
+        <button class="nav-btn" data-section="settings">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </button>
+      </div>
+    </aside>
 
     <main class="content">
       <div class="topbar">
@@ -1163,104 +919,104 @@ tbody td[colspan] {
       <div id="notice" class="notice"></div>
 
       <section id="dashboardSection">
-  <div class="card dashboard-filter-card">
-    <div class="dashboard-filter-bar">
-      <div>
-        <h3>Dashboard Date Filter</h3>
-        <p>Choose a date to view booking totals and service breakdown.</p>
-      </div>
+        <div class="card dashboard-filter-card">
+          <div class="dashboard-filter-bar">
+            <div>
+              <h3>Dashboard Date Filter</h3>
+              <p>Choose a date to view booking totals and service breakdown.</p>
+            </div>
 
-      <div class="field compact-field">
-        <label for="dashboardDate">Select Date</label>
-        <input type="date" id="dashboardDate" />
-      </div>
-    </div>
-  </div>
-
-  <div class="cards">
-    <div class="card metric-card metric-total">
-      <div class="metric-label">Total Bookings</div>
-      <div class="metric-value" id="metricTotal">0</div>
-      <div class="metric-sub">All fetched records</div>
-    </div>
-
-    <div class="card metric-card metric-today">
-      <div class="metric-label">Selected Date</div>
-      <div class="metric-value" id="metricToday">0</div>
-      <div class="metric-sub">Total bookings for chosen date</div>
-    </div>
-
-    <div class="card metric-card metric-pending">
-      <div class="metric-label">Pending</div>
-      <div class="metric-value" id="metricPending">0</div>
-      <div class="metric-sub">Need review or confirmation</div>
-    </div>
-
-    <div class="card metric-card metric-slots">
-      <div class="metric-label">Available Slot Rules</div>
-      <div class="metric-value" id="metricSlots">0</div>
-      <div class="metric-sub">Configured custom slot entries</div>
-    </div>
-  </div>
-
-  <div class="panel-grid dashboard-main-grid">
-    <div class="card">
-      <div class="panel-title">
-        <h3>Recent Bookings</h3>
-        <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Reference</th>
-              <th>Name</th>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="recentBookingsBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="stack">
-      <div class="card">
-        <div class="panel-title">
-          <h3>Bookings by Service</h3>
+            <div class="field compact-field">
+              <label for="dashboardDate">Select Date</label>
+              <input type="date" id="dashboardDate" />
+            </div>
+          </div>
         </div>
-        <div id="serviceBreakdown" class="slot-list service-breakdown"></div>
-      </div>
 
-      <div class="card">
-        <div class="panel-title">
-          <h3>Quick Slot Update</h3>
-        </div>
-        <div class="field">
-          <label for="quickService">Service</label>
-          <select id="quickService"></select>
-        </div>
-        <div class="field">
-          <label for="quickDate">Date</label>
-          <input type="date" id="quickDate" />
-        </div>
-        <div class="field">
-          <label for="quickSlots">Available Slots</label>
-          <input type="number" id="quickSlots" min="0" />
-        </div>
-        <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
-      </div>
+        <div class="cards">
+          <div class="card metric-card metric-total">
+            <div class="metric-label">Total Bookings</div>
+            <div class="metric-value" id="metricTotal">0</div>
+            <div class="metric-sub">All fetched records</div>
+          </div>
 
-      <div class="card">
-        <div class="panel-title">
-          <h3>Custom Slot Rules</h3>
+          <div class="card metric-card metric-today">
+            <div class="metric-label">Selected Date</div>
+            <div class="metric-value" id="metricToday">0</div>
+            <div class="metric-sub">Total bookings for chosen date</div>
+          </div>
+
+          <div class="card metric-card metric-pending">
+            <div class="metric-label">Pending</div>
+            <div class="metric-value" id="metricPending">0</div>
+            <div class="metric-sub">Need review or confirmation</div>
+          </div>
+
+          <div class="card metric-card metric-slots">
+            <div class="metric-label">Available Slot Rules</div>
+            <div class="metric-value" id="metricSlots">0</div>
+            <div class="metric-sub">Configured custom slot entries</div>
+          </div>
         </div>
-        <div class="slot-list" id="dashboardSlotList"></div>
-      </div>
-    </div>
-  </div>
-</section>
+
+        <div class="panel-grid dashboard-main-grid">
+          <div class="card">
+            <div class="panel-title">
+              <h3>Recent Bookings</h3>
+              <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Name</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentBookingsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="panel-title">
+                <h3>Bookings by Service</h3>
+              </div>
+              <div id="serviceBreakdown" class="slot-list service-breakdown"></div>
+            </div>
+
+            <div class="card">
+              <div class="panel-title">
+                <h3>Quick Slot Update</h3>
+              </div>
+              <div class="field">
+                <label for="quickService">Service</label>
+                <select id="quickService"></select>
+              </div>
+              <div class="field">
+                <label for="quickDate">Date</label>
+                <input type="date" id="quickDate" />
+              </div>
+              <div class="field">
+                <label for="quickSlots">Available Slots</label>
+                <input type="number" id="quickSlots" min="0" />
+              </div>
+              <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
+            </div>
+
+            <div class="card">
+              <div class="panel-title">
+                <h3>Custom Slot Rules</h3>
+              </div>
+              <div class="slot-list" id="dashboardSlotList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="bookingsSection" class="hidden">
         <div class="card">
@@ -1348,52 +1104,79 @@ tbody td[colspan] {
         </div>
       </section>
 
+      <section id="availabilitySection" class="hidden">
+        <div class="card">
+          <div class="panel-title">
+            <h3>Availability Management</h3>
+            <button class="btn btn-primary" id="openAvailabilityModalBtn">Add Availability Rule</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Reason</th>
+                  <th>NID Registration</th>
+                  <th>Correction</th>
+                  <th>ePhilID</th>
+                  <th>TRN</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="availabilityTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <section id="settingsSection" class="hidden">
-      <div class="settings-grid">
-        <div class="card settings-card">
-          <div class="panel-title">
-            <h3>System Settings</h3>
+        <div class="settings-grid">
+          <div class="card settings-card">
+            <div class="panel-title">
+              <h3>System Settings</h3>
+            </div>
+            <p class="settings-text">
+              This admin dashboard is connected to the personnel login page and Google Apps Script backend.
+            </p>
+
+            <div class="settings-info-list">
+              <div class="settings-info-item">
+                <strong>Access Control</strong>
+                <span>Authorized personnel only</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Data Source</strong>
+                <span>Google Sheets Appointment Database</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Dashboard Mode</strong>
+                <span>Live Admin View</span>
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
+            </div>
           </div>
-          <p class="settings-text">
-            This admin dashboard is connected to the personnel login page and Google Apps Script backend.
-          </p>
-    
-          <div class="settings-info-list">
-            <div class="settings-info-item">
-              <strong>Access Control</strong>
-              <span>Authorized personnel only</span>
+
+          <div class="card settings-card">
+            <div class="panel-title">
+              <h3>Admin Notes</h3>
             </div>
-    
-            <div class="settings-info-item">
-              <strong>Data Source</strong>
-              <span>Google Sheets Appointment Database</span>
+            <div class="empty-state">
+              <div class="empty-icon">🛡️</div>
+              <div>
+                <strong>System Ready</strong>
+                <p>Use this dashboard to manage bookings, adjust slot rules, and monitor daily service demand.</p>
+              </div>
             </div>
-    
-            <div class="settings-info-item">
-              <strong>Dashboard Mode</strong>
-              <span>Live Admin View</span>
-            </div>
-          </div>
-    
-          <div class="settings-actions">
-            <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
           </div>
         </div>
-    
-        <div class="card settings-card">
-          <div class="panel-title">
-            <h3>Admin Notes</h3>
-          </div>
-          <div class="empty-state">
-            <div class="empty-icon">🛡️</div>
-            <div>
-              <strong>System Ready</strong>
-              <p>Use this dashboard to manage bookings, adjust slot rules, and monitor daily service demand.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
     </main>
   </div>
 
@@ -1470,64 +1253,61 @@ tbody td[colspan] {
       </div>
     </div>
   </div>
-<div class="modal" id="availabilityModal">
 
-<div class="modal-card">
+  <div class="modal" id="availabilityModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="availabilityModalTitle">Add Availability</h3>
+        <button class="btn btn-secondary" data-close="availabilityModal">Close</button>
+      </div>
 
-<div class="modal-head">
-<h3 id="availabilityModalTitle">Add Availability</h3>
-<button class="btn btn-secondary" data-close="availabilityModal">Close</button>
-</div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="availabilityDate">Date</label>
+          <input type="date" id="availabilityDate">
+        </div>
 
-<div class="form-grid">
+        <div class="field">
+          <label for="availabilityStatus">Status</label>
+          <select id="availabilityStatus">
+            <option value="OPEN">OPEN</option>
+            <option value="CLOSED">CLOSED</option>
+          </select>
+        </div>
 
-<div class="field">
-<label>Date</label>
-<input type="date" id="availabilityDate">
-</div>
+        <div class="field full">
+          <label for="availabilityReason">Reason</label>
+          <input type="text" id="availabilityReason" placeholder="Holiday, maintenance, local event, etc.">
+        </div>
 
-<div class="field">
-<label>Status</label>
-<select id="availabilityStatus">
-<option value="OPEN">OPEN</option>
-<option value="CLOSED">CLOSED</option>
-</select>
-</div>
+        <div class="field">
+          <label for="slotNidReg">NID Registration</label>
+          <input type="number" id="slotNidReg" min="0">
+        </div>
 
-<div class="field full">
-<label>Reason</label>
-<input type="text" id="availabilityReason">
-</div>
+        <div class="field">
+          <label for="slotCorrection">Correction</label>
+          <input type="number" id="slotCorrection" min="0">
+        </div>
 
-<div class="field">
-<label>NID Registration</label>
-<input type="number" id="slotNidReg" min="0">
-</div>
+        <div class="field">
+          <label for="slotEphilid">ePhilID</label>
+          <input type="number" id="slotEphilid" min="0">
+        </div>
 
-<div class="field">
-<label>Correction</label>
-<input type="number" id="slotCorrection" min="0">
-</div>
+        <div class="field">
+          <label for="slotTrn">TRN</label>
+          <input type="number" id="slotTrn" min="0">
+        </div>
+      </div>
 
-<div class="field">
-<label>ePhilID</label>
-<input type="number" id="slotEphilid" min="0">
-</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" data-close="availabilityModal">Cancel</button>
+        <button class="btn btn-primary" id="saveAvailabilityBtn">Save</button>
+      </div>
+    </div>
+  </div>
 
-<div class="field">
-<label>TRN</label>
-<input type="number" id="slotTrn" min="0">
-</div>
-
-</div>
-
-<div class="modal-actions">
-<button class="btn btn-secondary" data-close="availabilityModal">Cancel</button>
-<button class="btn btn-primary" id="saveAvailabilityBtn">Save</button>
-</div>
-
-</div>
-</div>
   <script>
     const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
     let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
@@ -1572,11 +1352,13 @@ tbody td[colspan] {
     }
 
     function openModal(id) {
-      document.getElementById(id).classList.add("open");
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add("open");
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove("open");
     }
 
     function fillServiceOptions() {
@@ -1623,48 +1405,47 @@ tbody td[colspan] {
       });
     }
 
-      function renderMetrics() {
-        const selectedDate = document.getElementById("dashboardDate")?.value || new Date().toISOString().slice(0, 10);
-      
-        const bookingsForDate = bookings.filter(b => b.date === selectedDate);
-        const pendingForDate = bookingsForDate.filter(b => b.status === "Pending");
-      
-        document.getElementById("metricTotal").textContent = bookings.length;
-        document.getElementById("metricToday").textContent = bookingsForDate.length;
-        document.getElementById("metricPending").textContent = pendingForDate.length;
-        document.getElementById("metricSlots").textContent = slotRules.length;
-      
-        const breakdownEl = document.getElementById("serviceBreakdown");
-        if (!breakdownEl) return;
-      
-        breakdownEl.innerHTML = "";
-      
-        const counts = {
-          "National ID Registration": 0,
-          "Correction/Updating of Demographic Information": 0,
-          "Request National ID in Paper Format (ePhilID)": 0,
-          "Retrieval of TRN / Other Concern": 0
-        };
-      
-        bookingsForDate.forEach(b => {
-          if (counts.hasOwnProperty(b.service)) {
-            counts[b.service]++;
-          }
-        });
-      
-        Object.entries(counts).forEach(([service, count]) => {
-          const div = document.createElement("div");
-          div.className = "slot-item";
-          div.innerHTML = `
-            <div>
-              <strong>${service}</strong>
-              <div class="slot-meta">Selected date: ${formatDate(selectedDate)}</div>
-            </div>
-            <span class="slot-pill">${count} booking${count !== 1 ? "s" : ""}</span>
-          `;
-          breakdownEl.appendChild(div);
-        });
-      }
+    function renderMetrics() {
+      const selectedDate = document.getElementById("dashboardDate")?.value || new Date().toISOString().slice(0, 10);
+      const bookingsForDate = bookings.filter(b => b.date === selectedDate);
+      const pendingForDate = bookingsForDate.filter(b => b.status === "Pending");
+
+      document.getElementById("metricTotal").textContent = bookings.length;
+      document.getElementById("metricToday").textContent = bookingsForDate.length;
+      document.getElementById("metricPending").textContent = pendingForDate.length;
+      document.getElementById("metricSlots").textContent = slotRules.length;
+
+      const breakdownEl = document.getElementById("serviceBreakdown");
+      if (!breakdownEl) return;
+
+      breakdownEl.innerHTML = "";
+
+      const counts = {
+        "National ID Registration": 0,
+        "Correction/Updating of Demographic Information": 0,
+        "Request National ID in Paper Format (ePhilID)": 0,
+        "Retrieval of TRN / Other Concern": 0
+      };
+
+      bookingsForDate.forEach(b => {
+        if (counts.hasOwnProperty(b.service)) {
+          counts[b.service]++;
+        }
+      });
+
+      Object.entries(counts).forEach(([service, count]) => {
+        const div = document.createElement("div");
+        div.className = "slot-item";
+        div.innerHTML = `
+          <div>
+            <strong>${service}</strong>
+            <div class="slot-meta">Selected date: ${formatDate(selectedDate)}</div>
+          </div>
+          <span class="slot-pill">${count} booking${count !== 1 ? "s" : ""}</span>
+        `;
+        breakdownEl.appendChild(div);
+      });
+    }
 
     function renderRecentBookings(list = bookings) {
       const tbody = document.getElementById("recentBookingsBody");
@@ -1680,8 +1461,9 @@ tbody td[colspan] {
         `;
         tbody.appendChild(tr);
       });
+
       if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="8">No booking records match the selected filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5">No booking records match the selected filters.</td></tr>`;
       }
     }
 
@@ -1739,14 +1521,14 @@ tbody td[colspan] {
 
       if (!dashboardList.innerHTML) {
         dashboardList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🗂️</div>
-        <div>
-          <strong>No custom slot rules yet</strong>
-          <p>Add a custom slot rule to override the default service capacity for a specific date.</p>
-        </div>
-      </div>
-    `;
+          <div class="empty-state">
+            <div class="empty-icon">🗂️</div>
+            <div>
+              <strong>No custom slot rules yet</strong>
+              <p>Add a custom slot rule to override the default service capacity for a specific date.</p>
+            </div>
+          </div>
+        `;
       }
 
       slotRules.forEach(item => {
@@ -1784,11 +1566,40 @@ tbody td[colspan] {
       });
     }
 
+    function renderAvailabilityTable() {
+      const tbody = document.getElementById("availabilityTableBody");
+      tbody.innerHTML = "";
+
+      availabilityRules.forEach(rule => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatDate(rule.date)}</td>
+          <td>${rule.status}</td>
+          <td>${rule.reason || "—"}</td>
+          <td>${rule.nidReg ?? 0}</td>
+          <td>${rule.updateDemo ?? 0}</td>
+          <td>${rule.ephilid ?? 0}</td>
+          <td>${rule.trn ?? 0}</td>
+          <td>
+            <div class="row-actions">
+              <button class="mini-btn mini-delete" onclick="deleteAvailability('${rule.date}')">Delete</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (!tbody.innerHTML) {
+        tbody.innerHTML = `<tr><td colspan="8">No availability rules.</td></tr>`;
+      }
+    }
+
     function renderAll() {
       renderMetrics();
       renderRecentBookings(filterQuickSearch());
       renderBookingsTable();
       renderSlotLists();
+      renderAvailabilityTable();
     }
 
     function filterQuickSearch() {
@@ -1800,15 +1611,19 @@ tbody td[colspan] {
     }
 
     function switchSection(section) {
-const map = {
-dashboard: ["dashboardSection","Dashboard Overview"],
-bookings: ["bookingsSection","Booking Management"],
-slots: ["slotsSection","Slot Management"],
-availability: ["availabilitySection","Availability Management"],
-settings: ["settingsSection","System Settings"]
-};
+      const map = {
+        dashboard: ["dashboardSection", "Dashboard Overview"],
+        bookings: ["bookingsSection", "Booking Management"],
+        slots: ["slotsSection", "Slot Management"],
+        availability: ["availabilitySection", "Availability Management"],
+        settings: ["settingsSection", "System Settings"]
+      };
 
-      Object.values(map).forEach(([id]) => document.getElementById(id).classList.add("hidden"));
+      Object.values(map).forEach(([id]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+      });
+
       document.getElementById(map[section][0]).classList.remove("hidden");
       document.getElementById("sectionTitle").textContent = map[section][1];
 
@@ -1836,6 +1651,16 @@ settings: ["settingsSection","System Settings"]
       document.getElementById("slotService").selectedIndex = 0;
     }
 
+    function resetAvailabilityForm() {
+      document.getElementById("availabilityDate").value = "";
+      document.getElementById("availabilityStatus").value = "OPEN";
+      document.getElementById("availabilityReason").value = "";
+      document.getElementById("slotNidReg").value = "";
+      document.getElementById("slotCorrection").value = "";
+      document.getElementById("slotEphilid").value = "";
+      document.getElementById("slotTrn").value = "";
+    }
+
     async function apiRequest(payload) {
       const finalPayload = {
         ...payload,
@@ -1861,65 +1686,64 @@ settings: ["settingsSection","System Settings"]
         bookings = data.bookings || [];
         slotRules = data.slotRules || [];
         availabilityRules = data.availabilityRules || [];
-        renderAvailabilityTable();
-        renderAll();
-            }
-async function saveAvailability() {
+        showNotice("Admin data loaded successfully.");
+      } catch (err) {
+        bookings = [];
+        slotRules = [];
+        availabilityRules = [];
+        showNotice(err.message, "error");
+      }
 
-const payload = {
+      renderAll();
+    }
 
-action: "adminSaveAvailability",
+    async function saveAvailability() {
+      const payload = {
+        action: "adminSaveAvailability",
+        date: document.getElementById("availabilityDate").value,
+        status: document.getElementById("availabilityStatus").value,
+        reason: document.getElementById("availabilityReason").value,
+        nidReg: document.getElementById("slotNidReg").value,
+        updateDemo: document.getElementById("slotCorrection").value,
+        ephilid: document.getElementById("slotEphilid").value,
+        trn: document.getElementById("slotTrn").value
+      };
 
-date: document.getElementById("availabilityDate").value,
+      if (!payload.date) {
+        showNotice("Please select an availability date.", "error");
+        return;
+      }
 
-status: document.getElementById("availabilityStatus").value,
+      const res = await apiRequest(payload);
 
-reason: document.getElementById("availabilityReason").value,
+      if (res.status === "error") {
+        showNotice(res.message, "error");
+        return;
+      }
 
-nidReg: document.getElementById("slotNidReg").value,
+      showNotice("Availability rule saved.");
+      closeModal("availabilityModal");
+      resetAvailabilityForm();
+      loadAdminData();
+    }
 
-updateDemo: document.getElementById("slotCorrection").value,
+    window.deleteAvailability = async function(date) {
+      if (!confirm("Delete availability rule for " + date + "?")) return;
 
-ephilid: document.getElementById("slotEphilid").value,
+      const res = await apiRequest({
+        action: "adminDeleteAvailability",
+        date: date
+      });
 
-trn: document.getElementById("slotTrn").value
+      if (res.status === "error") {
+        showNotice(res.message, "error");
+        return;
+      }
 
-};
+      showNotice("Availability rule deleted.");
+      loadAdminData();
+    };
 
-const res = await apiRequest(payload);
-
-if(res.status === "error"){
-showNotice(res.message,"error");
-return;
-}
-
-showNotice("Availability rule saved");
-
-closeModal("availabilityModal");
-
-loadAdminData();
-
-}
-    window.deleteAvailability = async function(date){
-
-if(!confirm("Delete availability rule for " + date + "?")) return;
-
-const res = await apiRequest({
-action:"adminDeleteAvailability",
-date:date
-});
-
-if(res.status === "error"){
-showNotice(res.message,"error");
-return;
-}
-
-showNotice("Availability rule deleted");
-
-loadAdminData();
-
-}
-    
     async function saveBooking() {
       const payload = {
         action: editingBookingRef ? "adminUpdateBooking" : "adminCreateBooking",
@@ -1979,47 +1803,6 @@ loadAdminData();
       }
     }
 
-      function renderAvailabilityTable() {
-      
-      const tbody = document.getElementById("availabilityTableBody");
-      if(!tbody) return;
-      
-      tbody.innerHTML = "";
-      
-      availabilityRules.forEach(rule => {
-      
-      const tr = document.createElement("tr");
-      
-      tr.innerHTML = `
-      <td>${formatDate(rule.date)}</td>
-      <td>${rule.status}</td>
-      <td>${rule.reason || "—"}</td>
-      <td>${rule.nidReg || 0}</td>
-      <td>${rule.updateDemo || 0}</td>
-      <td>${rule.ephilid || 0}</td>
-      <td>${rule.trn || 0}</td>
-      
-      <td>
-      <div class="row-actions">
-      
-      <button class="mini-btn mini-delete"
-      onclick="deleteAvailability('${rule.date}')">
-      Delete
-      </button>
-      
-      </div>
-      </td>
-      `;
-      
-      tbody.appendChild(tr);
-      
-      });
-      
-      if(!availabilityRules.length){
-      tbody.innerHTML = `<tr><td colspan="8">No availability rules configured.</td></tr>`;
-      }
-      
-      }
     function logout() {
       sessionStorage.removeItem("nid_admin_secret");
       window.location.href = "login.html";
@@ -2079,19 +1862,20 @@ loadAdminData();
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!requireLogin()) return;
-      document.getElementById("openAvailabilityModalBtn")
-.addEventListener("click", () => openModal("availabilityModal"));
 
-document.getElementById("saveAvailabilityBtn")
-.addEventListener("click", saveAvailability);
       const dashboardDateInput = document.getElementById("dashboardDate");
       if (dashboardDateInput) {
         dashboardDateInput.value = new Date().toISOString().slice(0, 10);
       }
 
-      document.getElementById("dashboardDate")?.addEventListener("change", () => {
-      renderMetrics();
+      document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
+
+      document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
+        resetAvailabilityForm();
+        openModal("availabilityModal");
       });
+
+      document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
 
       fillServiceOptions();
       renderAll();
@@ -2102,24 +1886,29 @@ document.getElementById("saveAvailabilityBtn")
       });
 
       document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
+
       document.getElementById("openNewBookingBtn").addEventListener("click", () => {
         resetBookingForm();
         openModal("bookingModal");
       });
+
       document.getElementById("openBookingModalBtn").addEventListener("click", () => {
         resetBookingForm();
         openModal("bookingModal");
       });
+
       document.getElementById("openSlotModalBtn").addEventListener("click", () => {
         resetSlotForm();
         openModal("slotModal");
       });
+
       document.getElementById("saveBookingBtn").addEventListener("click", saveBooking);
       document.getElementById("saveSlotBtn").addEventListener("click", () => saveSlotRule(false));
       document.getElementById("saveQuickSlotBtn").addEventListener("click", () => saveSlotRule(true));
       document.getElementById("logoutBtn").addEventListener("click", logout);
 
       document.getElementById("quickSearch").addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
+
       ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
         document.getElementById(id).addEventListener("input", renderBookingsTable);
       });
@@ -2149,4 +1938,3 @@ document.getElementById("saveAvailabilityBtn")
   </script>
 </body>
 </html>
-
