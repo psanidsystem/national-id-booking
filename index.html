@@ -606,6 +606,11 @@ document.addEventListener("DOMContentLoaded", function() {
   let monthlyBooked = {};
 	setFormDisabled(true);
 openModal("privacyModal");
+	document.getElementById("fullname").addEventListener("input", function () {
+  this.value = this.value
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/^\s+/, "");
 });
 
   const DEFAULT_SLOTS = {
@@ -741,6 +746,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
