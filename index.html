@@ -496,15 +496,30 @@ function showCheckmark() {
   }, 2000);
 }
 
+function resetForm() {
+  document.getElementById("service").value = "";
+  document.getElementById("fullname").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("serviceInfoText").innerHTML = "";
+
+  const dateInput = document.getElementById("date");
+  if (dateInput._flatpickr) {
+    dateInput._flatpickr.clear();
+  }
+}
+
 window.closeSlip = function() {
   closeModal("slipModal");
   showCheckmark();
+  resetForm();
 };
 
 window.printSlip = function() {
   window.print();
   closeModal("slipModal");
   showCheckmark();
+  resetForm();
 };
 
 window.downloadSlip = function() {
@@ -518,6 +533,7 @@ window.downloadSlip = function() {
 
     closeModal("slipModal");
     showCheckmark();
+    resetForm();
   });
 };
 
@@ -737,6 +753,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
