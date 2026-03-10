@@ -674,6 +674,58 @@ tbody tr:hover {
     font-size: 22px;
   }
 }
+
+    /* Improve dashboard vertical spacing */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 26px;   /* space between metrics and next section */
+}
+
+/* Main panel layout spacing */
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 22px;             /* more breathing room */
+  margin-top: 4px;
+}
+
+/* Card internal spacing */
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Section headers spacing */
+
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+/* Search bar spacing */
+
+.search-input {
+  margin-left: 10px;
+  max-width: 360px;
+}
+
+/* Improve table padding */
+
+th,
+td {
+  padding: 18px 14px;
+}
   </style>
 </head>
 <body>
