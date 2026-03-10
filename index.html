@@ -377,216 +377,6 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
 </div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-
-// ===============================
-// GLOBAL CONFIG
-// ===============================
-
-const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
-
-
-// ===============================
-// SLOT CHECK
-// ===============================
-
-function checkSlots(){
-
-  const service = document.getElementById("service").value;
-  const date = document.getElementById("date").value;
-  const info = document.getElementById("serviceInfoText");
-
-  if(!service || !date){
-    info.innerHTML = "";
-    return;
-  }
-
-  // 🔵 Show loading message immediately
-  info.innerHTML = "⏳ Checking available slots...";
-  info.style.color = "#555";
-
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "slots",
-      date: date,
-      service: service
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-
-    info.innerHTML = `
-      👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
-      🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
-    `;
-
-    info.style.color = data.remaining <= 0 ? "red" : "green";
-
-  })
-  .catch(err => {
-    info.innerHTML = "⚠ Unable to check availability.";
-    info.style.color = "red";
-  });
-
-}
-
-// ===============================
-// DOM READY
-// ===============================
-
-document.addEventListener("DOMContentLoaded", function(){
-
-  const formContainer = document.getElementById("formContainer");
-  const privacyModal = document.getElementById("privacyModal");
-  const serviceSelect = document.getElementById("service");
-
-  openModal("privacyModal");
-
-  let monthlyBooked = {};
-
-const DEFAULT_SLOTS = {
-  "National ID Registration": 32,
-  "Correction/Updating of Demographic Information": 16,
-  "Request National ID in Paper Format (ePhilID)": 50,
-  "Retrieval of TRN / Other Concern": 50
-};
-
-const calendar = flatpickr("#date", {
-  dateFormat: "Y-m-d",
-  minDate: new Date(),
-  disableMobile: true,
-  monthSelectorType: "static",
-
-  onReady: function(selectedDates, dateStr, instance) {
-    fetchMonthlyData(instance);
-  },
-
-  onMonthChange: function(selectedDates, dateStr, instance) {
-    fetchMonthlyData(instance);
-  },
-
-  onDayCreate: function(dObj, dStr, fp, dayElem) {
-
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  // 🚫 Disable past dates
-  if (dayElem.dateObj < today) {
-    dayElem.classList.add("flatpickr-disabled");
-    dayElem.style.pointerEvents = "none";
-    return;
-  }
-
-  const year = dayElem.dateObj.getFullYear();
-  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
-  const date = `${year}-${month}-${day}`;
-
-  const service = document.getElementById("service").value;
-  if (!service) return;
-
-  const base = DEFAULT_SLOTS[service] || 0;
-  const booked = monthlyBooked[date] || 0;
-  const remaining = base - booked;
-
-  const dot = document.createElement("span");
-  dot.classList.add("slot-dot");
-
-  if (remaining <= 0) {
-    dot.classList.add("full");
-    dayElem.classList.add("flatpickr-disabled");
-    dayElem.style.pointerEvents = "none";
-    dayElem.setAttribute("data-tooltip", "Fully booked");
-  } else if (remaining <= 3) {
-    dot.classList.add("few");
-    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-  } else {
-    dot.classList.add("many");
-    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-  }
-
-  dayElem.appendChild(dot);
-  dayElem.classList.add("has-tooltip");
-}
-	
-	function fetchMonthlyData(instance){
-
-  const service = document.getElementById("service").value;
-  if (!service) return;
-
-  const currentMonth = instance.currentYear + "-" +
-    String(instance.currentMonth + 1).padStart(2, '0');
-
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "monthlySlots",
-      service: service,
-      month: currentMonth
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    monthlyBooked = data || {};
-    instance.redraw();
-  })
-  .catch(err => {
-    console.log("Monthly fetch error:", err);
-  });
-}
-document.getElementById("service").addEventListener("change", function(){
-
-  monthlyBooked = {};
-
-  calendar.clear();
-  calendar.redraw();
-
-  fetchMonthlyData(calendar);
-
-});
-
-  // Slot Listeners
-  document.getElementById("service")
-    .addEventListener("change", checkSlots);
-
-  document.getElementById("date")
-    .addEventListener("change", checkSlots);
-
-  // Service Modal Listener
-  serviceSelect.addEventListener("change", function(){
-
-    const selected = this.value;
-
-    // Close all service modals
-    ["nidModal","updateModal","ephilidModal","trnModal"]
-      .forEach(id => document.getElementById(id).style.display = "none");
-
-    const modalMap = {
-      "National ID Registration": "nidModal",
-      "Correction/Updating of Demographic Information": "updateModal",
-      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
-      "Retrieval of TRN / Other Concern": "trnModal"
-    };
-
-    if (modalMap[selected]) {
-      document.getElementById(modalMap[selected]).style.display = "flex";
-    }
-
-  });
-
-});
-
-  // CLOSE MODALS
-  window.closeNidModal = () => closeModal("nidModal");
-window.closeUpdateModal = () => closeModal("updateModal");
-window.closeEphilidModal = () => closeModal("ephilidModal");
-window.closeTrnModal = () => closeModal("trnModal");
-window.closeSystemModal = () => closeModal("systemModal");
-window.closeSlip = () => {
-  closeModal("slipModal");
-  showCheckmark();
-};
-
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
 
 function openModal(id) {
@@ -609,18 +399,20 @@ function agreePrivacy() {
   closeModal("privacyModal");
 }
 
-function confirmSubmit() {
-  closeModal("confirmModal");
-  submitForm();
-}
-
 function openConfirmModal() {
   const service = document.getElementById("service").value;
   const fullname = document.getElementById("fullname").value.trim();
   const date = document.getElementById("date").value;
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
   if (!service || !fullname || !date) {
     showSystemMessage("Missing Fields", "Please complete all required fields.");
+    return;
+  }
+
+  if (!email && !phone) {
+    showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
     return;
   }
 
@@ -631,12 +423,87 @@ function openConfirmModal() {
   openModal("confirmModal");
 }
 
-  // ===============================
-  // BOOKING
-  // ===============================
+function confirmSubmit() {
+  closeModal("confirmModal");
+  submitForm();
+}
 
-  window.submitForm = function(){
+function checkSlots() {
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+  const info = document.getElementById("serviceInfoText");
 
+  if (!service || !date) {
+    info.innerHTML = "";
+    return;
+  }
+
+  info.innerHTML = "⏳ Checking available slots...";
+  info.style.color = "#555";
+
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "slots",
+      date: date,
+      service: service
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      info.innerHTML = `
+        👤 Personnel Assigned: <strong>${data.personnel}</strong><br>
+        🎟 Remaining Slots: <strong>${data.remaining}</strong> / ${data.max}
+      `;
+      info.style.color = data.remaining <= 0 ? "red" : "green";
+    })
+    .catch(() => {
+      info.innerHTML = "⚠ Unable to check availability.";
+      info.style.color = "red";
+    });
+}
+
+window.closeNidModal = () => closeModal("nidModal");
+window.closeUpdateModal = () => closeModal("updateModal");
+window.closeEphilidModal = () => closeModal("ephilidModal");
+window.closeTrnModal = () => closeModal("trnModal");
+window.closeSystemModal = () => closeModal("systemModal");
+
+function showCheckmark() {
+  const overlay = document.getElementById("checkmarkOverlay");
+  overlay.style.display = "flex";
+
+  setTimeout(() => {
+    overlay.style.display = "none";
+  }, 2000);
+}
+
+window.closeSlip = function() {
+  closeModal("slipModal");
+  showCheckmark();
+};
+
+window.printSlip = function() {
+  window.print();
+  closeModal("slipModal");
+  showCheckmark();
+};
+
+window.downloadSlip = function() {
+  const slip = document.getElementById("slipContent");
+
+  html2canvas(slip).then(function(canvas) {
+    const link = document.createElement("a");
+    link.download = "National_ID_Appointment.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    closeModal("slipModal");
+    showCheckmark();
+  });
+};
+
+window.submitForm = function() {
   const btn = document.getElementById("submitBtn");
   const btnText = document.getElementById("btnText");
   const loader = document.getElementById("btnLoader");
@@ -647,19 +514,16 @@ function openConfirmModal() {
   const phone = document.getElementById("phone").value.trim();
   const date = document.getElementById("date").value;
 
-  if(!service || !fullname || !date){
-    showSystemMessage("Missing Fields",
-      "Please complete all required fields.");
+  if (!service || !fullname || !date) {
+    showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
 
-  if(!email && !phone){
-    showSystemMessage("Contact Required",
-      "Provide at least email OR mobile number.");
+  if (!email && !phone) {
+    showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
     return;
   }
 
-  // 🔥 SHOW LOADER
   btn.disabled = true;
   btnText.style.display = "none";
   loader.style.display = "inline-block";
@@ -674,98 +538,172 @@ function openConfirmModal() {
       date
     })
   })
-  .then(res => res.json())
-  .then(r => {
+    .then(res => res.json())
+    .then(r => {
+      btn.disabled = false;
+      btnText.style.display = "inline";
+      loader.style.display = "none";
 
-    // 🔥 HIDE LOADER
-    btn.disabled = false;
-    btnText.style.display = "inline";
-    loader.style.display = "none";
+      if (r.status === "duplicate_name") {
+        return showSystemMessage("Duplicate Appointment", "You already have an appointment on this date.");
+      }
 
-    if(r.status === "duplicate_name"){
-      return showSystemMessage("Duplicate Appointment",
-        "You already have an appointment on this date.");
+      if (r.status === "duplicate_email") {
+        return showSystemMessage("Duplicate Email", "This email already has an appointment.");
+      }
+
+      if (r.status === "duplicate_phone") {
+        return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment.");
+      }
+
+      if (r.status === "daily_full") {
+        return showSystemMessage("Fully Booked", "This service is fully booked on this date.");
+      }
+
+      if (r.status === "success") {
+        document.getElementById("sRef").textContent = r.refCode;
+        document.getElementById("sName").textContent = fullname;
+        document.getElementById("sDate").textContent = date;
+        openModal("slipModal");
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btnText.style.display = "inline";
+      loader.style.display = "none";
+
+      showSystemMessage("System Error", "Unable to connect to server.");
+    });
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+  const serviceSelect = document.getElementById("service");
+  let monthlyBooked = {};
+
+  const DEFAULT_SLOTS = {
+    "National ID Registration": 32,
+    "Correction/Updating of Demographic Information": 16,
+    "Request National ID in Paper Format (ePhilID)": 50,
+    "Retrieval of TRN / Other Concern": 50
+  };
+
+  function fetchMonthlyData(instance) {
+    const service = document.getElementById("service").value;
+    if (!service) return;
+
+    const currentMonth = instance.currentYear + "-" +
+      String(instance.currentMonth + 1).padStart(2, "0");
+
+    fetch(EXEC_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "monthlySlots",
+        service: service,
+        month: currentMonth
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        monthlyBooked = data || {};
+        instance.redraw();
+      })
+      .catch(err => {
+        console.log("Monthly fetch error:", err);
+      });
+  }
+
+  const calendar = flatpickr("#date", {
+    dateFormat: "Y-m-d",
+    minDate: new Date(),
+    disableMobile: true,
+    monthSelectorType: "static",
+
+    onReady: function(selectedDates, dateStr, instance) {
+      fetchMonthlyData(instance);
+    },
+
+    onMonthChange: function(selectedDates, dateStr, instance) {
+      fetchMonthlyData(instance);
+    },
+
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (dayElem.dateObj < today) {
+        dayElem.classList.add("flatpickr-disabled");
+        dayElem.style.pointerEvents = "none";
+        return;
+      }
+
+      const year = dayElem.dateObj.getFullYear();
+      const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+      const date = `${year}-${month}-${day}`;
+
+      const service = document.getElementById("service").value;
+      if (!service) return;
+
+      const base = DEFAULT_SLOTS[service] || 0;
+      const booked = monthlyBooked[date] || 0;
+      const remaining = base - booked;
+
+      const dot = document.createElement("span");
+      dot.classList.add("slot-dot");
+
+      if (remaining <= 0) {
+        dot.classList.add("full");
+        dayElem.classList.add("flatpickr-disabled");
+        dayElem.style.pointerEvents = "none";
+        dayElem.setAttribute("data-tooltip", "Fully booked");
+      } else if (remaining <= 3) {
+        dot.classList.add("few");
+        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+      } else {
+        dot.classList.add("many");
+        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+      }
+
+      dayElem.appendChild(dot);
+      dayElem.classList.add("has-tooltip");
     }
-
-    if(r.status === "duplicate_email"){
-      return showSystemMessage("Duplicate Email",
-        "This email already has an appointment.");
-    }
-
-    if(r.status === "duplicate_phone"){
-      return showSystemMessage("Duplicate Phone",
-        "This mobile number already has an appointment.");
-    }
-
-    if(r.status === "daily_full"){
-      return showSystemMessage("Fully Booked",
-        "This service is fully booked on this date.");
-    }
-
-    if(r.status === "success"){
-      document.getElementById("sRef").textContent = r.refCode;
-      document.getElementById("sName").textContent = fullname;
-      document.getElementById("sDate").textContent = date;
-
-      document.getElementById("slipModal").style.display = "flex";
-    }
-
-  })
-  .catch(() => {
-
-    btn.disabled = false;
-    btnText.style.display = "inline";
-    loader.style.display = "none";
-
-    showSystemMessage("System Error",
-      "Unable to connect to server.");
   });
-};
 
+  openModal("privacyModal");
 
-// ===============================
-// PRINT / DOWNLOAD
-// ===============================
-
-window.printSlip = function() {
-  window.print();
-  document.getElementById("slipModal").style.display = "none";
-  showCheckmark();
-};
-
-window.downloadSlip = function() {
-
-  const slip = document.getElementById("slipContent");
-
-  html2canvas(slip).then(function(canvas) {
-
-    const link = document.createElement("a");
-    link.download = "National_ID_Appointment.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-
-    document.getElementById("slipModal").style.display = "none";
-    showCheckmark();
+  document.getElementById("service").addEventListener("change", function() {
+    monthlyBooked = {};
+    calendar.clear();
+    calendar.redraw();
+    fetchMonthlyData(calendar);
   });
 
-};
+  document.getElementById("service").addEventListener("change", checkSlots);
+  document.getElementById("date").addEventListener("change", checkSlots);
 
-window.closeSlip = function() {
-  document.getElementById("slipModal").style.display = "none";
-  showCheckmark();
-};
+  serviceSelect.addEventListener("change", function() {
+    const selected = this.value;
 
-	function showCheckmark(){
-  const overlay = document.getElementById("checkmarkOverlay");
-  overlay.style.display = "flex";
+    ["nidModal", "updateModal", "ephilidModal", "trnModal"].forEach(id => {
+      closeModal(id);
+    });
 
-  setTimeout(() => {
-    overlay.style.display = "none";
-  }, 2000);
-}
-window.addEventListener("click", function(e){
+    const modalMap = {
+      "National ID Registration": "nidModal",
+      "Correction/Updating of Demographic Information": "updateModal",
+      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
+      "Retrieval of TRN / Other Concern": "trnModal"
+    };
+
+    if (modalMap[selected]) {
+      openModal(modalMap[selected]);
+    }
+  });
+});
+
+window.addEventListener("click", function(e) {
   document.querySelectorAll(".modal").forEach(modal => {
-    if(e.target === modal){
+    if (e.target === modal) {
       modal.style.display = "none";
     }
   });
@@ -774,6 +712,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
