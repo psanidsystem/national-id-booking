@@ -762,6 +762,21 @@ td {
       <div id="notice" class="notice"></div>
 
       <section id="dashboardSection">
+        <div class="card" style="margin-bottom:18px;">
+        <div class="panel-title" style="margin-bottom:12px;">
+          <h3>Dashboard Date Filter</h3>
+        </div>
+        <div class="field" style="max-width:260px;">
+          <label for="dashboardDate">Select Date</label>
+          <input type="date" id="dashboardDate" />
+        </div>
+      </div>
+        <div class="card" style="margin-bottom:18px;">
+      <div class="panel-title">
+        <h3>Bookings by Service</h3>
+      </div>
+      <div id="serviceBreakdown" class="slot-list"></div>
+      </div>
         <div class="cards">
         <div class="card metric-card metric-total">
           <div class="metric-label">Total Bookings</div>
@@ -770,9 +785,9 @@ td {
         </div>
       
         <div class="card metric-card metric-today">
-          <div class="metric-label">Today</div>
+          <div class="metric-label">Selected Date</div>
           <div class="metric-value" id="metricToday">0</div>
-          <div class="metric-sub">Bookings on selected date</div>
+          <div class="metric-sub">Total bookings for chosen date</div>
         </div>
       
         <div class="card metric-card metric-pending">
@@ -1108,13 +1123,48 @@ td {
       });
     }
 
-    function renderMetrics() {
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById("metricTotal").textContent = bookings.length;
-      document.getElementById("metricToday").textContent = bookings.filter(b => b.date === today).length;
-      document.getElementById("metricPending").textContent = bookings.filter(b => b.status === "Pending").length;
-      document.getElementById("metricSlots").textContent = slotRules.length;
-    }
+      function renderMetrics() {
+        const selectedDate = document.getElementById("dashboardDate")?.value || new Date().toISOString().slice(0, 10);
+      
+        const bookingsForDate = bookings.filter(b => b.date === selectedDate);
+        const pendingForDate = bookingsForDate.filter(b => b.status === "Pending");
+      
+        document.getElementById("metricTotal").textContent = bookings.length;
+        document.getElementById("metricToday").textContent = bookingsForDate.length;
+        document.getElementById("metricPending").textContent = pendingForDate.length;
+        document.getElementById("metricSlots").textContent = slotRules.length;
+      
+        const breakdownEl = document.getElementById("serviceBreakdown");
+        if (!breakdownEl) return;
+      
+        breakdownEl.innerHTML = "";
+      
+        const counts = {
+          "National ID Registration": 0,
+          "Correction/Updating of Demographic Information": 0,
+          "Request National ID in Paper Format (ePhilID)": 0,
+          "Retrieval of TRN / Other Concern": 0
+        };
+      
+        bookingsForDate.forEach(b => {
+          if (counts.hasOwnProperty(b.service)) {
+            counts[b.service]++;
+          }
+        });
+      
+        Object.entries(counts).forEach(([service, count]) => {
+          const div = document.createElement("div");
+          div.className = "slot-item";
+          div.innerHTML = `
+            <div>
+              <strong>${service}</strong>
+              <div class="slot-meta">Selected date: ${formatDate(selectedDate)}</div>
+            </div>
+            <span class="slot-pill">${count} booking${count !== 1 ? "s" : ""}</span>
+          `;
+          breakdownEl.appendChild(div);
+        });
+      }
 
     function renderRecentBookings(list = bookings) {
       const tbody = document.getElementById("recentBookingsBody");
@@ -1428,6 +1478,15 @@ td {
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!requireLogin()) return;
+
+      const dashboardDateInput = document.getElementById("dashboardDate");
+      if (dashboardDateInput) {
+        dashboardDateInput.value = new Date().toISOString().slice(0, 10);
+      }
+
+      document.getElementById("dashboardDate")?.addEventListener("change", () => {
+      renderMetrics();
+      });
 
       fillServiceOptions();
       renderAll();
