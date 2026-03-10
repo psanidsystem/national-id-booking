@@ -482,16 +482,9 @@ function checkSlots() {
   })
     .then(res => res.json())
     .then(data => {
-     .then(data => {
-
-  info.innerHTML = `
-    info.innerHTML = `
-  🟢 Available Slots: <strong>${data.remaining}</strong>
-  	`;
-	
-	  info.style.color = data.remaining <= 0 ? "red" : "green";
-	
-	})
+      info.innerHTML = `🟢 Available Slots: <strong>${data.remaining}</strong>`;
+      info.style.color = data.remaining <= 0 ? "red" : "green";
+    })
     .catch(() => {
       info.innerHTML = "⚠ Unable to check availability.";
       info.style.color = "red";
@@ -790,62 +783,3 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
