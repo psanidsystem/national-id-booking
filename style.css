@@ -588,6 +588,51 @@ select {
   padding-bottom: 6px;
 }
 
+.slip-header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:25px;
+  margin-bottom:10px;
+}
+
+.slip-logo{
+  width:65px;
+  height:65px;
+  object-fit:contain;
+}
+
+.slip-subtitle{
+  text-align:center;
+  margin-top:-5px;
+  margin-bottom:20px;
+  font-size:13px;
+  color:#555;
+}
+#slipContent h2{
+  text-align:center;
+  color:#1e5aa8;
+  margin-bottom:6px;
+}
+
+.slip-divider{
+  height:2px;
+  background:#1e5aa8;
+  margin:15px 0;
+}
+.slip-row{
+  display:flex;
+  margin-bottom:10px;
+}
+
+.slip-label{
+  width:130px;
+  font-weight:600;
+}
+
+.slip-value{
+  flex:1;
+}
 /* ================= PRINT APPOINTMENT SLIP ================= */
 
 @media print {
@@ -622,6 +667,7 @@ select {
   }
 
 }
+
 
 
 
