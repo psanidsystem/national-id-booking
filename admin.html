@@ -1134,6 +1134,45 @@ tbody td[colspan] {
         <span class="nav-icon">🗓️</span>
         <span>Slot Management</span>
       </button>
+      <section id="availabilitySection" class="hidden">
+
+<div class="card">
+
+<div class="panel-title">
+<h3>Availability Management</h3>
+<button class="btn btn-primary" id="openAvailabilityModalBtn">
+Add Availability Rule
+</button>
+</div>
+
+<div class="table-wrap">
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Status</th>
+<th>Reason</th>
+<th>NID Registration</th>
+<th>Correction</th>
+<th>ePhilID</th>
+<th>TRN</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="availabilityTableBody"></tbody>
+
+</table>
+</div>
+
+</div>
+
+</section>
+      <button class="nav-btn" data-section="availability">
+      <span class="nav-icon">📅</span>
+      <span>Availability</span>
+      </button>
     
       <button class="nav-btn" data-section="settings">
         <span class="nav-icon">⚙️</span>
@@ -1464,7 +1503,64 @@ tbody td[colspan] {
       </div>
     </div>
   </div>
+<div class="modal" id="availabilityModal">
 
+<div class="modal-card">
+
+<div class="modal-head">
+<h3 id="availabilityModalTitle">Add Availability</h3>
+<button class="btn btn-secondary" data-close="availabilityModal">Close</button>
+</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Date</label>
+<input type="date" id="availabilityDate">
+</div>
+
+<div class="field">
+<label>Status</label>
+<select id="availabilityStatus">
+<option value="OPEN">OPEN</option>
+<option value="CLOSED">CLOSED</option>
+</select>
+</div>
+
+<div class="field full">
+<label>Reason</label>
+<input type="text" id="availabilityReason">
+</div>
+
+<div class="field">
+<label>NID Registration</label>
+<input type="number" id="slotNidReg" min="0">
+</div>
+
+<div class="field">
+<label>Correction</label>
+<input type="number" id="slotCorrection" min="0">
+</div>
+
+<div class="field">
+<label>ePhilID</label>
+<input type="number" id="slotEphilid" min="0">
+</div>
+
+<div class="field">
+<label>TRN</label>
+<input type="number" id="slotTrn" min="0">
+</div>
+
+</div>
+
+<div class="modal-actions">
+<button class="btn btn-secondary" data-close="availabilityModal">Cancel</button>
+<button class="btn btn-primary" id="saveAvailabilityBtn">Save</button>
+</div>
+
+</div>
+</div>
   <script>
     const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
     let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
@@ -1736,12 +1832,13 @@ tbody td[colspan] {
     }
 
     function switchSection(section) {
-      const map = {
-        dashboard: ["dashboardSection", "Dashboard Overview"],
-        bookings: ["bookingsSection", "Booking Management"],
-        slots: ["slotsSection", "Slot Management"],
-        settings: ["settingsSection", "System Settings"]
-      };
+const map = {
+dashboard: ["dashboardSection","Dashboard Overview"],
+bookings: ["bookingsSection","Booking Management"],
+slots: ["slotsSection","Slot Management"],
+availability: ["availabilitySection","Availability Management"],
+settings: ["settingsSection","System Settings"]
+};
 
       Object.values(map).forEach(([id]) => document.getElementById(id).classList.add("hidden"));
       document.getElementById(map[section][0]).classList.remove("hidden");
@@ -1795,6 +1892,8 @@ tbody td[colspan] {
 
         bookings = data.bookings || [];
         slotRules = data.slotRules || [];
+        availabilityRules = data.availabilityRules || [];
+        renderAvailabilityTable();
         showNotice("Admin data loaded successfully.");
       } catch (err) {
         bookings = [];
@@ -1803,7 +1902,62 @@ tbody td[colspan] {
       }
       renderAll();
     }
+async function saveAvailability() {
 
+const payload = {
+
+action: "adminSaveAvailability",
+
+date: document.getElementById("availabilityDate").value,
+
+status: document.getElementById("availabilityStatus").value,
+
+reason: document.getElementById("availabilityReason").value,
+
+nidReg: document.getElementById("slotNidReg").value,
+
+updateDemo: document.getElementById("slotCorrection").value,
+
+ephilid: document.getElementById("slotEphilid").value,
+
+trn: document.getElementById("slotTrn").value
+
+};
+
+const res = await apiRequest(payload);
+
+if(res.status === "error"){
+showNotice(res.message,"error");
+return;
+}
+
+showNotice("Availability rule saved");
+
+closeModal("availabilityModal");
+
+loadAdminData();
+
+}
+    window.deleteAvailability = async function(date){
+
+if(!confirm("Delete availability rule for " + date + "?")) return;
+
+const res = await apiRequest({
+action:"adminDeleteAvailability",
+date:date
+});
+
+if(res.status === "error"){
+showNotice(res.message,"error");
+return;
+}
+
+showNotice("Availability rule deleted");
+
+loadAdminData();
+
+}
+    
     async function saveBooking() {
       const payload = {
         action: editingBookingRef ? "adminUpdateBooking" : "adminCreateBooking",
@@ -1863,6 +2017,45 @@ tbody td[colspan] {
       }
     }
 
+    function renderAvailabilityTable() {
+
+const tbody = document.getElementById("availabilityTableBody");
+tbody.innerHTML = "";
+
+availabilityRules.forEach(rule => {
+
+const tr = document.createElement("tr");
+
+tr.innerHTML = `
+<td>${formatDate(rule.date)}</td>
+<td>${rule.status}</td>
+<td>${rule.reason || "—"}</td>
+<td>${rule.nidReg}</td>
+<td>${rule.updateDemo}</td>
+<td>${rule.ephilid}</td>
+<td>${rule.trn}</td>
+
+<td>
+<div class="row-actions">
+
+<button class="mini-btn mini-delete"
+onclick="deleteAvailability('${rule.date}')">
+Delete
+</button>
+
+</div>
+</td>
+`;
+
+tbody.appendChild(tr);
+
+});
+
+if(!tbody.innerHTML){
+tbody.innerHTML = `<tr><td colspan="8">No availability rules.</td></tr>`;
+}
+
+}
     function logout() {
       sessionStorage.removeItem("nid_admin_secret");
       window.location.href = "login.html";
@@ -1922,7 +2115,11 @@ tbody td[colspan] {
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!requireLogin()) return;
+      document.getElementById("openAvailabilityModalBtn")
+.addEventListener("click", () => openModal("availabilityModal"));
 
+document.getElementById("saveAvailabilityBtn")
+.addEventListener("click", saveAvailability);
       const dashboardDateInput = document.getElementById("dashboardDate");
       if (dashboardDateInput) {
         dashboardDateInput.value = new Date().toISOString().slice(0, 10);
