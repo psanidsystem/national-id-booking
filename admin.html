@@ -515,6 +515,7 @@
         <button class="nav-btn" data-section="bookings">Bookings</button>
         <button class="nav-btn" data-section="slots">Slot Management</button>
         <button class="nav-btn" data-section="settings">Settings</button>
+        <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
       </div>
     </aside>
 
@@ -804,6 +805,14 @@
     let editingBookingRef = null;
     let editingSlotKey = null;
     let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
+
+    function requireLogin() {
+    if (!adminSecret) {
+      window.location.href = "login.html";
+      return false;
+    }
+    return true;
+    }
 
     function showNotice(message, type = "success", targetId = "notice") {
       const el = document.getElementById(targetId);
@@ -1235,7 +1244,8 @@
         showNotice(err.message, "error");
       }
     };
-
+    
+    if (!requireLogin()) return;
     document.addEventListener("DOMContentLoaded", () => {
       fillServiceOptions();
       renderAll();
@@ -1303,6 +1313,11 @@
         });
       });
     });
+
+    function logout() {
+  sessionStorage.removeItem("nid_admin_secret");
+  window.location.href = "login.html";
+}
   </script>
 </body>
 </html>
