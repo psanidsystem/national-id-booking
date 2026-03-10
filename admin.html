@@ -621,7 +621,7 @@
           </div>
           <div style="line-height:1.7; color:#4b5563; font-size:14px;">
             <p><strong>Current frontend setup:</strong> this admin page is ready for GitHub Pages and a Google Apps Script backend.</p>
-            <p><strong>Recommended backend actions:</strong> <code>adminList</code>, <code>adminCreateBooking</code>, <code>adminUpdateBooking</code>, <code>adminDeleteBooking</code>, <code>adminListSlots</code>, and <code>adminSaveSlot</code>.</p>
+            <p><strong>Recommended backend actions:</strong> <code>adminList</code>, <code>adminCreateBooking</code>, <code>adminUpdateBooking</code>, <code>adminDeleteBooking</code>, <code>adminListSlots</code>, <code>adminSaveSlot</code>, and <code>adminDeleteSlot</code>.</p>
             <p><strong>Security reminder:</strong> protect admin actions with a password, token, or Google account validation before deploying publicly.</p>
             <p><strong>Next good additions:</strong> export CSV, booking status history, audit log, and date-based reports.</p>
           </div>
@@ -954,36 +954,34 @@
       document.getElementById("slotService").selectedIndex = 0;
     }
 
-        async function apiRequest(payload) {
-          if (!EXEC_URL || !EXEC_URL.startsWith("https://script.google.com/")) {
-            throw new Error("Invalid Google Apps Script URL.");
-          }
-        
-          const res = await fetch(EXEC_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
-        
-          return res.json();
-        }
+    async function apiRequest(payload) {
+      if (!EXEC_URL || !EXEC_URL.startsWith("https://script.google.com/")) {
+        throw new Error("Invalid Google Apps Script URL.");
+      }
+
+      const res = await fetch(EXEC_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      return res.json();
+    }
 
     async function loadAdminData() {
       try {
         const data = await apiRequest({ action: "adminList" });
+
+        if (data.status === "error") {
+          throw new Error(data.message || "Unable to load admin data.");
+        }
+
         bookings = data.bookings || [];
         slotRules = data.slotRules || [];
+        showNotice("Admin data loaded successfully.");
       } catch (err) {
-        // fallback demo data for UI development
-        bookings = [
-          { refCode: "NID-92BB84", fullname: "JOEY BRAGAT", service: services[0], date: "2026-04-05", email: "", phone: "09123456789", status: "Confirmed" },
-          { refCode: "NID-6165E4", fullname: "MARIA SANTOS", service: services[1], date: "2026-04-06", email: "maria@example.com", phone: "09998887777", status: "Pending" },
-          { refCode: "NID-51AE28", fullname: "PAOLO REYES", service: services[2], date: "2026-04-07", email: "", phone: "09881112222", status: "Confirmed" }
-        ];
-        slotRules = [
-          { date: "2026-04-05", service: services[0], available: 18 },
-          { date: "2026-04-06", service: services[1], available: 9 }
-        ];
-        showNotice(err.message + " Showing demo data instead.", "error");
+        bookings = [];
+        slotRules = [];
+        showNotice(err.message, "error");
       }
       renderAll();
     }
@@ -1007,7 +1005,8 @@
       }
 
       try {
-        await apiRequest(payload);
+        const result = await apiRequest(payload);
+        if (result.status === "error") throw new Error(result.message || "Unable to save booking.");
         showNotice(editingBookingRef ? "Booking updated." : "Booking added.");
         closeModal("bookingModal");
         resetBookingForm();
@@ -1028,16 +1027,19 @@
       }
 
       try {
-        await apiRequest({
+        const result = await apiRequest({
           action: "adminSaveSlot",
           originalKey: editingSlotKey,
           date,
           service,
           available: Number(available)
         });
+        if (result.status === "error") throw new Error(result.message || "Unable to save slot rule.");
         showNotice("Slot rule saved.");
         closeModal("slotModal");
         resetSlotForm();
+        document.getElementById("quickDate").value = "";
+        document.getElementById("quickSlots").value = "";
         await loadAdminData();
       } catch (err) {
         showNotice(err.message, "error");
@@ -1062,7 +1064,8 @@
     window.deleteBooking = async function(refCode) {
       if (!confirm(`Delete booking ${refCode}?`)) return;
       try {
-        await apiRequest({ action: "adminDeleteBooking", refCode });
+        const result = await apiRequest({ action: "adminDeleteBooking", refCode });
+        if (result.status === "error") throw new Error(result.message || "Unable to delete booking.");
         showNotice("Booking deleted.");
         await loadAdminData();
       } catch (err) {
@@ -1086,7 +1089,8 @@
       const [date, service] = key.split("__");
       if (!confirm(`Delete slot rule for ${service} on ${date}?`)) return;
       try {
-        await apiRequest({ action: "adminDeleteSlot", date, service });
+        const result = await apiRequest({ action: "adminDeleteSlot", date, service });
+        if (result.status === "error") throw new Error(result.message || "Unable to delete slot rule.");
         showNotice("Slot rule deleted.");
         await loadAdminData();
       } catch (err) {
