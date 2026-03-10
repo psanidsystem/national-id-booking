@@ -570,6 +570,23 @@ select {
     border: 1px solid #000;
     background: white;
   }
+  /* ================= SLIP HEADER ================= */
+
+.slip-header{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  margin-bottom:10px;
+}
+
+.slip-logo{
+  height:60px;
+}
+
+#slipContent h2{
+  text-align:center;
+  color:#1e5aa8;
+}
 
   .actions {
     display: none !important;
@@ -580,6 +597,7 @@ select {
   }
 
 }
+
 
 
 
