@@ -57,7 +57,7 @@
   <input id="phone" type="tel" placeholder="09XXXXXXXXX">
 
   <!-- SUBMIT -->
-<button type="button" id="submitBtn" onclick="submitForm()">
+<button type="button" id="submitBtn" onclick="openConfirmModal()">
   <span id="btnText">Submit Appointment Request</span>
   <span id="btnLoader" class="loading" style="display:none;"></span>
 </button>
@@ -439,7 +439,10 @@ document.addEventListener("DOMContentLoaded", function(){
   const formContainer = document.getElementById("formContainer");
   const privacyModal = document.getElementById("privacyModal");
   const serviceSelect = document.getElementById("service");
-let monthlyBooked = {};
+
+  openModal("privacyModal");
+
+  let monthlyBooked = {};
 
 const DEFAULT_SLOTS = {
   "National ID Registration": 32,
@@ -589,7 +592,6 @@ document.getElementById("service").addEventListener("change", function(){
   window.closeSystemModal = () =>
     document.getElementById("systemModal").style.display = "none";
 
-	<script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
 
 function openModal(id) {
@@ -616,8 +618,23 @@ function confirmSubmit() {
   closeModal("confirmModal");
   submitForm();
 }
-</script>
 
+function openConfirmModal() {
+  const service = document.getElementById("service").value;
+  const fullname = document.getElementById("fullname").value.trim();
+  const date = document.getElementById("date").value;
+
+  if (!service || !fullname || !date) {
+    showSystemMessage("Missing Fields", "Please complete all required fields.");
+    return;
+  }
+
+  document.getElementById("cName").textContent = fullname;
+  document.getElementById("cService").textContent = service;
+  document.getElementById("cDate").textContent = date;
+
+  openModal("confirmModal");
+}
 
   // ===============================
   // BOOKING
@@ -762,6 +779,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
