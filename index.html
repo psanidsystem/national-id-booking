@@ -607,12 +607,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	setFormDisabled(true);
 openModal("privacyModal");
 });
-document.getElementById("fullname").addEventListener("input", function () {
-  this.value = this.value
-    .toUpperCase()
-    .replace(/\s+/g, " ")
-    .replace(/^\s+/, "");
-});
+
   const DEFAULT_SLOTS = {
     "National ID Registration": 32,
     "Correction/Updating of Demographic Information": 16,
@@ -746,6 +741,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
