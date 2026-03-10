@@ -148,11 +148,6 @@
       color: var(--primary);
     }
 
-    .btn-danger {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
     .cards {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -620,10 +615,9 @@
             <h3>Integration Notes</h3>
           </div>
           <div style="line-height:1.7; color:#4b5563; font-size:14px;">
-            <p><strong>Current frontend setup:</strong> this admin page is ready for GitHub Pages and a Google Apps Script backend.</p>
-            <p><strong>Recommended backend actions:</strong> <code>adminList</code>, <code>adminCreateBooking</code>, <code>adminUpdateBooking</code>, <code>adminDeleteBooking</code>, <code>adminListSlots</code>, <code>adminSaveSlot</code>, and <code>adminDeleteSlot</code>.</p>
-            <p><strong>Security reminder:</strong> protect admin actions with a password, token, or Google account validation before deploying publicly.</p>
-            <p><strong>Next good additions:</strong> export CSV, booking status history, audit log, and date-based reports.</p>
+            <p><strong>Admin Secret:</strong> this admin page uses a shared admin secret for GitHub Pages to Apps Script access.</p>
+            <p><strong>Required backend actions:</strong> <code>adminList</code>, <code>adminCreateBooking</code>, <code>adminUpdateBooking</code>, <code>adminDeleteBooking</code>, <code>adminSaveSlot</code>, and <code>adminDeleteSlot</code>.</p>
+            <p><strong>Reminder:</strong> keep your secret private and change it before public deployment.</p>
           </div>
         </div>
       </section>
@@ -706,6 +700,7 @@
 
   <script>
     const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
+    const ADMIN_SECRET = "PSA-ADMIN-2026";
 
     const services = [
       "National ID Registration",
@@ -955,13 +950,14 @@
     }
 
     async function apiRequest(payload) {
-      if (!EXEC_URL || !EXEC_URL.startsWith("https://script.google.com/")) {
-        throw new Error("Invalid Google Apps Script URL.");
-      }
+      const finalPayload = {
+        ...payload,
+        adminSecret: ADMIN_SECRET
+      };
 
       const res = await fetch(EXEC_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        body: JSON.stringify(finalPayload)
       });
 
       return res.json();
