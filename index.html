@@ -577,20 +577,15 @@ document.getElementById("service").addEventListener("change", function(){
 });
 
   // CLOSE MODALS
-  window.closeNidModal = () =>
-    document.getElementById("nidModal").style.display = "none";
-
-  window.closeUpdateModal = () =>
-    document.getElementById("updateModal").style.display = "none";
-
-  window.closeEphilidModal = () =>
-    document.getElementById("ephilidModal").style.display = "none";
-
-  window.closeTrnModal = () =>
-    document.getElementById("trnModal").style.display = "none";
-
-  window.closeSystemModal = () =>
-    document.getElementById("systemModal").style.display = "none";
+  window.closeNidModal = () => closeModal("nidModal");
+window.closeUpdateModal = () => closeModal("updateModal");
+window.closeEphilidModal = () => closeModal("ephilidModal");
+window.closeTrnModal = () => closeModal("trnModal");
+window.closeSystemModal = () => closeModal("systemModal");
+window.closeSlip = () => {
+  closeModal("slipModal");
+  showCheckmark();
+};
 
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
 
@@ -779,6 +774,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
