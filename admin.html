@@ -726,6 +726,117 @@ th,
 td {
   padding: 18px 14px;
 }
+
+    /* DASHBOARD LAYOUT ENHANCEMENT */
+.dashboard-filter-card {
+  padding: 18px 22px;
+  margin-bottom: 2px;
+}
+
+.dashboard-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-filter-bar h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.dashboard-filter-bar p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.compact-field {
+  min-width: 230px;
+  max-width: 260px;
+}
+
+.cards {
+  margin-bottom: 4px;
+}
+
+.dashboard-main-grid {
+  align-items: start;
+}
+
+/* SERVICE BREAKDOWN LOOK */
+.service-breakdown {
+  display: grid;
+  gap: 12px;
+}
+
+.service-breakdown .slot-item {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.service-breakdown .slot-item strong {
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.service-breakdown .slot-meta {
+  font-size: 12px;
+  color: #667085;
+}
+
+.service-breakdown .slot-pill {
+  min-width: 92px;
+  text-align: center;
+  background: #edf4ff;
+  color: #1e5aa8;
+  font-weight: 700;
+}
+
+/* MAKE SEARCH ALIGN BETTER */
+.panel-title .search-input {
+  max-width: 360px;
+  margin-left: auto;
+}
+
+/* BETTER SPACING INSIDE DASHBOARD */
+#dashboardSection {
+  display: grid;
+  gap: 18px;
+}
+
+/* QUICK SLOT CARD BUTTON FULL WIDTH LOOKS BETTER */
+#saveQuickSlotBtn {
+  margin-top: 6px;
+  width: 100%;
+}
+
+/* IMPROVE RIGHT COLUMN CARD BALANCE */
+.stack .card {
+  padding: 20px;
+}
+
+/* MOBILE */
+@media (max-width: 820px) {
+  .dashboard-filter-bar {
+    align-items: stretch;
+  }
+
+  .compact-field {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .panel-title .search-input {
+    max-width: 100%;
+    margin-left: 0;
+  }
+}
   </style>
 </head>
 <body>
@@ -762,98 +873,104 @@ td {
       <div id="notice" class="notice"></div>
 
       <section id="dashboardSection">
-        <div class="card" style="margin-bottom:18px;">
-        <div class="panel-title" style="margin-bottom:12px;">
-          <h3>Dashboard Date Filter</h3>
-        </div>
-        <div class="field" style="max-width:260px;">
-          <label for="dashboardDate">Select Date</label>
-          <input type="date" id="dashboardDate" />
-        </div>
+  <div class="card dashboard-filter-card">
+    <div class="dashboard-filter-bar">
+      <div>
+        <h3>Dashboard Date Filter</h3>
+        <p>Choose a date to view booking totals and service breakdown.</p>
       </div>
-        <div class="card" style="margin-bottom:18px;">
+
+      <div class="field compact-field">
+        <label for="dashboardDate">Select Date</label>
+        <input type="date" id="dashboardDate" />
+      </div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card metric-card metric-total">
+      <div class="metric-label">Total Bookings</div>
+      <div class="metric-value" id="metricTotal">0</div>
+      <div class="metric-sub">All fetched records</div>
+    </div>
+
+    <div class="card metric-card metric-today">
+      <div class="metric-label">Selected Date</div>
+      <div class="metric-value" id="metricToday">0</div>
+      <div class="metric-sub">Total bookings for chosen date</div>
+    </div>
+
+    <div class="card metric-card metric-pending">
+      <div class="metric-label">Pending</div>
+      <div class="metric-value" id="metricPending">0</div>
+      <div class="metric-sub">Need review or confirmation</div>
+    </div>
+
+    <div class="card metric-card metric-slots">
+      <div class="metric-label">Available Slot Rules</div>
+      <div class="metric-value" id="metricSlots">0</div>
+      <div class="metric-sub">Configured custom slot entries</div>
+    </div>
+  </div>
+
+  <div class="panel-grid dashboard-main-grid">
+    <div class="card">
       <div class="panel-title">
-        <h3>Bookings by Service</h3>
+        <h3>Recent Bookings</h3>
+        <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
       </div>
-      <div id="serviceBreakdown" class="slot-list"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Name</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recentBookingsBody"></tbody>
+        </table>
       </div>
-        <div class="cards">
-        <div class="card metric-card metric-total">
-          <div class="metric-label">Total Bookings</div>
-          <div class="metric-value" id="metricTotal">0</div>
-          <div class="metric-sub">All fetched records</div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <div class="panel-title">
+          <h3>Bookings by Service</h3>
         </div>
-      
-        <div class="card metric-card metric-today">
-          <div class="metric-label">Selected Date</div>
-          <div class="metric-value" id="metricToday">0</div>
-          <div class="metric-sub">Total bookings for chosen date</div>
-        </div>
-      
-        <div class="card metric-card metric-pending">
-          <div class="metric-label">Pending</div>
-          <div class="metric-value" id="metricPending">0</div>
-          <div class="metric-sub">Need review or confirmation</div>
-        </div>
-      
-        <div class="card metric-card metric-slots">
-          <div class="metric-label">Available Slot Rules</div>
-          <div class="metric-value" id="metricSlots">0</div>
-          <div class="metric-sub">Configured custom slot entries</div>
-        </div>
+        <div id="serviceBreakdown" class="slot-list service-breakdown"></div>
       </div>
 
-        <div class="panel-grid">
-          <div class="card">
-            <div class="panel-title">
-              <h3>Recent Bookings</h3>
-              <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Reference</th>
-                    <th>Name</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="recentBookingsBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="stack">
-            <div class="card">
-              <div class="panel-title">
-                <h3>Quick Slot Update</h3>
-              </div>
-              <div class="field">
-                <label for="quickService">Service</label>
-                <select id="quickService"></select>
-              </div>
-              <div class="field">
-                <label for="quickDate">Date</label>
-                <input type="date" id="quickDate" />
-              </div>
-              <div class="field">
-                <label for="quickSlots">Available Slots</label>
-                <input type="number" id="quickSlots" min="0" />
-              </div>
-              <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
-            </div>
-
-            <div class="card">
-              <div class="panel-title">
-                <h3>Custom Slot Rules</h3>
-              </div>
-              <div class="slot-list" id="dashboardSlotList"></div>
-            </div>
-          </div>
+      <div class="card">
+        <div class="panel-title">
+          <h3>Quick Slot Update</h3>
         </div>
-      </section>
+        <div class="field">
+          <label for="quickService">Service</label>
+          <select id="quickService"></select>
+        </div>
+        <div class="field">
+          <label for="quickDate">Date</label>
+          <input type="date" id="quickDate" />
+        </div>
+        <div class="field">
+          <label for="quickSlots">Available Slots</label>
+          <input type="number" id="quickSlots" min="0" />
+        </div>
+        <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
+      </div>
+
+      <div class="card">
+        <div class="panel-title">
+          <h3>Custom Slot Rules</h3>
+        </div>
+        <div class="slot-list" id="dashboardSlotList"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
       <section id="bookingsSection" class="hidden">
         <div class="card">
