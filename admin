@@ -29,6 +29,68 @@
       color: var(--text);
     }
 
+    .hidden { display: none !important; }
+
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #eaf2ff, #f4f7fb);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      padding: 30px;
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .login-brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #eef4ff;
+      padding: 6px;
+    }
+
+    .login-brand h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.15;
+      color: var(--primary);
+    }
+
+    .login-subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .login-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .login-help {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -146,11 +208,6 @@
     .btn-secondary {
       background: #e8eef8;
       color: var(--primary);
-    }
-
-    .btn-danger {
-      background: #fee2e2;
-      color: #991b1b;
     }
 
     .cards {
@@ -332,8 +389,6 @@
       color: var(--primary);
     }
 
-    .hidden { display: none !important; }
-
     .modal {
       position: fixed;
       inset: 0;
@@ -416,11 +471,36 @@
         grid-template-columns: 1fr;
       }
       .content { padding: 18px; }
+      .login-card { padding: 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="layout">
+  <section id="loginPage" class="login-page">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="logo-psa.png" alt="PSA logo">
+        <div>
+          <h1>Admin Login</h1>
+        </div>
+      </div>
+      <p class="login-subtitle">Enter your admin access key to open the National ID Appointment System dashboard.</p>
+
+      <div id="loginNotice" class="notice"></div>
+
+      <div class="login-form">
+        <div class="field">
+          <label for="loginSecret">Admin Access Key</label>
+          <input id="loginSecret" type="password" placeholder="Enter admin key" />
+        </div>
+        <button class="btn btn-primary" id="loginBtn">Log In</button>
+      </div>
+
+      <p class="login-help">This page is for authorized staff only.</p>
+    </div>
+  </section>
+
+  <div id="adminApp" class="layout hidden">
     <aside class="sidebar">
       <div class="brand">
         <img src="logo-psa.png" alt="PSA logo">
@@ -617,13 +697,11 @@
       <section id="settingsSection" class="hidden">
         <div class="card">
           <div class="panel-title">
-            <h3>Integration Notes</h3>
+            <h3>System Settings</h3>
           </div>
           <div style="line-height:1.7; color:#4b5563; font-size:14px;">
-            <p><strong>Current frontend setup:</strong> this admin page is ready for GitHub Pages and a Google Apps Script backend.</p>
-            <p><strong>Recommended backend actions:</strong> <code>adminList</code>, <code>adminCreateBooking</code>, <code>adminUpdateBooking</code>, <code>adminDeleteBooking</code>, <code>adminListSlots</code>, <code>adminSaveSlot</code>, and <code>adminDeleteSlot</code>.</p>
-            <p><strong>Security reminder:</strong> protect admin actions with a password, token, or Google account validation before deploying publicly.</p>
-            <p><strong>Next good additions:</strong> export CSV, booking status history, audit log, and date-based reports.</p>
+            <p>This admin dashboard requires a valid access key before data can be loaded.</p>
+            <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
           </div>
         </div>
       </section>
@@ -725,15 +803,17 @@
     let slotRules = [];
     let editingBookingRef = null;
     let editingSlotKey = null;
+    let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
 
-    function showNotice(message, type = "success") {
-      const el = document.getElementById("notice");
+    function showNotice(message, type = "success", targetId = "notice") {
+      const el = document.getElementById(targetId);
+      if (!el) return;
       el.className = `notice show ${type}`;
       el.textContent = message;
       setTimeout(() => {
         el.className = "notice";
         el.textContent = "";
-      }, 2800);
+      }, 3000);
     }
 
     function openModal(id) {
@@ -742,6 +822,16 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.remove("open");
+    }
+
+    function showAdminApp() {
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("adminApp").classList.remove("hidden");
+    }
+
+    function showLoginPage() {
+      document.getElementById("adminApp").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
     }
 
     function fillServiceOptions() {
@@ -762,8 +852,9 @@
 
     function formatDate(dateStr) {
       if (!dateStr) return "—";
-      const [year, month, day] = dateStr.split("-");
-      return `${day}/${month}/${year}`;
+      const parts = String(dateStr).split("-");
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
     function badgeClass(status) {
@@ -959,9 +1050,14 @@
         throw new Error("Invalid Google Apps Script URL.");
       }
 
+      const finalPayload = {
+        ...payload,
+        adminSecret: adminSecret
+      };
+
       const res = await fetch(EXEC_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        body: JSON.stringify(finalPayload)
       });
 
       return res.json();
@@ -984,6 +1080,48 @@
         showNotice(err.message, "error");
       }
       renderAll();
+    }
+
+    async function handleLogin() {
+      const secretInput = document.getElementById("loginSecret");
+      const entered = secretInput.value.trim();
+
+      if (!entered) {
+        showNotice("Please enter the admin access key.", "error", "loginNotice");
+        return;
+      }
+
+      adminSecret = entered;
+      sessionStorage.setItem("nid_admin_secret", adminSecret);
+
+      try {
+        const data = await apiRequest({ action: "adminList" });
+
+        if (data.status === "error") {
+          throw new Error(data.message || "Login failed.");
+        }
+
+        bookings = data.bookings || [];
+        slotRules = data.slotRules || [];
+        showAdminApp();
+        renderAll();
+        showNotice("Login successful.");
+        secretInput.value = "";
+      } catch (err) {
+        adminSecret = "";
+        sessionStorage.removeItem("nid_admin_secret");
+        showNotice(err.message, "error", "loginNotice");
+      }
+    }
+
+    function logout() {
+      adminSecret = "";
+      sessionStorage.removeItem("nid_admin_secret");
+      bookings = [];
+      slotRules = [];
+      renderAll();
+      showLoginPage();
+      showNotice("Logged out successfully.", "success", "loginNotice");
     }
 
     async function saveBooking() {
@@ -1100,12 +1238,24 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       fillServiceOptions();
-      renderSlotLists();
       renderAll();
-      loadAdminData();
+
+      if (adminSecret) {
+        showAdminApp();
+        loadAdminData();
+      } else {
+        showLoginPage();
+      }
 
       document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", () => switchSection(btn.dataset.section));
+      });
+
+      document.getElementById("loginBtn").addEventListener("click", handleLogin);
+      document.getElementById("loginSecret").addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          handleLogin();
+        }
       });
 
       document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
@@ -1124,6 +1274,7 @@
       document.getElementById("saveBookingBtn").addEventListener("click", saveBooking);
       document.getElementById("saveSlotBtn").addEventListener("click", () => saveSlotRule(false));
       document.getElementById("saveQuickSlotBtn").addEventListener("click", () => saveSlotRule(true));
+      document.getElementById("logoutBtn").addEventListener("click", logout);
 
       document.getElementById("quickSearch").addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
       ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
