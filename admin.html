@@ -476,29 +476,6 @@
   </style>
 </head>
 <body>
-  <section id="loginPage" class="login-page">
-    <div class="login-card">
-      <div class="login-brand">
-        <img src="logo-psa.png" alt="PSA logo">
-        <div>
-          <h1>Admin Login</h1>
-        </div>
-      </div>
-      <p class="login-subtitle">Enter your admin access key to open the National ID Appointment System dashboard.</p>
-
-      <div id="loginNotice" class="notice"></div>
-
-      <div class="login-form">
-        <div class="field">
-          <label for="loginSecret">Admin Access Key</label>
-          <input id="loginSecret" type="password" placeholder="Enter admin key" />
-        </div>
-        <button class="btn btn-primary" id="loginBtn">Log In</button>
-      </div>
-
-      <p class="login-help">This page is for authorized staff only.</p>
-    </div>
-  </section>
 
   <div id="adminApp" class="layout hidden">
     <aside class="sidebar">
@@ -515,7 +492,6 @@
         <button class="nav-btn" data-section="bookings">Bookings</button>
         <button class="nav-btn" data-section="slots">Slot Management</button>
         <button class="nav-btn" data-section="settings">Settings</button>
-        <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
       </div>
     </aside>
 
@@ -784,543 +760,474 @@
   </div>
 
   <script>
-    const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
+  const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
+  let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
 
-    const services = [
-      "National ID Registration",
-      "Correction/Updating of Demographic Information",
-      "Request National ID in Paper Format (ePhilID)",
-      "Retrieval of TRN / Other Concern"
-    ];
+  const services = [
+    "National ID Registration",
+    "Correction/Updating of Demographic Information",
+    "Request National ID in Paper Format (ePhilID)",
+    "Retrieval of TRN / Other Concern"
+  ];
 
-    const defaultSlots = {
-      "National ID Registration": 32,
-      "Correction/Updating of Demographic Information": 16,
-      "Request National ID in Paper Format (ePhilID)": 50,
-      "Retrieval of TRN / Other Concern": 50
-    };
+  const defaultSlots = {
+    "National ID Registration": 32,
+    "Correction/Updating of Demographic Information": 16,
+    "Request National ID in Paper Format (ePhilID)": 50,
+    "Retrieval of TRN / Other Concern": 50
+  };
 
-    let bookings = [];
-    let slotRules = [];
-    let editingBookingRef = null;
-    let editingSlotKey = null;
-  
-    function showNotice(message, type = "success", targetId = "notice") {
-      const el = document.getElementById(targetId);
+  let bookings = [];
+  let slotRules = [];
+  let editingBookingRef = null;
+  let editingSlotKey = null;
+
+  function requireLogin() {
+    if (!adminSecret) {
+      window.location.href = "login.html";
+      return false;
+    }
+    return true;
+  }
+
+  function showNotice(message, type = "success", targetId = "notice") {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    el.className = `notice show ${type}`;
+    el.textContent = message;
+    setTimeout(() => {
+      el.className = "notice";
+      el.textContent = "";
+    }, 3000);
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+
+  function fillServiceOptions() {
+    const ids = ["quickService", "filterService", "bookingService", "slotService"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
       if (!el) return;
-      el.className = `notice show ${type}`;
-      el.textContent = message;
-      setTimeout(() => {
-        el.className = "notice";
-        el.textContent = "";
-      }, 3000);
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.add("open");
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
-    }
-
-    function showAdminApp() {
-      document.getElementById("loginPage").classList.add("hidden");
-      document.getElementById("adminApp").classList.remove("hidden");
-    }
-
-    function showLoginPage() {
-      document.getElementById("adminApp").classList.add("hidden");
-      document.getElementById("loginPage").classList.remove("hidden");
-    }
-
-    function fillServiceOptions() {
-      const ids = ["quickService", "filterService", "bookingService", "slotService"];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const includeAll = id === "filterService";
-        el.innerHTML = includeAll ? `<option value="">All services</option>` : "";
-        services.forEach(service => {
-          const option = document.createElement("option");
-          option.value = service;
-          option.textContent = service;
-          el.appendChild(option);
-        });
-      });
-    }
-
-    function formatDate(dateStr) {
-      if (!dateStr) return "—";
-      const parts = String(dateStr).split("-");
-      if (parts.length !== 3) return dateStr;
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    function badgeClass(status) {
-      if (status === "Cancelled") return "badge badge-cancelled";
-      if (status === "Pending") return "badge badge-pending";
-      return "badge badge-confirmed";
-    }
-
-    function applyBookingFilters() {
-      const service = document.getElementById("filterService").value;
-      const status = document.getElementById("filterStatus").value;
-      const date = document.getElementById("filterDate").value;
-      const search = document.getElementById("filterSearch").value.trim().toLowerCase();
-
-      return bookings.filter(item => {
-        const haystack = [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase();
-        return (!service || item.service === service) &&
-               (!status || item.status === status) &&
-               (!date || item.date === date) &&
-               (!search || haystack.includes(search));
-      });
-    }
-
-    function renderMetrics() {
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById("metricTotal").textContent = bookings.length;
-      document.getElementById("metricToday").textContent = bookings.filter(b => b.date === today).length;
-      document.getElementById("metricPending").textContent = bookings.filter(b => b.status === "Pending").length;
-      document.getElementById("metricSlots").textContent = slotRules.length;
-    }
-
-    function renderRecentBookings(list = bookings) {
-      const tbody = document.getElementById("recentBookingsBody");
-      tbody.innerHTML = "";
-      list.slice(0, 6).forEach(item => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${item.refCode}</td>
-          <td>${item.fullname}</td>
-          <td>${item.service}</td>
-          <td>${formatDate(item.date)}</td>
-          <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-      if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="5">No bookings found.</td></tr>`;
-      }
-    }
-
-    function renderBookingsTable() {
-      const tbody = document.getElementById("bookingsTableBody");
-      const filtered = applyBookingFilters();
-      tbody.innerHTML = "";
-
-      filtered.forEach(item => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${item.refCode}</td>
-          <td>${item.fullname}</td>
-          <td>${item.service}</td>
-          <td>${formatDate(item.date)}</td>
-          <td>${item.email || "—"}</td>
-          <td>${item.phone || "—"}</td>
-          <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
-          <td>
-            <div class="row-actions">
-              <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
-              <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="8">No bookings match the current filters.</td></tr>`;
-      }
-    }
-
-    function renderSlotLists() {
-      const dashboardList = document.getElementById("dashboardSlotList");
-      const slotsTableBody = document.getElementById("slotsTableBody");
-      const defaultList = document.getElementById("defaultSlotList");
-
-      dashboardList.innerHTML = "";
-      slotsTableBody.innerHTML = "";
-      defaultList.innerHTML = "";
-
-      slotRules.slice(0, 5).forEach(item => {
-        const div = document.createElement("div");
-        div.className = "slot-item";
-        div.innerHTML = `
-          <div>
-            <strong>${formatDate(item.date)}</strong>
-            <div class="slot-meta">${item.service}</div>
-          </div>
-          <span class="slot-pill">${item.available} slots</span>
-        `;
-        dashboardList.appendChild(div);
-      });
-
-      if (!dashboardList.innerHTML) {
-        dashboardList.innerHTML = `<div class="slot-meta">No custom slot rules yet.</div>`;
-      }
-
-      slotRules.forEach(item => {
-        const tr = document.createElement("tr");
-        const key = `${item.date}__${item.service}`;
-        tr.innerHTML = `
-          <td>${formatDate(item.date)}</td>
-          <td>${item.service}</td>
-          <td>${item.available}</td>
-          <td>
-            <div class="row-actions">
-              <button class="mini-btn mini-slot" onclick="editSlotRule('${key}')">Edit</button>
-              <button class="mini-btn mini-delete" onclick="deleteSlotRule('${key}')">Delete</button>
-            </div>
-          </td>
-        `;
-        slotsTableBody.appendChild(tr);
-      });
-
-      if (!slotsTableBody.innerHTML) {
-        slotsTableBody.innerHTML = `<tr><td colspan="4">No custom slot rules saved.</td></tr>`;
-      }
-
-      Object.entries(defaultSlots).forEach(([service, count]) => {
-        const div = document.createElement("div");
-        div.className = "slot-item";
-        div.innerHTML = `
-          <div>
-            <strong>${service}</strong>
-            <div class="slot-meta">Default capacity</div>
-          </div>
-          <span class="slot-pill">${count} slots</span>
-        `;
-        defaultList.appendChild(div);
-      });
-    }
-
-    function renderAll() {
-      renderMetrics();
-      renderRecentBookings(filterQuickSearch());
-      renderBookingsTable();
-      renderSlotLists();
-    }
-
-    function filterQuickSearch() {
-      const q = document.getElementById("quickSearch").value.trim().toLowerCase();
-      if (!q) return bookings;
-      return bookings.filter(item => [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase().includes(q));
-    }
-
-    function switchSection(section) {
-      const map = {
-        dashboard: ["dashboardSection", "Dashboard Overview"],
-        bookings: ["bookingsSection", "Booking Management"],
-        slots: ["slotsSection", "Slot Management"],
-        settings: ["settingsSection", "System Settings"]
-      };
-
-      Object.values(map).forEach(([id]) => document.getElementById(id).classList.add("hidden"));
-      document.getElementById(map[section][0]).classList.remove("hidden");
-      document.getElementById("sectionTitle").textContent = map[section][1];
-
-      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-      document.querySelector(`.nav-btn[data-section="${section}"]`).classList.add("active");
-    }
-
-    function resetBookingForm() {
-      editingBookingRef = null;
-      document.getElementById("bookingModalTitle").textContent = "Add Booking";
-      document.getElementById("bookingRef").value = "";
-      document.getElementById("bookingName").value = "";
-      document.getElementById("bookingEmail").value = "";
-      document.getElementById("bookingPhone").value = "";
-      document.getElementById("bookingDate").value = "";
-      document.getElementById("bookingStatus").value = "Confirmed";
-      document.getElementById("bookingService").selectedIndex = 0;
-    }
-
-    function resetSlotForm() {
-      editingSlotKey = null;
-      document.getElementById("slotModalTitle").textContent = "Add Slot Rule";
-      document.getElementById("slotDate").value = "";
-      document.getElementById("slotCount").value = "";
-      document.getElementById("slotService").selectedIndex = 0;
-    }
-
-    async function apiRequest(payload) {
-      if (!EXEC_URL || !EXEC_URL.startsWith("https://script.google.com/")) {
-        throw new Error("Invalid Google Apps Script URL.");
-      }
-
-      const finalPayload = {
-        ...payload,
-        adminSecret: adminSecret
-      };
-
-      const res = await fetch(EXEC_URL, {
-        method: "POST",
-        body: JSON.stringify(finalPayload)
-      });
-
-      return res.json();
-    }
-
-    async function loadAdminData() {
-      try {
-        const data = await apiRequest({ action: "adminList" });
-
-        if (data.status === "error") {
-          throw new Error(data.message || "Unable to load admin data.");
-        }
-
-        bookings = data.bookings || [];
-        slotRules = data.slotRules || [];
-        showNotice("Admin data loaded successfully.");
-      } catch (err) {
-        bookings = [];
-        slotRules = [];
-        showNotice(err.message, "error");
-      }
-      renderAll();
-    }
-
-    async function handleLogin() {
-      const secretInput = document.getElementById("loginSecret");
-      const entered = secretInput.value.trim();
-
-      if (!entered) {
-        showNotice("Please enter the admin access key.", "error", "loginNotice");
-        return;
-      }
-
-      adminSecret = entered;
-      sessionStorage.setItem("nid_admin_secret", adminSecret);
-
-      try {
-        const data = await apiRequest({ action: "adminList" });
-
-        if (data.status === "error") {
-          throw new Error(data.message || "Login failed.");
-        }
-
-        bookings = data.bookings || [];
-        slotRules = data.slotRules || [];
-        showAdminApp();
-        renderAll();
-        showNotice("Login successful.");
-        secretInput.value = "";
-      } catch (err) {
-        adminSecret = "";
-        sessionStorage.removeItem("nid_admin_secret");
-        showNotice(err.message, "error", "loginNotice");
-      }
-    }
-
-    function logout() {
-      adminSecret = "";
-      sessionStorage.removeItem("nid_admin_secret");
-      bookings = [];
-      slotRules = [];
-      renderAll();
-      showLoginPage();
-      showNotice("Logged out successfully.", "success", "loginNotice");
-    }
-
-    async function saveBooking() {
-      const payload = {
-        action: editingBookingRef ? "adminUpdateBooking" : "adminCreateBooking",
-        originalRefCode: editingBookingRef,
-        refCode: document.getElementById("bookingRef").value.trim(),
-        fullname: document.getElementById("bookingName").value.trim().toUpperCase(),
-        service: document.getElementById("bookingService").value,
-        date: document.getElementById("bookingDate").value,
-        email: document.getElementById("bookingEmail").value.trim(),
-        phone: document.getElementById("bookingPhone").value.trim(),
-        status: document.getElementById("bookingStatus").value
-      };
-
-      if (!payload.fullname || !payload.service || !payload.date) {
-        showNotice("Please complete the required booking fields.", "error");
-        return;
-      }
-
-      try {
-        const result = await apiRequest(payload);
-        if (result.status === "error") throw new Error(result.message || "Unable to save booking.");
-        showNotice(editingBookingRef ? "Booking updated." : "Booking added.");
-        closeModal("bookingModal");
-        resetBookingForm();
-        await loadAdminData();
-      } catch (err) {
-        showNotice(err.message, "error");
-      }
-    }
-
-    async function saveSlotRule(fromQuickPanel = false) {
-      const date = fromQuickPanel ? document.getElementById("quickDate").value : document.getElementById("slotDate").value;
-      const service = fromQuickPanel ? document.getElementById("quickService").value : document.getElementById("slotService").value;
-      const available = fromQuickPanel ? document.getElementById("quickSlots").value : document.getElementById("slotCount").value;
-
-      if (!date || !service || available === "") {
-        showNotice("Please complete date, service, and available slots.", "error");
-        return;
-      }
-
-      try {
-        const result = await apiRequest({
-          action: "adminSaveSlot",
-          originalKey: editingSlotKey,
-          date,
-          service,
-          available: Number(available)
-        });
-        if (result.status === "error") throw new Error(result.message || "Unable to save slot rule.");
-        showNotice("Slot rule saved.");
-        closeModal("slotModal");
-        resetSlotForm();
-        document.getElementById("quickDate").value = "";
-        document.getElementById("quickSlots").value = "";
-        await loadAdminData();
-      } catch (err) {
-        showNotice(err.message, "error");
-      }
-    }
-
-    window.editBooking = function(refCode) {
-      const item = bookings.find(b => b.refCode === refCode);
-      if (!item) return;
-      editingBookingRef = item.refCode;
-      document.getElementById("bookingModalTitle").textContent = "Edit Booking";
-      document.getElementById("bookingRef").value = item.refCode;
-      document.getElementById("bookingName").value = item.fullname;
-      document.getElementById("bookingEmail").value = item.email || "";
-      document.getElementById("bookingPhone").value = item.phone || "";
-      document.getElementById("bookingDate").value = item.date;
-      document.getElementById("bookingStatus").value = item.status || "Confirmed";
-      document.getElementById("bookingService").value = item.service;
-      openModal("bookingModal");
-    };
-
-    window.deleteBooking = async function(refCode) {
-      if (!confirm(`Delete booking ${refCode}?`)) return;
-      try {
-        const result = await apiRequest({ action: "adminDeleteBooking", refCode });
-        if (result.status === "error") throw new Error(result.message || "Unable to delete booking.");
-        showNotice("Booking deleted.");
-        await loadAdminData();
-      } catch (err) {
-        showNotice(err.message, "error");
-      }
-    };
-
-    window.editSlotRule = function(key) {
-      const [date, service] = key.split("__");
-      const item = slotRules.find(s => s.date === date && s.service === service);
-      if (!item) return;
-      editingSlotKey = key;
-      document.getElementById("slotModalTitle").textContent = "Edit Slot Rule";
-      document.getElementById("slotDate").value = item.date;
-      document.getElementById("slotService").value = item.service;
-      document.getElementById("slotCount").value = item.available;
-      openModal("slotModal");
-    };
-
-    window.deleteSlotRule = async function(key) {
-      const [date, service] = key.split("__");
-      if (!confirm(`Delete slot rule for ${service} on ${date}?`)) return;
-      try {
-        const result = await apiRequest({ action: "adminDeleteSlot", date, service });
-        if (result.status === "error") throw new Error(result.message || "Unable to delete slot rule.");
-        showNotice("Slot rule deleted.");
-        await loadAdminData();
-      } catch (err) {
-        showNotice(err.message, "error");
-      }
-    };
-    
-    sessionStorage.setItem("nid_admin_secret", "PSA-ADMIN-2026");
-    if (!requireLogin()) return;
-
-    document.addEventListener("DOMContentLoaded", () => {
-  if (!requireLogin()) return;
-
-  fillServiceOptions();
-  renderAll();
-  loadAdminData();
-
-  // the rest of your event listeners here
-});
-    
-    document.addEventListener("DOMContentLoaded", () => {
-      fillServiceOptions();
-      renderAll();
-
-      if (adminSecret) {
-        showAdminApp();
-        loadAdminData();
-      } else {
-        showLoginPage();
-      }
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", () => switchSection(btn.dataset.section));
-      });
-
-      document.getElementById("loginBtn").addEventListener("click", handleLogin);
-      document.getElementById("loginSecret").addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-          handleLogin();
-        }
-      });
-
-      document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
-      document.getElementById("openNewBookingBtn").addEventListener("click", () => {
-        resetBookingForm();
-        openModal("bookingModal");
-      });
-      document.getElementById("openBookingModalBtn").addEventListener("click", () => {
-        resetBookingForm();
-        openModal("bookingModal");
-      });
-      document.getElementById("openSlotModalBtn").addEventListener("click", () => {
-        resetSlotForm();
-        openModal("slotModal");
-      });
-      document.getElementById("saveBookingBtn").addEventListener("click", saveBooking);
-      document.getElementById("saveSlotBtn").addEventListener("click", () => saveSlotRule(false));
-      document.getElementById("saveQuickSlotBtn").addEventListener("click", () => saveSlotRule(true));
-      document.getElementById("logoutBtn").addEventListener("click", logout);
-
-      document.getElementById("quickSearch").addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
-      ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
-        document.getElementById(id).addEventListener("input", renderBookingsTable);
-      });
-
-      document.getElementById("clearFiltersBtn").addEventListener("click", () => {
-        document.getElementById("filterService").value = "";
-        document.getElementById("filterStatus").value = "";
-        document.getElementById("filterDate").value = "";
-        document.getElementById("filterSearch").value = "";
-        renderBookingsTable();
-      });
-
-      document.querySelectorAll("[data-close]").forEach(btn => {
-        btn.addEventListener("click", () => closeModal(btn.dataset.close));
-      });
-
-      document.getElementById("bookingName").addEventListener("input", e => {
-        e.target.value = e.target.value.toUpperCase().replace(/\s+/g, " ").replace(/^\s+/, "");
-      });
-
-      window.addEventListener("click", e => {
-        document.querySelectorAll(".modal").forEach(modal => {
-          if (e.target === modal) closeModal(modal.id);
-        });
+      const includeAll = id === "filterService";
+      el.innerHTML = includeAll ? `<option value="">All services</option>` : "";
+      services.forEach(service => {
+        const option = document.createElement("option");
+        option.value = service;
+        option.textContent = service;
+        el.appendChild(option);
       });
     });
+  }
 
-    function logout() {
-  sessionStorage.removeItem("nid_admin_secret");
-  window.location.href = "login.html";
-}
-  </script>
+  function formatDate(dateStr) {
+    if (!dateStr) return "—";
+    const parts = String(dateStr).split("-");
+    if (parts.length !== 3) return dateStr;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  function badgeClass(status) {
+    if (status === "Cancelled") return "badge badge-cancelled";
+    if (status === "Pending") return "badge badge-pending";
+    return "badge badge-confirmed";
+  }
+
+  function applyBookingFilters() {
+    const service = document.getElementById("filterService").value;
+    const status = document.getElementById("filterStatus").value;
+    const date = document.getElementById("filterDate").value;
+    const search = document.getElementById("filterSearch").value.trim().toLowerCase();
+
+    return bookings.filter(item => {
+      const haystack = [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase();
+      return (!service || item.service === service) &&
+             (!status || item.status === status) &&
+             (!date || item.date === date) &&
+             (!search || haystack.includes(search));
+    });
+  }
+
+  function renderMetrics() {
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById("metricTotal").textContent = bookings.length;
+    document.getElementById("metricToday").textContent = bookings.filter(b => b.date === today).length;
+    document.getElementById("metricPending").textContent = bookings.filter(b => b.status === "Pending").length;
+    document.getElementById("metricSlots").textContent = slotRules.length;
+  }
+
+  function renderRecentBookings(list = bookings) {
+    const tbody = document.getElementById("recentBookingsBody");
+    tbody.innerHTML = "";
+    list.slice(0, 6).forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.refCode}</td>
+        <td>${item.fullname}</td>
+        <td>${item.service}</td>
+        <td>${formatDate(item.date)}</td>
+        <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (!tbody.innerHTML) {
+      tbody.innerHTML = `<tr><td colspan="5">No bookings found.</td></tr>`;
+    }
+  }
+
+  function renderBookingsTable() {
+    const tbody = document.getElementById("bookingsTableBody");
+    const filtered = applyBookingFilters();
+    tbody.innerHTML = "";
+
+    filtered.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.refCode}</td>
+        <td>${item.fullname}</td>
+        <td>${item.service}</td>
+        <td>${formatDate(item.date)}</td>
+        <td>${item.email || "—"}</td>
+        <td>${item.phone || "—"}</td>
+        <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
+            <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if (!tbody.innerHTML) {
+      tbody.innerHTML = `<tr><td colspan="8">No bookings match the current filters.</td></tr>`;
+    }
+  }
+
+  function renderSlotLists() {
+    const dashboardList = document.getElementById("dashboardSlotList");
+    const slotsTableBody = document.getElementById("slotsTableBody");
+    const defaultList = document.getElementById("defaultSlotList");
+
+    dashboardList.innerHTML = "";
+    slotsTableBody.innerHTML = "";
+    defaultList.innerHTML = "";
+
+    slotRules.slice(0, 5).forEach(item => {
+      const div = document.createElement("div");
+      div.className = "slot-item";
+      div.innerHTML = `
+        <div>
+          <strong>${formatDate(item.date)}</strong>
+          <div class="slot-meta">${item.service}</div>
+        </div>
+        <span class="slot-pill">${item.available} slots</span>
+      `;
+      dashboardList.appendChild(div);
+    });
+
+    if (!dashboardList.innerHTML) {
+      dashboardList.innerHTML = `<div class="slot-meta">No custom slot rules yet.</div>`;
+    }
+
+    slotRules.forEach(item => {
+      const tr = document.createElement("tr");
+      const key = `${item.date}__${item.service}`;
+      tr.innerHTML = `
+        <td>${formatDate(item.date)}</td>
+        <td>${item.service}</td>
+        <td>${item.available}</td>
+        <td>
+          <div class="row-actions">
+            <button class="mini-btn mini-slot" onclick="editSlotRule('${key}')">Edit</button>
+            <button class="mini-btn mini-delete" onclick="deleteSlotRule('${key}')">Delete</button>
+          </div>
+        </td>
+      `;
+      slotsTableBody.appendChild(tr);
+    });
+
+    if (!slotsTableBody.innerHTML) {
+      slotsTableBody.innerHTML = `<tr><td colspan="4">No custom slot rules saved.</td></tr>`;
+    }
+
+    Object.entries(defaultSlots).forEach(([service, count]) => {
+      const div = document.createElement("div");
+      div.className = "slot-item";
+      div.innerHTML = `
+        <div>
+          <strong>${service}</strong>
+          <div class="slot-meta">Default capacity</div>
+        </div>
+        <span class="slot-pill">${count} slots</span>
+      `;
+      defaultList.appendChild(div);
+    });
+  }
+
+  function renderAll() {
+    renderMetrics();
+    renderRecentBookings(filterQuickSearch());
+    renderBookingsTable();
+    renderSlotLists();
+  }
+
+  function filterQuickSearch() {
+    const q = document.getElementById("quickSearch").value.trim().toLowerCase();
+    if (!q) return bookings;
+    return bookings.filter(item =>
+      [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase().includes(q)
+    );
+  }
+
+  function switchSection(section) {
+    const map = {
+      dashboard: ["dashboardSection", "Dashboard Overview"],
+      bookings: ["bookingsSection", "Booking Management"],
+      slots: ["slotsSection", "Slot Management"],
+      settings: ["settingsSection", "System Settings"]
+    };
+
+    Object.values(map).forEach(([id]) => document.getElementById(id).classList.add("hidden"));
+    document.getElementById(map[section][0]).classList.remove("hidden");
+    document.getElementById("sectionTitle").textContent = map[section][1];
+
+    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(`.nav-btn[data-section="${section}"]`).classList.add("active");
+  }
+
+  function resetBookingForm() {
+    editingBookingRef = null;
+    document.getElementById("bookingModalTitle").textContent = "Add Booking";
+    document.getElementById("bookingRef").value = "";
+    document.getElementById("bookingName").value = "";
+    document.getElementById("bookingEmail").value = "";
+    document.getElementById("bookingPhone").value = "";
+    document.getElementById("bookingDate").value = "";
+    document.getElementById("bookingStatus").value = "Confirmed";
+    document.getElementById("bookingService").selectedIndex = 0;
+  }
+
+  function resetSlotForm() {
+    editingSlotKey = null;
+    document.getElementById("slotModalTitle").textContent = "Add Slot Rule";
+    document.getElementById("slotDate").value = "";
+    document.getElementById("slotCount").value = "";
+    document.getElementById("slotService").selectedIndex = 0;
+  }
+
+  async function apiRequest(payload) {
+    const finalPayload = {
+      ...payload,
+      adminSecret: adminSecret
+    };
+
+    const res = await fetch(EXEC_URL, {
+      method: "POST",
+      body: JSON.stringify(finalPayload)
+    });
+
+    return res.json();
+  }
+
+  async function loadAdminData() {
+    try {
+      const data = await apiRequest({ action: "adminList" });
+
+      if (data.status === "error") {
+        throw new Error(data.message || "Unable to load admin data.");
+      }
+
+      bookings = data.bookings || [];
+      slotRules = data.slotRules || [];
+      showNotice("Admin data loaded successfully.");
+    } catch (err) {
+      bookings = [];
+      slotRules = [];
+      showNotice(err.message, "error");
+    }
+    renderAll();
+  }
+
+  async function saveBooking() {
+    const payload = {
+      action: editingBookingRef ? "adminUpdateBooking" : "adminCreateBooking",
+      originalRefCode: editingBookingRef,
+      refCode: document.getElementById("bookingRef").value.trim(),
+      fullname: document.getElementById("bookingName").value.trim().toUpperCase(),
+      service: document.getElementById("bookingService").value,
+      date: document.getElementById("bookingDate").value,
+      email: document.getElementById("bookingEmail").value.trim(),
+      phone: document.getElementById("bookingPhone").value.trim(),
+      status: document.getElementById("bookingStatus").value
+    };
+
+    if (!payload.fullname || !payload.service || !payload.date) {
+      showNotice("Please complete the required booking fields.", "error");
+      return;
+    }
+
+    try {
+      const result = await apiRequest(payload);
+      if (result.status === "error") throw new Error(result.message || "Unable to save booking.");
+      showNotice(editingBookingRef ? "Booking updated." : "Booking added.");
+      closeModal("bookingModal");
+      resetBookingForm();
+      await loadAdminData();
+    } catch (err) {
+      showNotice(err.message, "error");
+    }
+  }
+
+  async function saveSlotRule(fromQuickPanel = false) {
+    const date = fromQuickPanel ? document.getElementById("quickDate").value : document.getElementById("slotDate").value;
+    const service = fromQuickPanel ? document.getElementById("quickService").value : document.getElementById("slotService").value;
+    const available = fromQuickPanel ? document.getElementById("quickSlots").value : document.getElementById("slotCount").value;
+
+    if (!date || !service || available === "") {
+      showNotice("Please complete date, service, and available slots.", "error");
+      return;
+    }
+
+    try {
+      const result = await apiRequest({
+        action: "adminSaveSlot",
+        date,
+        service,
+        available: Number(available)
+      });
+      if (result.status === "error") throw new Error(result.message || "Unable to save slot rule.");
+      showNotice("Slot rule saved.");
+      closeModal("slotModal");
+      resetSlotForm();
+      document.getElementById("quickDate").value = "";
+      document.getElementById("quickSlots").value = "";
+      await loadAdminData();
+    } catch (err) {
+      showNotice(err.message, "error");
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem("nid_admin_secret");
+    window.location.href = "login.html";
+  }
+
+  window.editBooking = function(refCode) {
+    const item = bookings.find(b => b.refCode === refCode);
+    if (!item) return;
+    editingBookingRef = item.refCode;
+    document.getElementById("bookingModalTitle").textContent = "Edit Booking";
+    document.getElementById("bookingRef").value = item.refCode;
+    document.getElementById("bookingName").value = item.fullname;
+    document.getElementById("bookingEmail").value = item.email || "";
+    document.getElementById("bookingPhone").value = item.phone || "";
+    document.getElementById("bookingDate").value = item.date;
+    document.getElementById("bookingStatus").value = item.status || "Confirmed";
+    document.getElementById("bookingService").value = item.service;
+    openModal("bookingModal");
+  };
+
+  window.deleteBooking = async function(refCode) {
+    if (!confirm(`Delete booking ${refCode}?`)) return;
+    try {
+      const result = await apiRequest({ action: "adminDeleteBooking", refCode });
+      if (result.status === "error") throw new Error(result.message || "Unable to delete booking.");
+      showNotice("Booking deleted.");
+      await loadAdminData();
+    } catch (err) {
+      showNotice(err.message, "error");
+    }
+  };
+
+  window.editSlotRule = function(key) {
+    const [date, service] = key.split("__");
+    const item = slotRules.find(s => s.date === date && s.service === service);
+    if (!item) return;
+    editingSlotKey = key;
+    document.getElementById("slotModalTitle").textContent = "Edit Slot Rule";
+    document.getElementById("slotDate").value = item.date;
+    document.getElementById("slotService").value = item.service;
+    document.getElementById("slotCount").value = item.available;
+    openModal("slotModal");
+  };
+
+  window.deleteSlotRule = async function(key) {
+    const [date, service] = key.split("__");
+    if (!confirm(`Delete slot rule for ${service} on ${date}?`)) return;
+    try {
+      const result = await apiRequest({ action: "adminDeleteSlot", date, service });
+      if (result.status === "error") throw new Error(result.message || "Unable to delete slot rule.");
+      showNotice("Slot rule deleted.");
+      await loadAdminData();
+    } catch (err) {
+      showNotice(err.message, "error");
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!requireLogin()) return;
+
+    fillServiceOptions();
+    renderAll();
+    loadAdminData();
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchSection(btn.dataset.section));
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
+    document.getElementById("openNewBookingBtn").addEventListener("click", () => {
+      resetBookingForm();
+      openModal("bookingModal");
+    });
+    document.getElementById("openBookingModalBtn").addEventListener("click", () => {
+      resetBookingForm();
+      openModal("bookingModal");
+    });
+    document.getElementById("openSlotModalBtn").addEventListener("click", () => {
+      resetSlotForm();
+      openModal("slotModal");
+    });
+    document.getElementById("saveBookingBtn").addEventListener("click", saveBooking);
+    document.getElementById("saveSlotBtn").addEventListener("click", () => saveSlotRule(false));
+    document.getElementById("saveQuickSlotBtn").addEventListener("click", () => saveSlotRule(true));
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    document.getElementById("quickSearch").addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
+    ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
+      document.getElementById(id).addEventListener("input", renderBookingsTable);
+    });
+
+    document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+      document.getElementById("filterService").value = "";
+      document.getElementById("filterStatus").value = "";
+      document.getElementById("filterDate").value = "";
+      document.getElementById("filterSearch").value = "";
+      renderBookingsTable();
+    });
+
+    document.querySelectorAll("[data-close]").forEach(btn => {
+      btn.addEventListener("click", () => closeModal(btn.dataset.close));
+    });
+
+    document.getElementById("bookingName").addEventListener("input", e => {
+      e.target.value = e.target.value.toUpperCase().replace(/\s+/g, " ").replace(/^\s+/, "");
+    });
+
+    window.addEventListener("click", e => {
+      document.querySelectorAll(".modal").forEach(modal => {
+        if (e.target === modal) closeModal(modal.id);
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
