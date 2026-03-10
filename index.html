@@ -1,68 +1,61 @@
 <!DOCTYPE html>
 <html>
-	<div class="card" id="mainFormCard">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>National ID Appointment System</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
 <!-- ================= FORM ================= -->
 <div id="pageContent">
   <div class="container" id="formContainer">
-  <div class="card header">
-    <div class="logos">
-      <img class="logo" src="logo-psa.png">
-		<img class="logo" src="logo-partner.png">
+    <div class="card header">
+      <div class="logos">
+        <img class="logo" src="logo-psa.png">
+        <img class="logo" src="logo-partner.png">
+      </div>
+      <h2>National ID System</h2>
+      <p>Appointment Request<br>Philippine Statistics Authority - Cebu</p>
     </div>
-    <h2>National ID System</h2>
-    <p>Appointment Request<br>Philippine Statistics Authority - Cebu</p>
+
+    <div class="card" id="mainFormCard">
+
+      <label for="service">Select Services</label>
+      <select id="service" required>
+        <option value="">-- Select Service --</option>
+        <option>National ID Registration</option>
+        <option>Correction/Updating of Demographic Information</option>
+        <option>Request National ID in Paper Format (ePhilID)</option>
+        <option>Retrieval of TRN / Other Concern</option>
+      </select>
+
+      <label for="date">Preferred Date</label>
+      <input type="text" id="date" placeholder="Select appointment date" readonly>
+
+      <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
+        <small id="serviceInfoText" style="color:#555; display:block;"></small>
+      </div>
+
+      <label for="fullname">Full Name</label>
+      <input id="fullname" type="text" required>
+
+      <label for="email">Email Address (optional)</label>
+      <input id="email" type="email" placeholder="example@gmail.com">
+
+      <label for="phone">Mobile Number (optional)</label>
+      <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+
+      <button type="button" id="submitBtn" onclick="openConfirmModal()">
+        <span id="btnText">Submit Appointment Request</span>
+        <span id="btnLoader" class="loading" style="display:none;"></span>
+      </button>
+
     </div>
-	</div>
-
-  <div class="card">
-
-  <!-- SERVICE -->
-  <label for="service">Select Services</label>
-  <select id="service" required>
-    <option value="">-- Select Service --</option>
-    <option>National ID Registration</option>
-    <option>Correction/Updating of Demographic Information</option>
-    <option>Request National ID in Paper Format (ePhilID)</option>
-    <option>Retrieval of TRN / Other Concern</option>
-  </select>
-
-  <!-- DATE -->
-  <label for="date">Preferred Date</label>
-  <input type="text" id="date" placeholder="Select appointment date" readonly>
-
-  <!-- SLOT INFO -->
-  <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
-    <small id="serviceInfoText" style="color:#555; display:block;"></small>
   </div>
-
-  <!-- FULL NAME -->
-  <label for="fullname">Full Name</label>
-  <input id="fullname" type="text" required>
-
-  <!-- EMAIL -->
-  <label for="email">Email Address (optional)</label>
-  <input id="email" type="email" placeholder="example@gmail.com">
-
-  <!-- PHONE -->
-  <label for="phone">Mobile Number (optional)</label>
-  <input id="phone" type="tel" placeholder="09XXXXXXXXX">
-
-  <!-- SUBMIT -->
-<button type="button" id="submitBtn" onclick="openConfirmModal()">
-  <span id="btnText">Submit Appointment Request</span>
-  <span id="btnLoader" class="loading" style="display:none;"></span>
-</button>
-
 </div>
 
 <!-- ================= PRIVACY NOTICE ================= -->
@@ -702,8 +695,6 @@ openModal("privacyModal");
     }
   });
 
-  openModal("privacyModal");
-
   document.getElementById("service").addEventListener("change", function() {
     monthlyBooked = {};
     calendar.clear();
@@ -746,6 +737,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
