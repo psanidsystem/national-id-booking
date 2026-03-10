@@ -480,11 +480,16 @@ function checkSlots() {
       service: service
     })
   })
-    .then(res => res.json())
     .then(data => {
-      info.innerHTML = `🟢 Available Slots: <strong>${data.remaining}</strong>`;
-      info.style.color = data.remaining <= 0 ? "red" : "green";
-    })
+  if (data.open === false) {
+    info.innerHTML = `⛔ Booking Closed: <strong>${data.reason || "Unavailable"}</strong>`;
+    info.style.color = "red";
+    return;
+  }
+
+  info.innerHTML = `🟢 Available Slots: <strong>${data.remaining}</strong>`;
+  info.style.color = data.remaining <= 0 ? "red" : "green";
+})
     .catch(() => {
       info.innerHTML = "⚠ Unable to check availability.";
       info.style.color = "red";
@@ -613,7 +618,12 @@ window.submitForm = function() {
       if (r.status === "duplicate_phone") {
         return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment.");
       }
-
+		if (r.status === "closed_date") {
+	  return showSystemMessage(
+	    "Booking Closed",
+	    r.reason || "Booking is not available on the selected date."
+	  );
+	}
       if (r.status === "daily_full") {
         return showSystemMessage("Fully Booked", "This service is fully booked on this date.");
       }
@@ -783,4 +793,5 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
