@@ -704,6 +704,7 @@ document.addEventListener("DOMContentLoaded", function() {
 window.addEventListener("click", function(e) {
   document.querySelectorAll(".modal").forEach(modal => {
     if (e.target === modal) {
+      if (modal.id === "privacyModal") return;
       modal.style.display = "none";
     }
   });
@@ -712,6 +713,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
