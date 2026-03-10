@@ -1120,66 +1120,33 @@ tbody td[colspan] {
       </div>
 
     <div class="nav-group">
-      <button class="nav-btn active" data-section="dashboard">
-        <span class="nav-icon">📊</span>
-        <span>Dashboard</span>
-      </button>
+
+    <button class="nav-btn active" data-section="dashboard">
+    <span class="nav-icon">📊</span>
+    <span>Dashboard</span>
+    </button>
     
-      <button class="nav-btn" data-section="bookings">
-        <span class="nav-icon">📋</span>
-        <span>Bookings</span>
-      </button>
+    <button class="nav-btn" data-section="bookings">
+    <span class="nav-icon">📋</span>
+    <span>Bookings</span>
+    </button>
     
-      <button class="nav-btn" data-section="slots">
-        <span class="nav-icon">🗓️</span>
-        <span>Slot Management</span>
-      </button>
-      <section id="availabilitySection" class="hidden">
-
-<div class="card">
-
-<div class="panel-title">
-<h3>Availability Management</h3>
-<button class="btn btn-primary" id="openAvailabilityModalBtn">
-Add Availability Rule
-</button>
-</div>
-
-<div class="table-wrap">
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Status</th>
-<th>Reason</th>
-<th>NID Registration</th>
-<th>Correction</th>
-<th>ePhilID</th>
-<th>TRN</th>
-<th>Actions</th>
-</tr>
-</thead>
-
-<tbody id="availabilityTableBody"></tbody>
-
-</table>
-</div>
-
-</div>
-
-</section>
-      <button class="nav-btn" data-section="availability">
-      <span class="nav-icon">📅</span>
-      <span>Availability</span>
-      </button>
+    <button class="nav-btn" data-section="slots">
+    <span class="nav-icon">🗓️</span>
+    <span>Slot Management</span>
+    </button>
     
-      <button class="nav-btn" data-section="settings">
-        <span class="nav-icon">⚙️</span>
-        <span>Settings</span>
-      </button>
+    <button class="nav-btn" data-section="availability">
+    <span class="nav-icon">📅</span>
+    <span>Availability</span>
+    </button>
+    
+    <button class="nav-btn" data-section="settings">
+    <span class="nav-icon">⚙️</span>
+    <span>Settings</span>
+    </button>
+    
     </div>
-    </aside>
 
     <main class="content">
       <div class="topbar">
@@ -1581,6 +1548,7 @@ Add Availability Rule
 
     let bookings = [];
     let slotRules = [];
+    let availabilityRules = [];
     let editingBookingRef = null;
     let editingSlotKey = null;
 
@@ -1894,14 +1862,8 @@ settings: ["settingsSection","System Settings"]
         slotRules = data.slotRules || [];
         availabilityRules = data.availabilityRules || [];
         renderAvailabilityTable();
-        showNotice("Admin data loaded successfully.");
-      } catch (err) {
-        bookings = [];
-        slotRules = [];
-        showNotice(err.message, "error");
-      }
-      renderAll();
-    }
+        renderAll();
+            }
 async function saveAvailability() {
 
 const payload = {
@@ -2017,45 +1979,47 @@ loadAdminData();
       }
     }
 
-    function renderAvailabilityTable() {
-
-const tbody = document.getElementById("availabilityTableBody");
-tbody.innerHTML = "";
-
-availabilityRules.forEach(rule => {
-
-const tr = document.createElement("tr");
-
-tr.innerHTML = `
-<td>${formatDate(rule.date)}</td>
-<td>${rule.status}</td>
-<td>${rule.reason || "—"}</td>
-<td>${rule.nidReg}</td>
-<td>${rule.updateDemo}</td>
-<td>${rule.ephilid}</td>
-<td>${rule.trn}</td>
-
-<td>
-<div class="row-actions">
-
-<button class="mini-btn mini-delete"
-onclick="deleteAvailability('${rule.date}')">
-Delete
-</button>
-
-</div>
-</td>
-`;
-
-tbody.appendChild(tr);
-
-});
-
-if(!tbody.innerHTML){
-tbody.innerHTML = `<tr><td colspan="8">No availability rules.</td></tr>`;
-}
-
-}
+      function renderAvailabilityTable() {
+      
+      const tbody = document.getElementById("availabilityTableBody");
+      if(!tbody) return;
+      
+      tbody.innerHTML = "";
+      
+      availabilityRules.forEach(rule => {
+      
+      const tr = document.createElement("tr");
+      
+      tr.innerHTML = `
+      <td>${formatDate(rule.date)}</td>
+      <td>${rule.status}</td>
+      <td>${rule.reason || "—"}</td>
+      <td>${rule.nidReg || 0}</td>
+      <td>${rule.updateDemo || 0}</td>
+      <td>${rule.ephilid || 0}</td>
+      <td>${rule.trn || 0}</td>
+      
+      <td>
+      <div class="row-actions">
+      
+      <button class="mini-btn mini-delete"
+      onclick="deleteAvailability('${rule.date}')">
+      Delete
+      </button>
+      
+      </div>
+      </td>
+      `;
+      
+      tbody.appendChild(tr);
+      
+      });
+      
+      if(!availabilityRules.length){
+      tbody.innerHTML = `<tr><td colspan="8">No availability rules configured.</td></tr>`;
+      }
+      
+      }
     function logout() {
       sessionStorage.removeItem("nid_admin_secret");
       window.location.href = "login.html";
