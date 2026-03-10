@@ -589,6 +589,35 @@ document.getElementById("service").addEventListener("change", function(){
   window.closeSystemModal = () =>
     document.getElementById("systemModal").style.display = "none";
 
+	<script>
+const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = "flex";
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = "none";
+}
+
+function showSystemMessage(title, message) {
+  document.getElementById("systemTitle").textContent = title;
+  document.getElementById("systemMessage").textContent = message;
+  openModal("systemModal");
+}
+
+function agreePrivacy() {
+  closeModal("privacyModal");
+}
+
+function confirmSubmit() {
+  closeModal("confirmModal");
+  submitForm();
+}
+</script>
+
 
   // ===============================
   // BOOKING
@@ -733,6 +762,7 @@ window.addEventListener("click", function(e){
 </body>
 
 </html>
+
 
 
 
