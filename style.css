@@ -339,7 +339,6 @@ select {
   opacity: 1 !important;
   color: #ffffff !important;
 }
-}
 
 .flatpickr-current-month input.cur-year {
   color: #ffffff !important;
@@ -547,6 +546,7 @@ select {
 .form-disabled button {
   cursor: not-allowed;
 }
+
 
 
 
