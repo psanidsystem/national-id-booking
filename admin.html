@@ -804,16 +804,7 @@
     let slotRules = [];
     let editingBookingRef = null;
     let editingSlotKey = null;
-    let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
-
-    function requireLogin() {
-    if (!adminSecret) {
-      window.location.href = "login.html";
-      return false;
-    }
-    return true;
-    }
-
+  
     function showNotice(message, type = "success", targetId = "notice") {
       const el = document.getElementById(targetId);
       if (!el) return;
@@ -1246,6 +1237,17 @@
     };
     
     if (!requireLogin()) return;
+
+    document.addEventListener("DOMContentLoaded", () => {
+  if (!requireLogin()) return;
+
+  fillServiceOptions();
+  renderAll();
+  loadAdminData();
+
+  // the rest of your event listeners here
+});
+    
     document.addEventListener("DOMContentLoaded", () => {
       fillServiceOptions();
       renderAll();
