@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+	<div class="card" id="mainFormCard">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
@@ -379,6 +380,29 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
 
+function setFormDisabled(disabled) {
+  const formCard = document.getElementById("mainFormCard");
+  const service = document.getElementById("service");
+  const date = document.getElementById("date");
+  const fullname = document.getElementById("fullname");
+  const email = document.getElementById("email");
+  const phone = document.getElementById("phone");
+  const submitBtn = document.getElementById("submitBtn");
+
+  if (disabled) {
+    formCard.classList.add("form-disabled");
+  } else {
+    formCard.classList.remove("form-disabled");
+  }
+
+  service.disabled = disabled;
+  date.disabled = disabled;
+  fullname.disabled = disabled;
+  email.disabled = disabled;
+  phone.disabled = disabled;
+  submitBtn.disabled = disabled;
+}
+
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.style.display = "flex";
@@ -397,6 +421,7 @@ function showSystemMessage(title, message) {
 
 function agreePrivacy() {
   closeModal("privacyModal");
+  setFormDisabled(false);
 }
 
 function openConfirmModal() {
@@ -579,6 +604,11 @@ window.submitForm = function() {
 document.addEventListener("DOMContentLoaded", function() {
   const serviceSelect = document.getElementById("service");
   let monthlyBooked = {};
+	setFormDisabled(true);
+openModal("privacyModal");
+	document.getElementById("fullname").addEventListener("input", function () {
+  this.value = this.value.toUpperCase();
+});
 
   const DEFAULT_SLOTS = {
     "National ID Registration": 32,
@@ -713,6 +743,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
