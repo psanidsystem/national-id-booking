@@ -159,56 +159,60 @@
   </div>
 
   <script>
-    const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
+  const EXEC_URL = "https://script.google.com/macros/s/AKfycbwuqNcVjD4pdnNdxz2vYmGItDrtgempgNW4Vgh_jLgk3UXnJmVi_HhPY6xdh_IcgdNF8w/exec";
 
-    function showNotice(message, type = "error") {
-      const el = document.getElementById("loginNotice");
-      el.className = `notice show ${type}`;
-      el.textContent = message;
+  if (sessionStorage.getItem("nid_admin_secret")) {
+    window.location.href = "admin.html";
+  }
+
+  function showNotice(message, type = "error") {
+    const el = document.getElementById("loginNotice");
+    el.className = `notice show ${type}`;
+    el.textContent = message;
+  }
+
+  async function login() {
+    const secret = document.getElementById("adminSecret").value.trim();
+
+    if (!secret) {
+      showNotice("Please enter the access key.");
+      return;
     }
 
-    async function login() {
-      const secret = document.getElementById("adminSecret").value.trim();
+    try {
+      const res = await fetch(EXEC_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "adminList",
+          adminSecret: secret
+        })
+      });
 
-      if (!secret) {
-        showNotice("Please enter the access key.");
-        return;
+      const data = await res.json();
+
+      if (data.status === "error") {
+        throw new Error(data.message || "Login failed.");
       }
 
-      try {
-        const res = await fetch(EXEC_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "adminList",
-            adminSecret: secret
-          })
-        });
+      sessionStorage.setItem("nid_admin_secret", secret);
+      showNotice("Login successful. Redirecting...", "success");
 
-        const data = await res.json();
+      setTimeout(() => {
+        window.location.href = "admin.html";
+      }, 700);
 
-        if (data.status === "error") {
-          throw new Error(data.message || "Login failed.");
-        }
-
-        sessionStorage.setItem("nid_admin_secret", secret);
-        showNotice("Login successful. Redirecting...", "success");
-
-        setTimeout(() => {
-          window.location.href = "admin.html";
-        }, 700);
-
-      } catch (err) {
-        showNotice(err.message || "Unable to log in.");
-      }
+    } catch (err) {
+      showNotice(err.message || "Unable to log in.");
     }
+  }
 
-    document.getElementById("loginBtn").addEventListener("click", login);
+  document.getElementById("loginBtn").addEventListener("click", login);
 
-    document.getElementById("adminSecret").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        login();
-      }
-    });
-  </script>
+  document.getElementById("adminSecret").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      login();
+    }
+  });
+</script>
 </body>
 </html>
