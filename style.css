@@ -536,6 +536,17 @@ select {
 .has-tooltip:hover::before {
   opacity: 1;
 }
+.form-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.form-disabled input,
+.form-disabled select,
+.form-disabled button {
+  cursor: not-allowed;
+}
 
 
 
