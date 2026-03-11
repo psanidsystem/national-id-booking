@@ -35,6 +35,18 @@
 
       <label for="date">Preferred Date</label>
       <input type="text" id="date" placeholder="Select appointment date" readonly>
+		<label for="time">Preferred Time</label>
+		<select id="time" required>
+		  <option value="">-- Select Time --</option>
+		  <option>8:00 AM</option>
+		  <option>9:00 AM</option>
+		  <option>10:00 AM</option>
+		  <option>11:00 AM</option>
+		  <option>1:00 PM</option>
+		  <option>2:00 PM</option>
+		  <option>3:00 PM</option>
+		  <option>4:00 PM</option>
+		</select>
 
       <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
         <small id="serviceInfoText" style="color:#555; display:block;"></small>
@@ -322,8 +334,9 @@ collection and processing of your personal data for the stated purpose.
   <div class="modal-content">
     <h2>Confirm Appointment</h2>
     <p><b>Name:</b> <span id="cName"></span></p>
-    <p><b>Service:</b> <span id="cService"></span></p>
-    <p><b>Date:</b> <span id="cDate"></span></p>
+	<p><b>Service:</b> <span id="cService"></span></p>
+	<p><b>Date:</b> <span id="cDate"></span></p>
+	<p><b>Time:</b> <span id="cTime"></span></p>
     <div class="actions">
       <button type="button" class="secondary" 
 onclick="document.getElementById('confirmModal').style.display='none'">Cancel</button>
@@ -348,6 +361,7 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
 	<p><b>Booking Time:</b> <span id="sTimestamp"></span></p>
 	<p><b>Name:</b> <span id="sName"></span></p>
 	<p><b>Date:</b> <span id="sDate"></span></p>
+	<p><b>Time:</b> <span id="sTime"></span></p>
 	<p><b>Office Hours:</b> 8:00 AM to 5:00 PM</p>
 	
 	<p><b>Center:</b><br>
@@ -433,13 +447,14 @@ function agreePrivacy() {
 }
 
 function openConfirmModal() {
-  const service = document.getElementById("service").value;
-  const fullname = document.getElementById("fullname").value.trim();
-  const date = document.getElementById("date").value;
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
+	const service = document.getElementById("service").value;
+	const fullname = document.getElementById("fullname").value.trim();
+	const date = document.getElementById("date").value;
+	const time = document.getElementById("time").value;
+	const email = document.getElementById("email").value.trim();
+	const phone = document.getElementById("phone").value.trim();
 
-  if (!service || !fullname || !date) {
+  if (!service || !fullname || !date || !time) {
     showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
@@ -449,9 +464,10 @@ function openConfirmModal() {
     return;
   }
 
-  document.getElementById("cName").textContent = fullname;
-  document.getElementById("cService").textContent = service;
-  document.getElementById("cDate").textContent = date;
+	document.getElementById("cName").textContent = fullname;
+	document.getElementById("cService").textContent = service;
+	document.getElementById("cDate").textContent = date;
+	document.getElementById("cTime").textContent = time;
 
   openModal("confirmModal");
 }
@@ -483,11 +499,14 @@ function checkSlots() {
 
   fetch(EXEC_URL, {
     method: "POST",
-    body: JSON.stringify({
-      action: "slots",
-      date: date,
-      service: service
-    })
+	body: JSON.stringify({
+	  service,
+	  fullname,
+	  email,
+	  phone,
+	  date,
+	  time
+	})
   })
     .then(res => res.json())
     .then(data => {
@@ -550,6 +569,7 @@ function formatAppointmentDate(dateStr) {
 
 function resetForm() {
   document.getElementById("service").value = "";
+  document.getElementById("time").value = "";
   document.getElementById("fullname").value = "";
   document.getElementById("email").value = "";
   document.getElementById("phone").value = "";
@@ -600,7 +620,7 @@ window.submitForm = function() {
   const phone = document.getElementById("phone").value.trim();
   const date = document.getElementById("date").value;
 
-  if (!service || !fullname || !date) {
+  if (!service || !fullname || !date || !time) {
     showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
@@ -656,7 +676,7 @@ window.submitForm = function() {
       if (r.status === "success") {
         dailySlotCache = {};
         monthlyBooked = {};
-
+		
         const now = new Date();
         const timestamp = now.toLocaleString();
 
@@ -664,6 +684,7 @@ window.submitForm = function() {
         document.getElementById("sName").textContent = fullname;
         document.getElementById("sDate").textContent = formatAppointmentDate(date);
         document.getElementById("sTimestamp").textContent = timestamp;
+		document.getElementById("sTime").textContent = time;
 
         openModal("slipModal");
         return;
@@ -841,3 +862,4 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
