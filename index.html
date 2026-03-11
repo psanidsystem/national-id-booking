@@ -480,16 +480,27 @@ function checkSlots() {
       service: service
     })
   })
+    .then(res => res.json())
     .then(data => {
-  if (data.open === false) {
-    info.innerHTML = `⛔ Booking Closed: <strong>${data.reason || "Unavailable"}</strong>`;
-    info.style.color = "red";
-    return;
-  }
+      console.log("Slots response:", data);
 
-  info.innerHTML = `🟢 Available Slots: <strong>${data.remaining}</strong>`;
-  info.style.color = data.remaining <= 0 ? "red" : "green";
-})
+      if (data.status === "error") {
+        info.innerHTML = "⚠ " + (data.message || "Unable to check availability.");
+        info.style.color = "red";
+        return;
+      }
+
+      if (data.open === false) {
+        info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
+        info.style.color = "red";
+        return;
+      }
+
+      const remaining = Number(data.remaining ?? 0);
+
+      info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
+      info.style.color = remaining <= 0 ? "red" : "green";
+    })
     .catch(() => {
       info.innerHTML = "⚠ Unable to check availability.";
       info.style.color = "red";
@@ -793,5 +804,6 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
