@@ -1623,8 +1623,13 @@
     function filterQuickSearch() {
       const q = document.getElementById("quickSearch").value.trim().toLowerCase();
       if (!q) return bookings;
-      return bookings.filter(item =>
-      const haystack = [item.refCode, item.fullname, item.email, item.phone, item.time].join(" ").toLowerCase();
+    
+      return bookings.filter(item => {
+        const haystack = [item.refCode, item.fullname, item.email, item.phone, item.time]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
+      });
     }
 
     function switchSection(section) {
@@ -1659,7 +1664,6 @@
       document.getElementById("bookingTime").value = "";
       document.getElementById("bookingStatus").value = "Confirmed";
       document.getElementById("bookingService").selectedIndex = 0;
-    }
     }
 
     function resetSlotForm() {
@@ -1828,20 +1832,22 @@
       window.location.href = "login.html";
     }
 
-    window.editBooking = function(refCode) {
-      const item = bookings.find(b => b.refCode === refCode);
-      if (!item) return;
-      editingBookingRef = item.refCode;
-      document.getElementById("bookingRef").value = item.refCode;
-      document.getElementById("bookingName").value = item.fullname;
-      document.getElementById("bookingEmail").value = item.email || "";
-      document.getElementById("bookingPhone").value = item.phone || "";
-      document.getElementById("bookingDate").value = item.date;
-      document.getElementById("bookingTime").value = item.time || "";
-      document.getElementById("bookingStatus").value = item.status || "Confirmed";
-      document.getElementById("bookingService").value = item.service;
-      openModal("bookingModal");
-    };
+      window.editBooking = function(refCode) {
+        const item = bookings.find(b => b.refCode === refCode);
+        if (!item) return;
+      
+        editingBookingRef = item.refCode;
+        document.getElementById("bookingModalTitle").textContent = "Edit Booking";
+        document.getElementById("bookingRef").value = item.refCode;
+        document.getElementById("bookingName").value = item.fullname;
+        document.getElementById("bookingEmail").value = item.email || "";
+        document.getElementById("bookingPhone").value = item.phone || "";
+        document.getElementById("bookingDate").value = item.date;
+        document.getElementById("bookingTime").value = item.time || "";
+        document.getElementById("bookingStatus").value = item.status || "Confirmed";
+        document.getElementById("bookingService").value = item.service;
+        openModal("bookingModal");
+      };
 
     window.deleteBooking = async function(refCode) {
       if (!confirm(`Delete booking ${refCode}?`)) return;
