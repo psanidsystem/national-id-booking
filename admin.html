@@ -1395,11 +1395,50 @@
 
     function formatDate(dateStr) {
       if (!dateStr) return "—";
+    
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+    
       const parts = String(dateStr).split("-");
       if (parts.length !== 3) return dateStr;
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    
+      const year = parts[0];
+      const monthIndex = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+    
+      if (monthIndex < 0 || monthIndex > 11 || isNaN(day)) return dateStr;
+    
+      return `${day} ${months[monthIndex]} ${year}`;
     }
+    function formatTime(timeValue) {
+  if (!timeValue) return "—";
 
+  const str = String(timeValue).trim();
+
+  if (/^\d{1,2}:\d{2}\s?(AM|PM)$/i.test(str)) {
+    const [timePart, meridianRaw] = str.split(/\s+/);
+    let [hour, minute] = timePart.split(":");
+    hour = String(parseInt(hour, 10)).padStart(2, "0");
+    return `${hour}:${minute} ${meridianRaw.toUpperCase()}`;
+  }
+
+  const dateObj = new Date(timeValue);
+  if (!isNaN(dateObj.getTime())) {
+    let hours = dateObj.getUTCHours();
+    const minutes = String(dateObj.getUTCMinutes()).padStart(2, "0");
+    const meridian = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+
+    const hourText = String(hours).padStart(2, "0");
+    return `${hourText}:${minutes} ${meridian}`;
+  }
+
+  return str;
+}
     function badgeClass(status) {
       if (status === "Cancelled") return "badge badge-cancelled";
       if (status === "Pending") return "badge badge-pending";
@@ -1473,7 +1512,7 @@
           <td>${item.fullname}</td>
           <td>${item.service}</td>
           <td>${formatDate(item.date)}</td>
-          <td>${item.time || "—"}</td>
+          <td>${formatTime(item.time)}</td>
           <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
         `;
         tbody.appendChild(tr);
@@ -1491,22 +1530,22 @@
 
       filtered.forEach(item => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${item.refCode}</td>
-            <td>${item.fullname}</td>
-            <td>${item.service}</td>
-            <td>${formatDate(item.date)}</td>
-            <td>${item.time || "—"}</td>
-            <td>${item.email || "—"}</td>
-            <td>${item.phone || "—"}</td>
-            <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
-            <td>
-              <div class="row-actions">
-                <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
-                <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
-              </div>
-            </td>
-          `;
+      tr.innerHTML = `
+        <td>${item.refCode}</td>
+        <td>${item.fullname}</td>
+        <td>${item.service}</td>
+        <td>${formatDate(item.date)}</td>
+        <td>${formatTime(item.time)}</td>
+        <td>${item.email || "—"}</td>
+        <td>${item.phone || "—"}</td>
+        <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
+            <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
+          </div>
+        </td>
+      `;
         tbody.appendChild(tr);
       });
 
