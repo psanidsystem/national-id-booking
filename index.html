@@ -617,6 +617,7 @@ window.submitForm = function() {
   const email = document.getElementById("email").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
 
   if (!service || !fullname || !date || !time) {
     showSystemMessage("Missing Fields", "Please complete all required fields.");
@@ -639,7 +640,8 @@ window.submitForm = function() {
       fullname,
       email,
       phone,
-      date
+      date,
+      time
     })
   })
     .then(res => res.json())
@@ -647,6 +649,10 @@ window.submitForm = function() {
       btn.disabled = false;
       btnText.style.display = "inline";
       loader.style.display = "none";
+
+      if (r.status === "error") {
+        return showSystemMessage("Notice", r.message || "System error.");
+      }
 
       if (r.status === "duplicate_name") {
         return showSystemMessage("Duplicate Appointment", "You already have an appointment on this date.");
@@ -668,21 +674,21 @@ window.submitForm = function() {
       }
 
       if (r.status === "daily_full") {
-        return showSystemMessage("Fully Booked", "This service is fully booked on this date.");
+        return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
       }
 
       if (r.status === "success") {
         dailySlotCache = {};
         monthlyBooked = {};
-		
+
         const now = new Date();
         const timestamp = now.toLocaleString();
 
         document.getElementById("sRef").textContent = r.refCode;
         document.getElementById("sName").textContent = fullname;
         document.getElementById("sDate").textContent = formatAppointmentDate(date);
+        document.getElementById("sTime").textContent = time;
         document.getElementById("sTimestamp").textContent = timestamp;
-		document.getElementById("sTime").textContent = time;
 
         openModal("slipModal");
         return;
@@ -862,5 +868,6 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
