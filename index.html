@@ -459,7 +459,7 @@ function confirmSubmit() {
 	submitForm();
 }
 
-async function checkSlots() {
+function checkSlots() {
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
   const info = document.getElementById("serviceInfoText");
@@ -469,54 +469,54 @@ async function checkSlots() {
     return;
   }
 
+  const cacheKey = `${service}_${date}`;
+
+  // Use cached result first
+  if (dailySlotCache[cacheKey]) {
+    renderSlotInfo(dailySlotCache[cacheKey], info);
+    return;
+  }
+
   info.innerHTML = "⏳ Checking available slots...";
   info.style.color = "#555";
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000); // 10 seconds
-
-  try {
-    const res = await fetch(EXEC_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "slots",
-        date: date,
-        service: service
-      }),
-      signal: controller.signal
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "slots",
+      date: date,
+      service: service
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      dailySlotCache[cacheKey] = data;
+      renderSlotInfo(data, info);
+    })
+    .catch(() => {
+      info.innerHTML = "⚠ Unable to check availability.";
+      info.style.color = "red";
     });
+}
 
-    clearTimeout(timeout);
+function renderSlotInfo(data, info) {
+  if (data.status === "error") {
+    info.innerHTML = "⚠ " + (data.message || "Unable to check availability.");
+    info.style.color = "red";
+    return;
+  }
 
-    const text = await res.text();
-    console.log("Raw slots response:", text);
+  if (data.open === false) {
+    info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
+    info.style.color = "red";
+    return;
+  }
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      info.innerHTML = "⚠ Server returned invalid response.";
-      info.style.color = "red";
-      return;
-    }
-
-    if (data.status === "error") {
-      info.innerHTML = `⚠ ${data.message || "Unable to check availability."}`;
-      info.style.color = "red";
-      return;
-    }
-
-    if (data.open === false) {
-      info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
-      info.style.color = "red";
-      return;
-    }
-
-    const remaining = Number(data.remaining ?? 0);
-    info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
-    info.style.color = remaining <= 0 ? "red" : "green";
-
-  } catch (err) {
+  const remaining = Number(data.remaining ?? 0);
+  info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
+  info.style.color = remaining <= 0 ? "red" : "green";
+}
+	catch (err) {
     clearTimeout(timeout);
 
     if (err.name === "AbortError") {
@@ -662,15 +662,17 @@ window.submitForm = function() {
         return showSystemMessage("Fully Booked", "This service is fully booked on this date.");
       }
 
-      if (r.status === "success") {
+if (r.status === "success") {
+  dailySlotCache = {};
+  monthlyBooked = {};
 
   const now = new Date();
   const timestamp = now.toLocaleString();
 
-	document.getElementById("sRef").textContent = r.refCode;
-	document.getElementById("sName").textContent = fullname;
-	document.getElementById("sDate").textContent = formatAppointmentDate(date);
-	document.getElementById("sTimestamp").textContent = timestamp;
+  document.getElementById("sRef").textContent = r.refCode;
+  document.getElementById("sName").textContent = fullname;
+  document.getElementById("sDate").textContent = formatAppointmentDate(date);
+  document.getElementById("sTimestamp").textContent = timestamp;
 
   openModal("slipModal");
 }
@@ -686,7 +688,8 @@ window.submitForm = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
   const serviceSelect = document.getElementById("service");
-  let monthlyBooked = {};
+ 	let monthlyBooked = {};
+	let dailySlotCache = {};
 	setFormDisabled(true);
 openModal("privacyModal");
 	document.getElementById("fullname").addEventListener("input", function () {
@@ -806,12 +809,13 @@ openModal("privacyModal");
 	}
   });
 
-  document.getElementById("service").addEventListener("change", function() {
-    monthlyBooked = {};
-    calendar.clear();
-    calendar.redraw();
-    fetchMonthlyData(calendar);
-  });
+	document.getElementById("service").addEventListener("change", function() {
+	  monthlyBooked = {};
+	  dailySlotCache = {};
+	  calendar.clear();
+	  calendar.redraw();
+	  fetchMonthlyData(calendar);
+	});
 
   document.getElementById("service").addEventListener("change", checkSlots);
   document.getElementById("date").addEventListener("change", checkSlots);
@@ -848,6 +852,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
