@@ -680,30 +680,30 @@ openModal("privacyModal");
     "Retrieval of TRN / Other Concern": 50
   };
 
-  function fetchMonthlyData(instance) {
-    const service = document.getElementById("service").value;
-    if (!service) return;
-
-    const currentMonth = instance.currentYear + "-" +
-      String(instance.currentMonth + 1).padStart(2, "0");
-
-    fetch(EXEC_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "monthlySlots",
-        service: service,
-        month: currentMonth
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        monthlyBooked = data || {};
-        instance.redraw();
-      })
-      .catch(err => {
-        console.log("Monthly fetch error:", err);
-      });
-  }
+	function fetchMonthlyData(instance) {
+	  const service = document.getElementById("service").value;
+	  if (!service) return;
+	
+	  const currentMonth = instance.currentYear + "-" +
+	    String(instance.currentMonth + 1).padStart(2, "0");
+	
+	  fetch(EXEC_URL, {
+	    method: "POST",
+	    body: JSON.stringify({
+	      action: "monthlySlots",
+	      service: service,
+	      month: currentMonth
+	    })
+	  })
+	    .then(res => res.json())
+	    .then(data => {
+	      monthlyBooked = data || {};
+	      instance.redraw();
+	    })
+	    .catch(err => {
+	      console.log("Monthly fetch error:", err);
+	    });
+	}
 
   const calendar = flatpickr("#date", {
     dateFormat: "Y-m-d",
@@ -719,47 +719,68 @@ openModal("privacyModal");
       fetchMonthlyData(instance);
     },
 
-    onDayCreate: function(dObj, dStr, fp, dayElem) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (dayElem.dateObj < today) {
-        dayElem.classList.add("flatpickr-disabled");
-        dayElem.style.pointerEvents = "none";
-        return;
-      }
-
-      const year = dayElem.dateObj.getFullYear();
-      const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
-      const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
-      const date = `${year}-${month}-${day}`;
-
-      const service = document.getElementById("service").value;
-      if (!service) return;
-
-      const base = DEFAULT_SLOTS[service] || 0;
-      const booked = monthlyBooked[date] || 0;
-      const remaining = base - booked;
-
-      const dot = document.createElement("span");
-      dot.classList.add("slot-dot");
-
-      if (remaining <= 0) {
-        dot.classList.add("full");
-        dayElem.classList.add("flatpickr-disabled");
-        dayElem.style.pointerEvents = "none";
-        dayElem.setAttribute("data-tooltip", "Fully booked");
-      } else if (remaining <= 3) {
-        dot.classList.add("few");
-        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-      } else {
-        dot.classList.add("many");
-        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-      }
-
-      dayElem.appendChild(dot);
-      dayElem.classList.add("has-tooltip");
-    }
+	onDayCreate: function(dObj, dStr, fp, dayElem) {
+	  const today = new Date();
+	  today.setHours(0, 0, 0, 0);
+	
+	  if (dayElem.dateObj < today) {
+	    dayElem.classList.add("flatpickr-disabled");
+	    dayElem.style.pointerEvents = "none";
+	    return;
+	  }
+	
+	  const year = dayElem.dateObj.getFullYear();
+	  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
+	  const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+	  const date = `${year}-${month}-${day}`;
+	
+	  const service = document.getElementById("service").value;
+	  if (!service) return;
+	
+	  const dayData = monthlyBooked[date] || null;
+	
+	  let booked = 0;
+	  let max = DEFAULT_SLOTS[service] || 0;
+	  let open = true;
+	  let reason = "";
+	
+	  if (dayData) {
+	    booked = Number(dayData.booked || 0);
+	    max = Number(dayData.max || 0);
+	    open = dayData.open !== false;
+	    reason = dayData.reason || "";
+	  }
+	
+	  const remaining = max - booked;
+	
+	  // closed date
+	  if (!open || max <= 0) {
+	    dayElem.classList.add("flatpickr-disabled");
+	    dayElem.style.pointerEvents = "none";
+	    dayElem.setAttribute("data-tooltip", reason || "Booking closed");
+	    dayElem.classList.add("has-tooltip");
+	    return;
+	  }
+	
+	  const dot = document.createElement("span");
+	  dot.classList.add("slot-dot");
+	
+	  if (remaining <= 0) {
+	    dot.classList.add("full");
+	    dayElem.classList.add("flatpickr-disabled");
+	    dayElem.style.pointerEvents = "none";
+	    dayElem.setAttribute("data-tooltip", "Fully booked");
+	  } else if (remaining <= 3) {
+	    dot.classList.add("few");
+	    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+	  } else {
+	    dot.classList.add("many");
+	    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+	  }
+	
+	  dayElem.appendChild(dot);
+	  dayElem.classList.add("has-tooltip");
+	}
   });
 
   document.getElementById("service").addEventListener("change", function() {
@@ -804,6 +825,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
