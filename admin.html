@@ -973,6 +973,7 @@
                     <th>Name</th>
                     <th>Service</th>
                     <th>Date</th>
+                    <th>Time</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -1061,6 +1062,7 @@
                   <th>Name</th>
                   <th>Service</th>
                   <th>Date</th>
+                  <th>Time</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Status</th>
@@ -1208,13 +1210,27 @@
           <select id="bookingService"></select>
         </div>
         <div class="field">
-          <label for="bookingDate">Date</label>
-          <input id="bookingDate" type="date" />
-        </div>
-        <div class="field">
-          <label for="bookingEmail">Email</label>
-          <input id="bookingEmail" type="email" />
-        </div>
+  <label for="bookingDate">Date</label>
+  <input id="bookingDate" type="date" />
+    </div>
+    <div class="field">
+      <label for="bookingTime">Time</label>
+      <select id="bookingTime">
+        <option value="">-- Select Time --</option>
+        <option>8:00 AM</option>
+        <option>9:00 AM</option>
+        <option>10:00 AM</option>
+        <option>11:00 AM</option>
+        <option>1:00 PM</option>
+        <option>2:00 PM</option>
+        <option>3:00 PM</option>
+        <option>4:00 PM</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="bookingEmail">Email</label>
+      <input id="bookingEmail" type="email" />
+    </div>
         <div class="field">
           <label for="bookingPhone">Phone</label>
           <input id="bookingPhone" type="text" />
@@ -1397,7 +1413,7 @@
       const search = document.getElementById("filterSearch").value.trim().toLowerCase();
 
       return bookings.filter(item => {
-        const haystack = [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase();
+        const haystack = [item.refCode, item.fullname, item.email, item.phone, item.time].join(" ").toLowerCase();
         return (!service || item.service === service) &&
                (!status || item.status === status) &&
                (!date || item.date === date) &&
@@ -1457,13 +1473,14 @@
           <td>${item.fullname}</td>
           <td>${item.service}</td>
           <td>${formatDate(item.date)}</td>
+          <td>${item.time || "—"}</td>
           <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
         `;
         tbody.appendChild(tr);
       });
 
       if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="5">No booking records match the selected filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6">No booking records match the selected filters.</td></tr>`;
       }
     }
 
@@ -1475,25 +1492,26 @@
       filtered.forEach(item => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${item.refCode}</td>
-          <td>${item.fullname}</td>
-          <td>${item.service}</td>
-          <td>${formatDate(item.date)}</td>
-          <td>${item.email || "—"}</td>
-          <td>${item.phone || "—"}</td>
-          <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
-          <td>
-            <div class="row-actions">
-              <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
-              <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
-            </div>
-          </td>
-        `;
+            <td>${item.refCode}</td>
+            <td>${item.fullname}</td>
+            <td>${item.service}</td>
+            <td>${formatDate(item.date)}</td>
+            <td>${item.time || "—"}</td>
+            <td>${item.email || "—"}</td>
+            <td>${item.phone || "—"}</td>
+            <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+            <td>
+              <div class="row-actions">
+                <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
+                <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
+              </div>
+            </td>
+          `;
         tbody.appendChild(tr);
       });
 
       if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="8">No bookings match the current filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9">No bookings match the current filters.</td></tr>`;
       }
     }
 
@@ -1606,8 +1624,7 @@
       const q = document.getElementById("quickSearch").value.trim().toLowerCase();
       if (!q) return bookings;
       return bookings.filter(item =>
-        [item.refCode, item.fullname, item.email, item.phone].join(" ").toLowerCase().includes(q)
-      );
+      const haystack = [item.refCode, item.fullname, item.email, item.phone, item.time].join(" ").toLowerCase();
     }
 
     function switchSection(section) {
@@ -1639,8 +1656,10 @@
       document.getElementById("bookingEmail").value = "";
       document.getElementById("bookingPhone").value = "";
       document.getElementById("bookingDate").value = "";
+      document.getElementById("bookingTime").value = "";
       document.getElementById("bookingStatus").value = "Confirmed";
       document.getElementById("bookingService").selectedIndex = 0;
+    }
     }
 
     function resetSlotForm() {
@@ -1752,12 +1771,13 @@
         fullname: document.getElementById("bookingName").value.trim().toUpperCase(),
         service: document.getElementById("bookingService").value,
         date: document.getElementById("bookingDate").value,
+        time: document.getElementById("bookingTime").value,
         email: document.getElementById("bookingEmail").value.trim(),
         phone: document.getElementById("bookingPhone").value.trim(),
         status: document.getElementById("bookingStatus").value
       };
 
-      if (!payload.fullname || !payload.service || !payload.date) {
+      if (!payload.fullname || !payload.service || !payload.date || !payload.time) {
         showNotice("Please complete the required booking fields.", "error");
         return;
       }
@@ -1812,12 +1832,12 @@
       const item = bookings.find(b => b.refCode === refCode);
       if (!item) return;
       editingBookingRef = item.refCode;
-      document.getElementById("bookingModalTitle").textContent = "Edit Booking";
       document.getElementById("bookingRef").value = item.refCode;
       document.getElementById("bookingName").value = item.fullname;
       document.getElementById("bookingEmail").value = item.email || "";
       document.getElementById("bookingPhone").value = item.phone || "";
       document.getElementById("bookingDate").value = item.date;
+      document.getElementById("bookingTime").value = item.time || "";
       document.getElementById("bookingStatus").value = item.status || "Confirmed";
       document.getElementById("bookingService").value = item.service;
       openModal("bookingModal");
