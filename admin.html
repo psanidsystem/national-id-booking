@@ -1329,8 +1329,10 @@
 
   <script>
     const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
-    let accessKey = sessionStorage.getItem("nid_access_key") || "";
+    let username = sessionStorage.getItem("nid_username") || "";
+    let password = sessionStorage.getItem("nid_password") || "";
     let userRole = sessionStorage.getItem("nid_role") || "";
+    let displayName = sessionStorage.getItem("nid_name") || "";
 
     const services = [
       "National ID Registration",
@@ -1353,7 +1355,7 @@
     let editingSlotKey = null;
 
     function requireLogin() {
-      if (!accessKey || !userRole) {
+      if (!username || !password || !userRole) {
         window.location.href = "login.html";
         return false;
       }
@@ -1815,7 +1817,8 @@ function getPersonnelActionButtons(item) {
       async function apiRequest(payload) {
         const finalPayload = {
           ...payload,
-          accessKey: accessKey
+          username: username,
+          password: password
         };
       
         const res = await fetch(EXEC_URL, {
@@ -1955,11 +1958,13 @@ function getPersonnelActionButtons(item) {
       }
     }
 
-      function logout() {
-        sessionStorage.removeItem("nid_access_key");
-        sessionStorage.removeItem("nid_role");
-        window.location.href = "login.html";
-      }
+        function logout() {
+          sessionStorage.removeItem("nid_username");
+          sessionStorage.removeItem("nid_password");
+          sessionStorage.removeItem("nid_role");
+          sessionStorage.removeItem("nid_name");
+          window.location.href = "login.html";
+        }
 
       window.editBooking = function(refCode) {
         const item = bookings.find(b => b.refCode === refCode);
