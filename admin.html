@@ -1326,7 +1326,8 @@
 
   <script>
     const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
-    let adminSecret = sessionStorage.getItem("nid_admin_secret") || "";
+    let accessKey = sessionStorage.getItem("nid_access_key") || "";
+    let userRole = sessionStorage.getItem("nid_role") || "";
 
     const services = [
       "National ID Registration",
@@ -1726,7 +1727,7 @@
     async function apiRequest(payload) {
       const finalPayload = {
         ...payload,
-        adminSecret: adminSecret
+        accessKey: accessKey
       };
 
       const res = await fetch(EXEC_URL, {
@@ -1932,7 +1933,11 @@
       if (dashboardDateInput) {
         dashboardDateInput.value = new Date().toISOString().slice(0, 10);
       }
-
+      if (userRole === "personnel") {
+        document.querySelector('.nav-btn[data-section="slots"]')?.remove();
+        document.querySelector('.nav-btn[data-section="availability"]')?.remove();
+        document.querySelector('.nav-btn[data-section="settings"]')?.remove();
+      }
       document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
 
       document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
