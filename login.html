@@ -213,6 +213,14 @@
       login();
     }
   });
+sessionStorage.setItem("nid_access_key", secret);
+sessionStorage.setItem("nid_role", data.role);
+    if (data.role === "admin") {
+  window.location.href = "admin.html";
+} else if (data.role === "personnel") {
+  window.location.href = "admin.html";
+}
+    
 </script>
 </body>
 </html>
