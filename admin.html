@@ -1142,72 +1142,69 @@
       </section>
 
       <section id="settingsSection" class="hidden">
-        <div class="settings-grid">
-          <div class="card settings-card">
-            <div class="panel-title">
-              <h3>System Settings</h3>
-            </div>
-            <p class="settings-text">
-              This admin dashboard is connected to the personnel login page and Google Apps Script backend.
-            </p>
+  <div class="settings-grid">
+    <div class="card settings-card">
+      <div class="panel-title">
+        <h3>System Settings</h3>
+      </div>
 
-            <div class="settings-info-list">
-              <div class="settings-info-item">
-                <strong>Access Control</strong>
-                <span>Authorized personnel only</span>
-              </div>
+      <p class="settings-text">
+        This admin dashboard is connected to the personnel login page and Google Apps Script backend.
+      </p>
 
-              <div class="settings-info-item">
-                <strong>Data Source</strong>
-                <span>Google Sheets Appointment Database</span>
-              </div>
-
-              <div class="settings-info-item">
-                <strong>Dashboard Mode</strong>
-                <span>Live Admin View</span>
-              </div>
-            </div>
-            <div class="settings-info-list">
-            <div class="settings-info-item">
-                <strong>Saturday Booking</strong>
-                <span>
-                  <input type="checkbox" id="allowSaturdayToggle" />
-                  Allow Saturday
-                </span>
-              </div>
-            
-              <div class="settings-info-item">
-                <strong>Sunday Booking</strong>
-                <span>
-                  <input type="checkbox" id="allowSundayToggle" />
-                  Allow Sunday
-                </span>
-              </div>
-            </div>
-            
-            <div class="settings-actions" style="display:grid; gap:10px;">
-              <button class="btn btn-primary" id="saveWeekendSettingsBtn">Save Weekend Settings</button>
-              <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
-            </div>
-            <div class="settings-actions">
-              <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
-            </div>
-          </div>
-
-          <div class="card settings-card">
-            <div class="panel-title">
-              <h3>Admin Notes</h3>
-            </div>
-            <div class="empty-state">
-              <div class="empty-icon">🛡️</div>
-              <div>
-                <strong>System Ready</strong>
-                <p>Use this dashboard to manage bookings, adjust slot rules, and monitor daily service demand.</p>
-              </div>
-            </div>
-          </div>
+      <div class="settings-info-list">
+        <div class="settings-info-item">
+          <strong>Access Control</strong>
+          <span>Authorized personnel only</span>
         </div>
-      </section>
+
+        <div class="settings-info-item">
+          <strong>Data Source</strong>
+          <span>Google Sheets Appointment Database</span>
+        </div>
+
+        <div class="settings-info-item">
+          <strong>Dashboard Mode</strong>
+          <span>Live Admin View</span>
+        </div>
+
+        <div class="settings-info-item">
+          <strong>Weekend Booking</strong>
+          <span id="weekendBookingLabel">Loading...</span>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:16px;">
+        <label for="weekendBookingToggle">Saturday & Sunday Booking</label>
+        <select id="weekendBookingToggle">
+          <option value="false">OFF</option>
+          <option value="true">ON</option>
+        </select>
+      </div>
+
+      <div class="row-actions" style="margin-bottom:16px;">
+        <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Weekend Setting</button>
+      </div>
+
+      <div class="settings-actions">
+        <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+
+    <div class="card settings-card">
+      <div class="panel-title">
+        <h3>Admin Notes</h3>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">🛡️</div>
+        <div>
+          <strong>System Ready</strong>
+          <p>Use this dashboard to manage bookings, adjust slot rules, monitor daily service demand, and control weekend booking access.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
       <section id="usersSection" class="hidden">
   <div class="card">
     <div class="panel-title">
@@ -1429,10 +1426,7 @@
     let password = sessionStorage.getItem("nid_password") || "";
     let userRole = sessionStorage.getItem("nid_role") || "";
     let displayName = sessionStorage.getItem("nid_name") || "";
-    let weekendSettings = {
-    allowSaturday: true,
-    allowSunday: true
-    };
+    let weekendSettings = { autoCloseWeekends: false };
 
     const services = [
       "National ID Registration",
@@ -1673,6 +1667,41 @@ function canEditBookings() {
     }
 
     showNotice(`Status updated to ${newStatus}.`);
+    
+    function renderWeekendSettings() {
+  const toggle = document.getElementById("weekendBookingToggle");
+  const label = document.getElementById("weekendBookingLabel");
+
+  if (!toggle || !label) return;
+
+  const isOpen = !weekendSettings.autoCloseWeekends;
+  toggle.value = isOpen ? "true" : "false";
+  label.textContent = isOpen ? "Enabled" : "Disabled";
+}
+
+async function saveWeekendSetting() {
+  const toggle = document.getElementById("weekendBookingToggle");
+  if (!toggle) return;
+
+  const allowWeekendBooking = toggle.value === "true";
+
+  try {
+    const result = await apiRequest({
+      action: "adminSaveSystemSettings",
+      autoCloseWeekends: !allowWeekendBooking
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to save weekend setting.");
+    }
+
+    showNotice("Weekend booking setting updated.");
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+}
+    
     await loadAdminData();
   } catch (err) {
     showNotice(err.message, "error");
@@ -1956,25 +1985,23 @@ async function loadAdminData() {
     slotRules = data.slotRules || [];
     availabilityRules = data.availabilityRules || [];
     users = data.users || [];
-    weekendSettings = data.weekendSettings || {
-      allowSaturday: true,
-      allowSunday: true
-    };
+    weekendSettings = data.systemSettings || { autoCloseWeekends: false };
 
-    const satToggle = document.getElementById("allowSaturdayToggle");
-    const sunToggle = document.getElementById("allowSundayToggle");
-
-    if (satToggle) satToggle.checked = !!weekendSettings.allowSaturday;
-    if (sunToggle) sunToggle.checked = !!weekendSettings.allowSunday;
-
+    renderAll();
+    renderWeekendSettings();
     showNotice("Admin data loaded successfully.");
   } catch (err) {
     bookings = [];
     slotRules = [];
     availabilityRules = [];
     users = [];
+    weekendSettings = { autoCloseWeekends: false };
+
+    renderAll();
+    renderWeekendSettings();
     showNotice(err.message, "error");
   }
+}
 
   renderAll();
 }
