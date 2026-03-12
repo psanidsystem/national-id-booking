@@ -897,6 +897,11 @@
           <span>Availability</span>
         </button>
 
+        <button class="nav-btn" data-section="users">
+          <span class="nav-icon">👥</span>
+          <span>Users</span>
+        </button>
+
         <button class="nav-btn" data-section="settings">
           <span class="nav-icon">⚙️</span>
           <span>Settings</span>
@@ -1182,8 +1187,78 @@
           </div>
         </div>
       </section>
+      <section id="usersSection" class="hidden">
+  <div class="card">
+    <div class="panel-title">
+      <h3>User Management</h3>
+      <button class="btn btn-primary" id="openUserModalBtn">New User</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
     </main>
   </div>
+
+  <div class="modal" id="userModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="userModalTitle">Create User</h3>
+      <button class="btn btn-secondary" data-close="userModal">Close</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="field full">
+        <label for="userFullName">Full Name</label>
+        <input id="userFullName" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="userUsername">Username</label>
+        <input id="userUsername" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="userPassword">Password</label>
+        <input id="userPassword" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="userRole">Role</label>
+        <select id="userRole">
+          <option value="personnel">personnel</option>
+          <option value="admin">admin</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="userStatus">Status</label>
+        <select id="userStatus">
+          <option value="active">active</option>
+          <option value="inactive">inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close="userModal">Cancel</button>
+      <button class="btn btn-primary" id="saveUserBtn">Save User</button>
+    </div>
+  </div>
+</div>
 
   <div class="modal" id="bookingModal">
     <div class="modal-card">
@@ -1348,11 +1423,22 @@
       "Retrieval of TRN / Other Concern": 50
     };
 
+    const map = {
+  dashboard: ["dashboardSection", "Dashboard Overview"],
+  bookings: ["bookingsSection", "Booking Management"],
+  slots: ["slotsSection", "Slot Management"],
+  availability: ["availabilitySection", "Availability Management"],
+  users: ["usersSection", "User Management"],
+  settings: ["settingsSection", "System Settings"]
+};
+
     let bookings = [];
     let slotRules = [];
     let availabilityRules = [];
     let editingBookingRef = null;
     let editingSlotKey = null;
+    let users = [];
+    let editingUsername = null;
 
     function requireLogin() {
       if (!username || !password || !userRole) {
@@ -1742,13 +1828,14 @@ function getPersonnelActionButtons(item) {
       }
     }
 
-    function renderAll() {
-      renderMetrics();
-      renderRecentBookings(filterQuickSearch());
-      renderBookingsTable();
-      renderSlotLists();
-      renderAvailabilityTable();
-    }
+      function renderAll() {
+        renderMetrics();
+        renderRecentBookings(filterQuickSearch());
+        renderBookingsTable();
+        renderSlotLists();
+        renderAvailabilityTable();
+        renderUsersTable();
+      }
 
     function filterQuickSearch() {
       const q = document.getElementById("quickSearch").value.trim().toLowerCase();
@@ -1763,24 +1850,18 @@ function getPersonnelActionButtons(item) {
     }
 
     function switchSection(section) {
-      const map = {
-        dashboard: ["dashboardSection", "Dashboard Overview"],
-        bookings: ["bookingsSection", "Booking Management"],
-        slots: ["slotsSection", "Slot Management"],
-        availability: ["availabilitySection", "Availability Management"],
-        settings: ["settingsSection", "System Settings"]
-      };
-
       Object.values(map).forEach(([id]) => {
         const el = document.getElementById(id);
         if (el) el.classList.add("hidden");
       });
-
+    
+      if (!map[section]) return;
+    
       document.getElementById(map[section][0]).classList.remove("hidden");
       document.getElementById("sectionTitle").textContent = map[section][1];
-
+    
       document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-      document.querySelector(`.nav-btn[data-section="${section}"]`).classList.add("active");
+      document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
     }
 
     function resetBookingForm() {
@@ -1829,28 +1910,105 @@ function getPersonnelActionButtons(item) {
         return res.json();
       }
 
-    async function loadAdminData() {
-      try {
-        const data = await apiRequest({ action: "adminList" });
-
-        if (data.status === "error") {
-          throw new Error(data.message || "Unable to load admin data.");
+      async function loadAdminData() {
+        try {
+          const data = await apiRequest({ action: "adminList" });
+      
+          if (data.status === "error") {
+            throw new Error(data.message || "Unable to load admin data.");
+          }
+      
+          bookings = data.bookings || [];
+          slotRules = data.slotRules || [];
+          availabilityRules = data.availabilityRules || [];
+          users = data.users || [];
+          showNotice("Admin data loaded successfully.");
+        } catch (err) {
+          bookings = [];
+          slotRules = [];
+          availabilityRules = [];
+          users = [];
+          showNotice(err.message, "error");
         }
-
-        bookings = data.bookings || [];
-        slotRules = data.slotRules || [];
-        availabilityRules = data.availabilityRules || [];
-        showNotice("Admin data loaded successfully.");
-      } catch (err) {
-        bookings = [];
-        slotRules = [];
-        availabilityRules = [];
-        showNotice(err.message, "error");
+      
+        renderAll();
       }
 
-      renderAll();
+    function resetUserForm() {
+  editingUsername = null;
+  document.getElementById("userModalTitle").textContent = "Create User";
+  document.getElementById("userFullName").value = "";
+  document.getElementById("userUsername").value = "";
+  document.getElementById("userPassword").value = "";
+  document.getElementById("userRole").value = "personnel";
+  document.getElementById("userStatus").value = "active";
+}
+    async function saveUser() {
+  const payload = {
+    action: editingUsername ? "adminUpdateUser" : "adminCreateUser",
+    originalUsername: editingUsername,
+    fullName: document.getElementById("userFullName").value.trim(),
+    username: document.getElementById("userUsername").value.trim(),
+    password: document.getElementById("userPassword").value.trim(),
+    role: document.getElementById("userRole").value,
+    status: document.getElementById("userStatus").value
+  };
+
+  if (!payload.fullName || !payload.username || !payload.password || !payload.role) {
+    showNotice("Please complete all user fields.", "error");
+    return;
+  }
+
+  try {
+    const result = await apiRequest(payload);
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to save user.");
     }
 
+    showNotice(editingUsername ? "User updated." : "User created.");
+    closeModal("userModal");
+    resetUserForm();
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+}
+    window.editUser = function(username) {
+  const user = users.find(u => u.username === username);
+  if (!user) return;
+
+  editingUsername = user.username;
+  document.getElementById("userModalTitle").textContent = "Edit User";
+  document.getElementById("userFullName").value = user.fullName || "";
+  document.getElementById("userUsername").value = user.username || "";
+  document.getElementById("userPassword").value = user.password || "";
+  document.getElementById("userRole").value = user.role || "personnel";
+  document.getElementById("userStatus").value = user.status || "active";
+
+  openModal("userModal");
+};
+
+window.deleteUser = async function(username) {
+  if (!confirm(`Delete user ${username}?`)) return;
+
+  try {
+    const result = await apiRequest({
+      action: "adminDeleteUser",
+      username: username
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to delete user.");
+    }
+
+    showNotice("User deleted.");
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+};
+
+    
     async function saveAvailability() {
       const payload = {
         action: "adminSaveAvailability",
@@ -2020,18 +2178,19 @@ function getPersonnelActionButtons(item) {
       }
     };
 
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
   if (!requireLogin()) return;
 
   if (userRole === "personnel") {
     document.querySelector('.nav-btn[data-section="slots"]')?.remove();
     document.querySelector('.nav-btn[data-section="availability"]')?.remove();
+    document.querySelector('.nav-btn[data-section="users"]')?.remove();
     document.querySelector('.nav-btn[data-section="settings"]')?.remove();
-
+  
     document.getElementById("openNewBookingBtn")?.remove();
     document.getElementById("openBookingModalBtn")?.remove();
     document.getElementById("openSlotModalBtn")?.remove();
-
+  
     switchSection("bookings");
   }
 
@@ -2107,6 +2266,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+    function renderUsersTable() {
+  const tbody = document.getElementById("usersTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  users.forEach(user => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${user.fullName || "—"}</td>
+      <td>${user.username}</td>
+      <td>${user.role}</td>
+      <td>${user.status}</td>
+      <td>
+        <div class="row-actions">
+          <button class="mini-btn mini-edit" onclick="editUser('${user.username}')">Edit</button>
+          <button class="mini-btn mini-delete" onclick="deleteUser('${user.username}')">Delete</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (!tbody.innerHTML) {
+    tbody.innerHTML = `<tr><td colspan="5">No users found.</td></tr>`;
+  }
+}
   </script>
 </body>
 </html>
