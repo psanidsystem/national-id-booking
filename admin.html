@@ -1034,10 +1034,13 @@
             <div class="field">
               <label for="filterStatus">Status</label>
               <select id="filterStatus">
-                <option value="">All statuses</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancelled">Cancelled</option>
+              <option value="">All statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Arrived">Arrived</option>
+              <option value="Assisted">Assisted</option>
+              <option value="Completed">Completed</option>
+              <option value="No Show">No Show</option>
+              <option value="Cancelled">Cancelled</option>
               </select>
             </div>
             <div class="field">
@@ -1440,11 +1443,15 @@
 
   return str;
 }
-    function badgeClass(status) {
-      if (status === "Cancelled") return "badge badge-cancelled";
-      if (status === "Pending") return "badge badge-pending";
-      return "badge badge-confirmed";
-    }
+function badgeClass(status) {
+  if (status === "Cancelled") return "badge badge-cancelled";
+  if (status === "No Show") return "badge badge-cancelled";
+  if (status === "Pending") return "badge badge-pending";
+  if (status === "Arrived") return "badge badge-pending";
+  if (status === "Assisted") return "badge badge-pending";
+  if (status === "Completed") return "badge badge-confirmed";
+  return "badge badge-confirmed";
+}
 
     function applyBookingFilters() {
       const service = document.getElementById("filterService").value;
@@ -1523,37 +1530,118 @@
         tbody.innerHTML = `<tr><td colspan="6">No booking records match the selected filters.</td></tr>`;
       }
     }
+function canEditBookings() {
+  return userRole === "admin";
+}
 
-    function renderBookingsTable() {
-      const tbody = document.getElementById("bookingsTableBody");
-      const filtered = applyBookingFilters();
-      tbody.innerHTML = "";
+    window.updateBookingStatus = async function(refCode, newStatus) {
+  const item = bookings.find(b => b.refCode === refCode);
+  if (!item) {
+    showNotice("Booking not found.", "error");
+    return;
+  }
 
-      filtered.forEach(item => {
-        const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.refCode}</td>
-        <td>${item.fullname}</td>
-        <td>${item.service}</td>
-        <td>${formatDate(item.date)}</td>
-        <td>${formatTime(item.time)}</td>
-        <td>${item.email || "—"}</td>
-        <td>${item.phone || "—"}</td>
-        <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
-        <td>
-          <div class="row-actions">
-            <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
-            <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
-          </div>
-        </td>
-      `;
-        tbody.appendChild(tr);
-      });
+  try {
+    const result = await apiRequest({
+      action: "adminUpdateBooking",
+      originalRefCode: item.refCode,
+      refCode: item.refCode,
+      fullname: item.fullname,
+      service: item.service,
+      date: item.date,
+      time: item.time,
+      email: item.email || "",
+      phone: item.phone || "",
+      status: newStatus
+    });
 
-      if (!tbody.innerHTML) {
-        tbody.innerHTML = `<tr><td colspan="9">No bookings match the current filters.</td></tr>`;
-      }
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to update booking status.");
     }
+
+    showNotice(`Status updated to ${newStatus}.`);
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+};
+    
+function getPersonnelActionButtons(item) {
+  const status = (item.status || "").trim();
+
+  if (status === "Completed" || status === "Cancelled" || status === "No Show") {
+    return `<span class="${badgeClass(status)}">${status}</span>`;
+  }
+
+  if (status === "Pending") {
+    return `
+      <div class="row-actions">
+        <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Arrived')">Arrived</button>
+        <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+      </div>
+    `;
+  }
+
+  if (status === "Arrived") {
+    return `
+      <div class="row-actions">
+        <button class="mini-btn mini-edit" onclick="updateBookingStatus('${item.refCode}', 'Assisted')">Assist</button>
+        <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+      </div>
+    `;
+  }
+
+  if (status === "Assisted") {
+    return `
+      <div class="row-actions">
+        <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Completed')">Complete</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="row-actions">
+      <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Arrived')">Arrived</button>
+      <button class="mini-btn mini-edit" onclick="updateBookingStatus('${item.refCode}', 'Assisted')">Assist</button>
+      <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Completed')">Complete</button>
+      <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+    </div>
+  `;
+}
+    function renderBookingsTable() {
+  const tbody = document.getElementById("bookingsTableBody");
+  const filtered = applyBookingFilters();
+  tbody.innerHTML = "";
+
+  filtered.forEach(item => {
+    const actionHtml = canEditBookings()
+      ? `
+        <div class="row-actions">
+          <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
+          <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
+        </div>
+      `
+      : getPersonnelActionButtons(item);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.refCode}</td>
+      <td>${item.fullname}</td>
+      <td>${item.service}</td>
+      <td>${formatDate(item.date)}</td>
+      <td>${formatTime(item.time)}</td>
+      <td>${item.email || "—"}</td>
+      <td>${item.phone || "—"}</td>
+      <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+      <td>${actionHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (!tbody.innerHTML) {
+    tbody.innerHTML = `<tr><td colspan="9">No bookings match the current filters.</td></tr>`;
+  }
+}
 
     function renderSlotLists() {
       const dashboardList = document.getElementById("dashboardSlotList");
@@ -1927,87 +2015,93 @@
       }
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      if (!requireLogin()) return;
+document.addEventListener("DOMContentLoaded", () => {
+  if (!requireLogin()) return;
 
-      
+  if (userRole === "personnel") {
+    document.querySelector('.nav-btn[data-section="slots"]')?.remove();
+    document.querySelector('.nav-btn[data-section="availability"]')?.remove();
+    document.querySelector('.nav-btn[data-section="settings"]')?.remove();
 
-      const dashboardDateInput = document.getElementById("dashboardDate");
-      if (dashboardDateInput) {
-        dashboardDateInput.value = new Date().toISOString().slice(0, 10);
-      }
-      if (userRole === "personnel") {
-        document.querySelector('.nav-btn[data-section="slots"]')?.remove();
-        document.querySelector('.nav-btn[data-section="availability"]')?.remove();
-        document.querySelector('.nav-btn[data-section="settings"]')?.remove();
-      }
-      document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
+    document.getElementById("openNewBookingBtn")?.remove();
+    document.getElementById("openBookingModalBtn")?.remove();
+    document.getElementById("openSlotModalBtn")?.remove();
 
-      document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
-        resetAvailabilityForm();
-        openModal("availabilityModal");
-      });
+    switchSection("bookings");
+  }
 
-      document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
+  const dashboardDateInput = document.getElementById("dashboardDate");
+  if (dashboardDateInput) {
+    dashboardDateInput.value = new Date().toISOString().slice(0, 10);
+  }
 
-      fillServiceOptions();
-      renderAll();
-      loadAdminData();
+  document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
 
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", () => switchSection(btn.dataset.section));
-      });
+  document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
+    resetAvailabilityForm();
+    openModal("availabilityModal");
+  });
 
-      document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
+  document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
 
-      document.getElementById("openNewBookingBtn").addEventListener("click", () => {
-        resetBookingForm();
-        openModal("bookingModal");
-      });
+  fillServiceOptions();
+  renderAll();
+  loadAdminData();
 
-      document.getElementById("openBookingModalBtn").addEventListener("click", () => {
-        resetBookingForm();
-        openModal("bookingModal");
-      });
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchSection(btn.dataset.section));
+  });
 
-      document.getElementById("openSlotModalBtn").addEventListener("click", () => {
-        resetSlotForm();
-        openModal("slotModal");
-      });
+  document.getElementById("refreshBtn")?.addEventListener("click", loadAdminData);
 
-      document.getElementById("saveBookingBtn").addEventListener("click", saveBooking);
-      document.getElementById("saveSlotBtn").addEventListener("click", () => saveSlotRule(false));
-      document.getElementById("saveQuickSlotBtn").addEventListener("click", () => saveSlotRule(true));
-      document.getElementById("logoutBtn").addEventListener("click", logout);
+  document.getElementById("openNewBookingBtn")?.addEventListener("click", () => {
+    resetBookingForm();
+    openModal("bookingModal");
+  });
+  
+  document.getElementById("openBookingModalBtn")?.addEventListener("click", () => {
+    resetBookingForm();
+    openModal("bookingModal");
+  });
+  
+  document.getElementById("openSlotModalBtn")?.addEventListener("click", () => {
+    resetSlotForm();
+    openModal("slotModal");
+  });
 
-      document.getElementById("quickSearch").addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
+  document.getElementById("saveBookingBtn")?.addEventListener("click", saveBooking);
+  document.getElementById("saveSlotBtn")?.addEventListener("click", () => saveSlotRule(false));
+  document.getElementById("saveQuickSlotBtn")?.addEventListener("click", () => saveSlotRule(true));
+  document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
-      ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
-        document.getElementById(id).addEventListener("input", renderBookingsTable);
-      });
+  document.getElementById("quickSearch")?.addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
 
-      document.getElementById("clearFiltersBtn").addEventListener("click", () => {
-        document.getElementById("filterService").value = "";
-        document.getElementById("filterStatus").value = "";
-        document.getElementById("filterDate").value = "";
-        document.getElementById("filterSearch").value = "";
-        renderBookingsTable();
-      });
+  ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
+    document.getElementById(id)?.addEventListener("input", renderBookingsTable);
+  });
 
-      document.querySelectorAll("[data-close]").forEach(btn => {
-        btn.addEventListener("click", () => closeModal(btn.dataset.close));
-      });
+  document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
+    document.getElementById("filterService").value = "";
+    document.getElementById("filterStatus").value = "";
+    document.getElementById("filterDate").value = "";
+    document.getElementById("filterSearch").value = "";
+    renderBookingsTable();
+  });
 
-      document.getElementById("bookingName").addEventListener("input", e => {
-        e.target.value = e.target.value.toUpperCase().replace(/\s+/g, " ").replace(/^\s+/, "");
-      });
+  document.querySelectorAll("[data-close]").forEach(btn => {
+    btn.addEventListener("click", () => closeModal(btn.dataset.close));
+  });
 
-      window.addEventListener("click", e => {
-        document.querySelectorAll(".modal").forEach(modal => {
-          if (e.target === modal) closeModal(modal.id);
-        });
-      });
+  document.getElementById("bookingName")?.addEventListener("input", e => {
+    e.target.value = e.target.value.toUpperCase().replace(/\s+/g, " ").replace(/^\s+/, "");
+  });
+
+  window.addEventListener("click", e => {
+    document.querySelectorAll(".modal").forEach(modal => {
+      if (e.target === modal) closeModal(modal.id);
     });
+  });
+});
   </script>
 </body>
 </html>
