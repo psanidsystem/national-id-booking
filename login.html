@@ -166,11 +166,11 @@
   <script>
   const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
-  const savedUsername = sessionStorage.getItem("nid_username");
-  const savedPassword = sessionStorage.getItem("nid_password");
-  const savedRole = sessionStorage.getItem("nid_role");
-
-  if (savedUsername && savedPassword && savedRole) {
+  if (
+    sessionStorage.getItem("nid_username") &&
+    sessionStorage.getItem("nid_password") &&
+    sessionStorage.getItem("nid_role")
+  ) {
     window.location.href = "admin.html";
   }
 
@@ -181,11 +181,11 @@
   }
 
   async function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const enteredUsername = document.getElementById("username").value.trim();
+    const enteredPassword = document.getElementById("password").value.trim();
 
-    if (!username || !password) {
-      showNotice("Please enter your username and password.");
+    if (!enteredUsername || !enteredPassword) {
+      showNotice("Please enter username and password.");
       return;
     }
 
@@ -201,20 +201,21 @@
 
       const data = await res.json();
 
-      if (data.status === "error") {
+      if (data.status !== "success") {
         throw new Error(data.message || "Login failed.");
       }
 
-      sessionStorage.setItem("nid_username", username);
-      sessionStorage.setItem("nid_password", password);
-      sessionStorage.setItem("nid_role", data.role);
+      sessionStorage.setItem("nid_username", data.username || enteredUsername);
+      sessionStorage.setItem("nid_password", enteredPassword);
+      sessionStorage.setItem("nid_role", data.role || "");
       sessionStorage.setItem("nid_name", data.name || "");
 
-      showNotice(`Login successful as ${data.role}. Redirecting...`, "success");
+      showNotice("Login successful. Redirecting...", "success");
 
       setTimeout(() => {
         window.location.href = "admin.html";
       }, 700);
+
     } catch (err) {
       showNotice(err.message || "Unable to log in.");
     }
