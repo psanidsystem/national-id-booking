@@ -1849,20 +1849,29 @@ function getPersonnelActionButtons(item) {
       });
     }
 
-    function switchSection(section) {
-      Object.values(map).forEach(([id]) => {
-        const el = document.getElementById(id);
-        if (el) el.classList.add("hidden");
-      });
-    
-      if (!map[section]) return;
-    
-      document.getElementById(map[section][0]).classList.remove("hidden");
-      document.getElementById("sectionTitle").textContent = map[section][1];
-    
-      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-      document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
-    }
+        function switchSection(section) {
+          const map = {
+            dashboard: ["dashboardSection", "Dashboard Overview"],
+            bookings: ["bookingsSection", "Booking Management"],
+            slots: ["slotsSection", "Slot Management"],
+            availability: ["availabilitySection", "Availability Management"],
+            users: ["usersSection", "User Management"],
+            settings: ["settingsSection", "System Settings"]
+          };
+        
+          Object.values(map).forEach(([id]) => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add("hidden");
+          });
+        
+          if (map[section]) {
+            document.getElementById(map[section][0]).classList.remove("hidden");
+            document.getElementById("sectionTitle").textContent = map[section][1];
+          }
+        
+          document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+          document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
+        }
 
     function resetBookingForm() {
       editingBookingRef = null;
@@ -1922,6 +1931,7 @@ function getPersonnelActionButtons(item) {
           slotRules = data.slotRules || [];
           availabilityRules = data.availabilityRules || [];
           users = data.users || [];
+      
           showNotice("Admin data loaded successfully.");
         } catch (err) {
           bookings = [];
@@ -2178,7 +2188,112 @@ window.deleteUser = async function(username) {
       }
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function resetUserForm() {
+  editingUsername = null;
+  document.getElementById("userModalTitle").textContent = "Create User";
+  document.getElementById("userFullName").value = "";
+  document.getElementById("userUsername").value = "";
+  document.getElementById("userPassword").value = "";
+  document.getElementById("userRole").value = "personnel";
+  document.getElementById("userStatus").value = "active";
+}
+
+function renderUsersTable() {
+  const tbody = document.getElementById("usersTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  users.forEach(user => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${user.fullName || "—"}</td>
+      <td>${user.username || "—"}</td>
+      <td>${user.role || "—"}</td>
+      <td>${user.status || "—"}</td>
+      <td>
+        <div class="row-actions">
+          <button class="mini-btn mini-edit" onclick="editUser('${user.username}')">Edit</button>
+          <button class="mini-btn mini-delete" onclick="deleteUser('${user.username}')">Delete</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (!tbody.innerHTML) {
+    tbody.innerHTML = `<tr><td colspan="5">No users found.</td></tr>`;
+  }
+}
+
+async function saveUser() {
+  const payload = {
+    action: editingUsername ? "adminUpdateUser" : "adminCreateUser",
+    originalUsername: editingUsername,
+    fullName: document.getElementById("userFullName").value.trim(),
+    username: document.getElementById("userUsername").value.trim(),
+    password: document.getElementById("userPassword").value.trim(),
+    role: document.getElementById("userRole").value,
+    status: document.getElementById("userStatus").value
+  };
+
+  if (!payload.fullName || !payload.username || !payload.password || !payload.role) {
+    showNotice("Please complete all user fields.", "error");
+    return;
+  }
+
+  try {
+    const result = await apiRequest(payload);
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to save user.");
+    }
+
+    showNotice(editingUsername ? "User updated." : "User created.");
+    closeModal("userModal");
+    resetUserForm();
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+}
+
+window.editUser = function(username) {
+  const user = users.find(u => u.username === username);
+  if (!user) return;
+
+  editingUsername = user.username;
+  document.getElementById("userModalTitle").textContent = "Edit User";
+  document.getElementById("userFullName").value = user.fullName || "";
+  document.getElementById("userUsername").value = user.username || "";
+  document.getElementById("userPassword").value = user.password || "";
+  document.getElementById("userRole").value = user.role || "personnel";
+  document.getElementById("userStatus").value = user.status || "active";
+
+  openModal("userModal");
+};
+
+window.deleteUser = async function(username) {
+  if (!confirm(`Delete user ${username}?`)) return;
+
+  try {
+    const result = await apiRequest({
+      action: "adminDeleteUser",
+      username: username
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to delete user.");
+    }
+
+    showNotice("User deleted.");
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
   if (!requireLogin()) return;
 
   if (userRole === "personnel") {
@@ -2186,11 +2301,11 @@ window.deleteUser = async function(username) {
     document.querySelector('.nav-btn[data-section="availability"]')?.remove();
     document.querySelector('.nav-btn[data-section="users"]')?.remove();
     document.querySelector('.nav-btn[data-section="settings"]')?.remove();
-  
+
     document.getElementById("openNewBookingBtn")?.remove();
     document.getElementById("openBookingModalBtn")?.remove();
     document.getElementById("openSlotModalBtn")?.remove();
-  
+
     switchSection("bookings");
   }
 
@@ -2198,15 +2313,6 @@ window.deleteUser = async function(username) {
   if (dashboardDateInput) {
     dashboardDateInput.value = new Date().toISOString().slice(0, 10);
   }
-
-  document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
-
-  document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
-    resetAvailabilityForm();
-    openModal("availabilityModal");
-  });
-
-  document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
 
   fillServiceOptions();
   renderAll();
@@ -2216,29 +2322,44 @@ window.deleteUser = async function(username) {
     btn.addEventListener("click", () => switchSection(btn.dataset.section));
   });
 
+  document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
   document.getElementById("refreshBtn")?.addEventListener("click", loadAdminData);
 
   document.getElementById("openNewBookingBtn")?.addEventListener("click", () => {
     resetBookingForm();
     openModal("bookingModal");
   });
-  
+
   document.getElementById("openBookingModalBtn")?.addEventListener("click", () => {
     resetBookingForm();
     openModal("bookingModal");
   });
-  
+
   document.getElementById("openSlotModalBtn")?.addEventListener("click", () => {
     resetSlotForm();
     openModal("slotModal");
   });
 
+  document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
+    resetAvailabilityForm();
+    openModal("availabilityModal");
+  });
+
+  document.getElementById("openUserModalBtn")?.addEventListener("click", () => {
+    resetUserForm();
+    openModal("userModal");
+  });
+
   document.getElementById("saveBookingBtn")?.addEventListener("click", saveBooking);
   document.getElementById("saveSlotBtn")?.addEventListener("click", () => saveSlotRule(false));
   document.getElementById("saveQuickSlotBtn")?.addEventListener("click", () => saveSlotRule(true));
+  document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
+  document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
   document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
-  document.getElementById("quickSearch")?.addEventListener("input", () => renderRecentBookings(filterQuickSearch()));
+  document.getElementById("quickSearch")?.addEventListener("input", () => {
+    renderRecentBookings(filterQuickSearch());
+  });
 
   ["filterService", "filterStatus", "filterDate", "filterSearch"].forEach(id => {
     document.getElementById(id)?.addEventListener("input", renderBookingsTable);
