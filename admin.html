@@ -1167,7 +1167,28 @@
                 <span>Live Admin View</span>
               </div>
             </div>
-
+            <div class="settings-info-list">
+            <div class="settings-info-item">
+                <strong>Saturday Booking</strong>
+                <span>
+                  <input type="checkbox" id="allowSaturdayToggle" />
+                  Allow Saturday
+                </span>
+              </div>
+            
+              <div class="settings-info-item">
+                <strong>Sunday Booking</strong>
+                <span>
+                  <input type="checkbox" id="allowSundayToggle" />
+                  Allow Sunday
+                </span>
+              </div>
+            </div>
+            
+            <div class="settings-actions" style="display:grid; gap:10px;">
+              <button class="btn btn-primary" id="saveWeekendSettingsBtn">Save Weekend Settings</button>
+              <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
+            </div>
             <div class="settings-actions">
               <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
             </div>
@@ -1408,6 +1429,10 @@
     let password = sessionStorage.getItem("nid_password") || "";
     let userRole = sessionStorage.getItem("nid_role") || "";
     let displayName = sessionStorage.getItem("nid_name") || "";
+    let weekendSettings = {
+    allowSaturday: true,
+    allowSunday: true
+    };
 
     const services = [
       "National ID Registration",
@@ -1919,31 +1944,62 @@ function getPersonnelActionButtons(item) {
         return res.json();
       }
 
-      async function loadAdminData() {
-        try {
-          const data = await apiRequest({ action: "adminList" });
-      
-          if (data.status === "error") {
-            throw new Error(data.message || "Unable to load admin data.");
-          }
-      
-          bookings = data.bookings || [];
-          slotRules = data.slotRules || [];
-          availabilityRules = data.availabilityRules || [];
-          users = data.users || [];
-      
-          showNotice("Admin data loaded successfully.");
-        } catch (err) {
-          bookings = [];
-          slotRules = [];
-          availabilityRules = [];
-          users = [];
-          showNotice(err.message, "error");
-        }
-      
-        renderAll();
-      }
+async function loadAdminData() {
+  try {
+    const data = await apiRequest({ action: "adminList" });
 
+    if (data.status === "error") {
+      throw new Error(data.message || "Unable to load admin data.");
+    }
+
+    bookings = data.bookings || [];
+    slotRules = data.slotRules || [];
+    availabilityRules = data.availabilityRules || [];
+    users = data.users || [];
+    weekendSettings = data.weekendSettings || {
+      allowSaturday: true,
+      allowSunday: true
+    };
+
+    const satToggle = document.getElementById("allowSaturdayToggle");
+    const sunToggle = document.getElementById("allowSundayToggle");
+
+    if (satToggle) satToggle.checked = !!weekendSettings.allowSaturday;
+    if (sunToggle) sunToggle.checked = !!weekendSettings.allowSunday;
+
+    showNotice("Admin data loaded successfully.");
+  } catch (err) {
+    bookings = [];
+    slotRules = [];
+    availabilityRules = [];
+    users = [];
+    showNotice(err.message, "error");
+  }
+
+  renderAll();
+}
+
+    async function saveWeekendSettings() {
+  const allowSaturday = document.getElementById("allowSaturdayToggle")?.checked ? "true" : "false";
+  const allowSunday = document.getElementById("allowSundayToggle")?.checked ? "true" : "false";
+
+  try {
+    const result = await apiRequest({
+      action: "adminUpdateWeekendSettings",
+      allowSaturday,
+      allowSunday
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to save weekend settings.");
+    }
+
+    showNotice("Weekend booking settings updated.");
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message, "error");
+  }
+}
     function resetUserForm() {
   editingUsername = null;
   document.getElementById("userModalTitle").textContent = "Create User";
@@ -2305,6 +2361,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("openNewBookingBtn")?.remove();
     document.getElementById("openBookingModalBtn")?.remove();
     document.getElementById("openSlotModalBtn")?.remove();
+    document.getElementById("saveWeekendSettingsBtn")?.addEventListener("click", saveWeekendSettings);
 
     switchSection("bookings");
   }
