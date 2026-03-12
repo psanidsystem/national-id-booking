@@ -1350,7 +1350,7 @@
     let editingSlotKey = null;
 
     function requireLogin() {
-      if (!adminSecret) {
+      if (!accessKey || !userRole) {
         window.location.href = "login.html";
         return false;
       }
@@ -1724,19 +1724,19 @@
       document.getElementById("slotTrn").value = "";
     }
 
-    async function apiRequest(payload) {
-      const finalPayload = {
-        ...payload,
-        accessKey: accessKey
-      };
-
-      const res = await fetch(EXEC_URL, {
-        method: "POST",
-        body: JSON.stringify(finalPayload)
-      });
-
-      return res.json();
-    }
+      async function apiRequest(payload) {
+        const finalPayload = {
+          ...payload,
+          accessKey: accessKey
+        };
+      
+        const res = await fetch(EXEC_URL, {
+          method: "POST",
+          body: JSON.stringify(finalPayload)
+        });
+      
+        return res.json();
+      }
 
     async function loadAdminData() {
       try {
@@ -1867,10 +1867,11 @@
       }
     }
 
-    function logout() {
-      sessionStorage.removeItem("nid_admin_secret");
-      window.location.href = "login.html";
-    }
+      function logout() {
+        sessionStorage.removeItem("nid_access_key");
+        sessionStorage.removeItem("nid_role");
+        window.location.href = "login.html";
+      }
 
       window.editBooking = function(refCode) {
         const item = bookings.find(b => b.refCode === refCode);
@@ -1928,6 +1929,8 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!requireLogin()) return;
+
+      
 
       const dashboardDateInput = document.getElementById("dashboardDate");
       if (dashboardDateInput) {
