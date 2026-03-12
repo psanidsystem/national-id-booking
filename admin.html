@@ -1849,29 +1849,29 @@ function getPersonnelActionButtons(item) {
       });
     }
 
-        function switchSection(section) {
-          const map = {
-            dashboard: ["dashboardSection", "Dashboard Overview"],
-            bookings: ["bookingsSection", "Booking Management"],
-            slots: ["slotsSection", "Slot Management"],
-            availability: ["availabilitySection", "Availability Management"],
-            users: ["usersSection", "User Management"],
-            settings: ["settingsSection", "System Settings"]
-          };
-        
-          Object.values(map).forEach(([id]) => {
-            const el = document.getElementById(id);
-            if (el) el.classList.add("hidden");
-          });
-        
-          if (map[section]) {
-            document.getElementById(map[section][0]).classList.remove("hidden");
-            document.getElementById("sectionTitle").textContent = map[section][1];
-          }
-        
-          document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-          document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
+      function switchSection(section) {
+        const map = {
+          dashboard: ["dashboardSection", "Dashboard Overview"],
+          bookings: ["bookingsSection", "Booking Management"],
+          slots: ["slotsSection", "Slot Management"],
+          availability: ["availabilitySection", "Availability Management"],
+          users: ["usersSection", "User Management"],
+          settings: ["settingsSection", "System Settings"]
+        };
+      
+        Object.values(map).forEach(([id]) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add("hidden");
+        });
+      
+        if (map[section]) {
+          document.getElementById(map[section][0]).classList.remove("hidden");
+          document.getElementById("sectionTitle").textContent = map[section][1];
         }
+      
+        document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
+      }
 
     function resetBookingForm() {
       editingBookingRef = null;
@@ -2345,17 +2345,39 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal("availabilityModal");
   });
 
-  document.getElementById("openUserModalBtn")?.addEventListener("click", () => {
-    resetUserForm();
-    openModal("userModal");
-  });
+  document.getElementById("refreshBtn")?.addEventListener("click", loadAdminData);
 
-  document.getElementById("saveBookingBtn")?.addEventListener("click", saveBooking);
-  document.getElementById("saveSlotBtn")?.addEventListener("click", () => saveSlotRule(false));
-  document.getElementById("saveQuickSlotBtn")?.addEventListener("click", () => saveSlotRule(true));
-  document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
-  document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
-  document.getElementById("logoutBtn")?.addEventListener("click", logout);
+document.getElementById("openNewBookingBtn")?.addEventListener("click", () => {
+  resetBookingForm();
+  openModal("bookingModal");
+});
+
+document.getElementById("openBookingModalBtn")?.addEventListener("click", () => {
+  resetBookingForm();
+  openModal("bookingModal");
+});
+
+document.getElementById("openSlotModalBtn")?.addEventListener("click", () => {
+  resetSlotForm();
+  openModal("slotModal");
+});
+
+document.getElementById("openAvailabilityModalBtn")?.addEventListener("click", () => {
+  resetAvailabilityForm();
+  openModal("availabilityModal");
+});
+
+document.getElementById("openUserModalBtn")?.addEventListener("click", () => {
+  resetUserForm();
+  openModal("userModal");
+});
+
+document.getElementById("saveBookingBtn")?.addEventListener("click", saveBooking);
+document.getElementById("saveSlotBtn")?.addEventListener("click", () => saveSlotRule(false));
+document.getElementById("saveQuickSlotBtn")?.addEventListener("click", () => saveSlotRule(true));
+document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
+document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
+document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
   document.getElementById("quickSearch")?.addEventListener("input", () => {
     renderRecentBookings(filterQuickSearch());
