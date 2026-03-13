@@ -373,16 +373,34 @@ collection and processing of your personal data for the stated purpose.
 
 <!-- ================= CONFIRM ================= -->
 <div class="modal" id="confirmModal" style="display:none;">
-  <div class="modal-content">
+  <div class="modal-content confirm-modal-card">
     <h2>Confirm Appointment</h2>
-    <p><b>Name:</b> <span id="cName"></span></p>
-	<p><b>Service:</b> <span id="cService"></span></p>
-	<p><b>Date:</b> <span id="cDate"></span></p>
-	<p><b>Time:</b> <span id="cTime"></span></p>
-    <div class="actions">
-      <button type="button" class="secondary" 
-onclick="document.getElementById('confirmModal').style.display='none'">Cancel</button>
-      <button type="button" onclick="confirmSubmit()">Confirm</button>
+    <p class="confirm-subtext">
+      Please review the appointment details before proceeding.
+    </p>
+
+    <div class="confirm-summary">
+      <div class="confirm-row">
+        <span class="confirm-label">Full Name</span>
+        <span class="confirm-value" id="cName"></span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Service</span>
+        <span class="confirm-value" id="cService"></span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Date</span>
+        <span class="confirm-value" id="cDate"></span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Time</span>
+        <span class="confirm-value" id="cTime"></span>
+      </div>
+    </div>
+
+    <div class="confirm-actions">
+      <button type="button" class="confirm-primary" onclick="confirmSubmit()">Confirm Appointment</button>
+      <button type="button" class="confirm-secondary" onclick="closeModal('confirmModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -567,17 +585,28 @@ function openConfirmModal() {
     return;
   }
 
+  let formattedDate = date;
+  if (date) {
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const parts = date.split("-");
+    if (parts.length === 3) {
+      const year = parts[0];
+      const month = months[parseInt(parts[1], 10) - 1];
+      const day = parseInt(parts[2], 10);
+      formattedDate = `${day} ${month} ${year}`;
+    }
+  }
+
   document.getElementById("cName").textContent = fullname;
   document.getElementById("cService").textContent = service;
-  document.getElementById("cDate").textContent = date;
+  document.getElementById("cDate").textContent = formattedDate;
   document.getElementById("cTime").textContent = time;
 
   openModal("confirmModal");
-}
-
-function confirmSubmit() {
-  closeModal("confirmModal");
-  submitForm();
 }
 
 function renderSlotInfo(data, info) {
@@ -1081,6 +1110,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
