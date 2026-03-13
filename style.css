@@ -837,12 +837,134 @@ select {
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
 
+  .container {
+    width: 100%;
+    max-width: 100%;
+  }
 
+  .card.header {
+    padding: 18px 16px 20px;
+    border-radius: 18px;
+    margin-bottom: 14px;
+  }
 
+  .logos {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 
+  .logo {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+  }
 
+  .card.header h2 {
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
 
+  .card.header p {
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+  }
 
+  #mainFormCard {
+    padding: 18px 16px 20px;
+    border-radius: 18px;
+  }
 
+  .form-section {
+    margin-bottom: 20px;
+  }
 
+  .section-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  input,
+  select {
+    height: 48px;
+    font-size: 16px;
+    padding: 0 14px;
+    border-radius: 12px;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .info-banner {
+    margin-top: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 14px;
+  }
+
+  .calendar-legend {
+    margin-top: 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .service-info small {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .helper-text {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 8px;
+  }
+
+  .summary-box {
+    margin: 18px 0;
+    padding: 14px 15px;
+    border-radius: 14px;
+  }
+
+  .summary-box h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .summary-box p {
+    font-size: 14px;
+    margin: 6px 0;
+    line-height: 1.4;
+  }
+
+  #submitBtn {
+    min-height: 48px;
+    font-size: 16px;
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+}
+body {
+  background: #f3f4f6;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
