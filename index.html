@@ -821,61 +821,82 @@ document.addEventListener("DOMContentLoaded", function() {
     },
 
     onDayCreate: function(dObj, dStr, fp, dayElem) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-      if (dayElem.dateObj < today) {
-        dayElem.classList.add("flatpickr-disabled");
-        dayElem.style.pointerEvents = "none";
-        return;
-      }
+  if (dayElem.dateObj < today) {
+    dayElem.classList.add("flatpickr-disabled");
+    dayElem.style.pointerEvents = "none";
+    return;
+  }
 
-      const year = dayElem.dateObj.getFullYear();
-      const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
-      const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
-      const date = `${year}-${month}-${day}`;
+  const year = dayElem.dateObj.getFullYear();
+  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+  const date = `${year}-${month}-${day}`;
 
-      const service = document.getElementById("service").value;
-      if (!service) return;
+  const service = document.getElementById("service").value;
+  if (!service) return;
 
-      const dayData = monthlySlotData[date] || null;
-      const closed = isClosedDate(date, dayData);
-      const full = !closed && isFullDate(dayData);
+  const dayData = monthlyBooked[date] || null;
 
-      let remaining = 0;
-      if (dayData) {
-        remaining = Number(dayData.max || 0) - Number(dayData.booked || 0);
-      }
+  let booked = 0;
+  let max = DEFAULT_SLOTS[service] || 0;
+  let open = true;
+  let reason = "";
 
-      dayElem.classList.remove("weekend-closed", "date-full", "date-available");
+  if (dayData) {
+    booked = Number(dayData.booked || 0);
+    max = Number(dayData.max || 0);
+    open = dayData.open !== false;
+    reason = dayData.reason || "";
+  }
 
-      const oldDot = dayElem.querySelector(".slot-dot");
-      if (oldDot) oldDot.remove();
+  const remaining = max - booked;
 
-      if (closed) {
-        dayElem.classList.add("flatpickr-disabled", "weekend-closed");
-        dayElem.style.pointerEvents = "none";
-        dayElem.setAttribute("data-tooltip", "Closed");
-        dayElem.classList.add("has-tooltip");
-        return;
-      }
+  // limpyoha una tanan old state
+  dayElem.classList.remove("has-tooltip", "flatpickr-disabled");
+  dayElem.removeAttribute("data-tooltip");
 
-      const dot = document.createElement("span");
-      dot.classList.add("slot-dot");
+  const oldDot = dayElem.querySelector(".slot-dot");
+  if (oldDot) oldDot.remove();
 
-      if (full) {
-        dot.classList.add("full");
-        dayElem.classList.add("flatpickr-disabled", "date-full");
-        dayElem.style.pointerEvents = "none";
-        dayElem.setAttribute("data-tooltip", "Fully booked");
-        dayElem.classList.add("has-tooltip");
-      } else {
-        dot.classList.add("many");
-        dayElem.classList.add("date-available");
-        dayElem.style.pointerEvents = "auto";
-        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-        dayElem.classList.add("has-tooltip");
-      }
+  // closed date
+  if (!open || max <= 0) {
+    dayElem.classList.add("flatpickr-disabled");
+    dayElem.style.pointerEvents = "none";
+    dayElem.setAttribute("data-tooltip", reason || "Booking closed");
+    dayElem.classList.add("has-tooltip");
+    return;
+  }
+
+  // full date
+  if (remaining <= 0) {
+    dayElem.classList.add("flatpickr-disabled");
+    dayElem.style.pointerEvents = "none";
+    dayElem.setAttribute("data-tooltip", "No slots available");
+    dayElem.classList.add("has-tooltip");
+
+    const dot = document.createElement("span");
+    dot.className = "slot-dot full";
+    dayElem.appendChild(dot);
+    return;
+  }
+
+  // available date
+  const dot = document.createElement("span");
+  dot.classList.add("slot-dot");
+
+  if (remaining <= 3) {
+    dot.classList.add("few");
+  } else {
+    dot.classList.add("many");
+  }
+
+  dayElem.appendChild(dot);
+  dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+  dayElem.classList.add("has-tooltip");
+}
 
       dayElem.appendChild(dot);
     }
@@ -922,6 +943,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
