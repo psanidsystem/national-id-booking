@@ -899,11 +899,13 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   }
 
-  const calendar = flatpickr("#date", {
-    dateFormat: "Y-m-d",
-    minDate: new Date(),
-    disableMobile: true,
-    monthSelectorType: "static",
+const calendar = flatpickr("#date", {
+  dateFormat: "Y-m-d",
+  altInput: true,
+  altFormat: "j F Y",
+  minDate: new Date(),
+  disableMobile: true,
+  monthSelectorType: "static",
 
     onReady: function(selectedDates, dateStr, instance) {
       fetchMonthlyData(instance);
@@ -1067,6 +1069,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
