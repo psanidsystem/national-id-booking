@@ -473,7 +473,7 @@ function updateWeekendNotice() {
       ? "current month"
       : `current period and the next ${months - 1} month(s)`;
 
-  el.textContent = `Appointments are accepted based on the approved schedule within the ${bookingText} booking window.`;
+  el.textContent = "Appointment availability is subject to the approved schedule and current booking window.";
   el.style.color = "#475467";
 }
 
@@ -1009,6 +1009,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
