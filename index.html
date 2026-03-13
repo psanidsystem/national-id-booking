@@ -466,22 +466,7 @@ function updateWeekendNotice() {
   const el = document.getElementById("weekendNotice");
   if (!el) return;
 
-  const allowedDays = [];
-  if (systemSettings.saturdayOpen) allowedDays.push("Saturday");
-  if (systemSettings.sundayOpen) allowedDays.push("Sunday");
-
-  const weekendText =
-    allowedDays.length === 0
-      ? "Weekend booking is not available."
-      : `Weekend booking available on: ${allowedDays.join(" and ")}.`;
-
-  const months = Number(systemSettings.bookingWindowMonths || 1);
-  const bookingText =
-    months === 1
-      ? "Booking window: current month only."
-      : `Booking window: current + ${months - 1} month(s).`;
-
-  el.textContent = `${weekendText} ${bookingText}`;
+  el.textContent = "Appointment availability is subject to the approved schedule and current booking window.";
   el.style.color = "#475467";
 }
 
@@ -1017,6 +1002,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
