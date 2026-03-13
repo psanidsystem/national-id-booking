@@ -615,7 +615,21 @@ function openConfirmModal() {
   openModal("confirmModal");
 }
 
-	function confirmSubmit() {
+function resetConfirmButtons() {
+  const primaryBtn = document.querySelector(".confirm-primary");
+  const secondaryBtn = document.querySelector(".confirm-secondary");
+
+  if (primaryBtn) {
+    primaryBtn.disabled = false;
+    primaryBtn.textContent = "Confirm Appointment";
+  }
+
+  if (secondaryBtn) {
+    secondaryBtn.disabled = false;
+  }
+}
+
+function confirmSubmit() {
   const primaryBtn = document.querySelector(".confirm-primary");
   const secondaryBtn = document.querySelector(".confirm-secondary");
 
@@ -628,10 +642,9 @@ function openConfirmModal() {
     secondaryBtn.disabled = true;
   }
 
-  closeModal("confirmModal");
   submitForm();
 }
-
+	
 function renderSlotInfo(data, info) {
   if (!info) return;
 
@@ -673,15 +686,21 @@ function checkSlots() {
   info.innerHTML = "⏳ Checking available slots...";
   info.style.color = "#555";
 
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "slots",
-      date,
-      service,
-      time
-    })
-  })
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+		fetch(EXEC_URL, {
+		  method: "POST",
+		  body: JSON.stringify({
+		    service,
+		    fullname,
+		    email,
+		    phone,
+		    date,
+		    time
+		  }),
+		  signal: controller.signal
+		})
     .then(res => res.json())
     .then(data => {
       dailySlotCache[cacheKey] = data;
@@ -833,11 +852,13 @@ window.submitForm = function() {
     })
   })
     .then(res => res.json())
-	.then(r => {
-	  btn.disabled = false;
-	  btnText.style.display = "inline";
-	  loader.style.display = "none";
-	  resetConfirmButtons();
+		.then(r => {
+		  clearTimeout(timeoutId);
+		
+		  btn.disabled = false;
+		  btnText.style.display = "inline";
+		  loader.style.display = "none";
+		  resetConfirmButtons();
 
       if (r.status === "error") {
         return showSystemMessage("Notice", r.message || "System error.");
@@ -863,34 +884,44 @@ window.submitForm = function() {
         return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
       }
 
-      if (r.status === "success") {
-        dailySlotCache = {};
-        monthlyBooked = {};
-
-        const now = new Date();
-        const timestamp = now.toLocaleString();
-
-        document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname;
-        document.getElementById("sDate").textContent = formatAppointmentDate(date);
-        document.getElementById("sTime").textContent = time;
-        document.getElementById("sTimestamp").textContent = timestamp;
-
-        openModal("slipModal");
-        return;
-      }
+		if (r.status === "success") {
+		  closeModal("confirmModal");
+		
+		  dailySlotCache = {};
+		  monthlyBooked = {};
+		
+		  const now = new Date();
+		  const timestamp = now.toLocaleString();
+		
+		  document.getElementById("sRef").textContent = r.refCode;
+		  document.getElementById("sName").textContent = fullname;
+		  document.getElementById("sDate").textContent = formatAppointmentDate(date);
+		  document.getElementById("sTime").textContent = time;
+		  document.getElementById("sTimestamp").textContent = timestamp;
+		
+		  openModal("slipModal");
+		  return;
+		}
 
       showSystemMessage("Notice", r.message || "Unexpected response from server.");
     })
-		.catch(err => {
-		  btn.disabled = false;
-		  btnText.style.display = "inline";
-		  loader.style.display = "none";
-		  resetConfirmButtons();
+.catch(err => {
+  clearTimeout(timeoutId);
 
-      console.error("submitForm error:", err);
-      showSystemMessage("System Error", "Unable to connect to server.");
-    });
+  btn.disabled = false;
+  btnText.style.display = "inline";
+  loader.style.display = "none";
+  resetConfirmButtons();
+
+  console.error("submitForm error:", err);
+
+  if (err.name === "AbortError") {
+    showSystemMessage("Request Timeout", "The server took too long to respond. Please try again.");
+    return;
+  }
+
+  showSystemMessage("System Error", "Unable to connect to server.");
+});
 };
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -1135,6 +1166,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
