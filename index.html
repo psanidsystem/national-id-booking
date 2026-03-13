@@ -402,7 +402,6 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
@@ -456,6 +455,17 @@ function showSystemMessage(title, message) {
 function agreePrivacy() {
   closeModal("privacyModal");
   setFormDisabled(false);
+}
+
+function updateWeekendNotice() {
+  const weekendNotice = document.getElementById("weekendNotice");
+  if (!weekendNotice) return;
+
+  if (systemSettings.autoCloseWeekends) {
+    weekendNotice.textContent = "Saturday and Sunday booking is currently unavailable.";
+  } else {
+    weekendNotice.textContent = "Saturday and Sunday booking is allowed.";
+  }
 }
 
 function openConfirmModal() {
@@ -534,9 +544,9 @@ function checkSlots() {
     method: "POST",
     body: JSON.stringify({
       action: "slots",
-      date: date,
-      service: service,
-      time: time
+      date,
+      service,
+      time
     })
   })
     .then(res => res.json())
@@ -682,10 +692,7 @@ window.submitForm = function() {
       }
 
       if (r.status === "closed_date") {
-        return showSystemMessage(
-          "Booking Closed",
-          r.reason || "Booking is not available on the selected date."
-        );
+        return showSystemMessage("Booking Closed", r.reason || "Booking is not available on the selected date.");
       }
 
       if (r.status === "daily_full") {
@@ -746,30 +753,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function fetchMonthlyData(instance) {
     const service = document.getElementById("service").value;
+
     if (!service) {
       monthlyBooked = {};
+      updateWeekendNotice();
       instance.redraw();
       return;
     }
 
-    const currentMonth = instance.currentYear + "-" +
-      String(instance.currentMonth + 1).padStart(2, "0");
+    const currentMonth = instance.currentYear + "-" + String(instance.currentMonth + 1).padStart(2, "0");
 
     fetch(EXEC_URL, {
       method: "POST",
       body: JSON.stringify({
         action: "monthlySlots",
-        service: service,
+        service,
         month: currentMonth
       })
     })
       .then(res => res.json())
       .then(data => {
-        monthlyBooked = data || {};
+        if (data.status === "error") {
+          throw new Error(data.message || "Unable to load monthly slots.");
+        }
+
+        monthlyBooked = data.slots || {};
+        systemSettings = data.systemSettings || { autoCloseWeekends: false };
+        updateWeekendNotice();
         instance.redraw();
       })
       .catch(err => {
         monthlyBooked = {};
+        systemSettings = { autoCloseWeekends: false };
+        updateWeekendNotice();
         instance.redraw();
         console.error("Monthly fetch error:", err);
       });
@@ -807,12 +823,24 @@ document.addEventListener("DOMContentLoaded", function() {
       const service = document.getElementById("service").value;
       if (!service) return;
 
+      const oldDot = dayElem.querySelector(".slot-dot");
+      if (oldDot) oldDot.remove();
+
+      dayElem.classList.remove("has-tooltip", "flatpickr-disabled", "calendar-closed-day", "calendar-full-day");
+      dayElem.removeAttribute("data-tooltip");
+      dayElem.style.pointerEvents = "";
+
       const dayOfWeek = dayElem.dateObj.getDay();
-      if (systemSettings.autoCloseWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
-        dayElem.classList.add("flatpickr-disabled");
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      if (systemSettings.autoCloseWeekends && isWeekend) {
+        dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", dayOfWeek === 0 ? "Sunday closed" : "Saturday closed");
-        dayElem.classList.add("has-tooltip");
+
+        const dot = document.createElement("span");
+        dot.className = "slot-dot closed";
+        dayElem.appendChild(dot);
         return;
       }
 
@@ -832,25 +860,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
       const remaining = max - booked;
 
-      dayElem.classList.remove("has-tooltip", "flatpickr-disabled");
-      dayElem.removeAttribute("data-tooltip");
-
-      const oldDot = dayElem.querySelector(".slot-dot");
-      if (oldDot) oldDot.remove();
-
       if (!open || max <= 0) {
-        dayElem.classList.add("flatpickr-disabled");
+        dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", reason || "Booking closed");
-        dayElem.classList.add("has-tooltip");
+
+        const dot = document.createElement("span");
+        dot.className = "slot-dot closed";
+        dayElem.appendChild(dot);
         return;
       }
 
       if (remaining <= 0) {
-        dayElem.classList.add("flatpickr-disabled");
+        dayElem.classList.add("flatpickr-disabled", "calendar-full-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", "Fully booked");
-        dayElem.classList.add("has-tooltip");
 
         const dot = document.createElement("span");
         dot.className = "slot-dot full";
@@ -859,17 +883,11 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       const dot = document.createElement("span");
-      dot.classList.add("slot-dot");
-
-      if (remaining <= 3) {
-        dot.classList.add("few");
-      } else {
-        dot.classList.add("many");
-      }
-
+      dot.classList.add("slot-dot", "many");
       dayElem.appendChild(dot);
-      dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+
       dayElem.classList.add("has-tooltip");
+      dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
     },
 
     onChange: function() {
@@ -916,6 +934,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
