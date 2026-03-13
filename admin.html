@@ -1169,16 +1169,44 @@
         </div>
 
         <div class="settings-info-item">
-          <strong>Weekend Booking</strong>
-          <span id="weekendBookingLabel">Loading...</span>
+          <strong>Saturday Booking</strong>
+          <span id="saturdayBookingLabel">Loading...</span>
+        </div>
+        
+        <div class="settings-info-item">
+          <strong>Sunday Booking</strong>
+          <span id="sundayBookingLabel">Loading...</span>
+        </div>
+        
+        <div class="settings-info-item">
+          <strong>Booking Window</strong>
+          <span id="bookingWindowLabel">Loading...</span>
         </div>
       </div>
 
       <div class="field" style="margin-bottom:16px;">
-        <label for="weekendBookingToggle">Saturday & Sunday Booking</label>
-        <select id="weekendBookingToggle">
+        <label for="saturdayBookingToggle">Saturday Booking</label>
+        <select id="saturdayBookingToggle">
           <option value="false">OFF</option>
           <option value="true">ON</option>
+        </select>
+      </div>
+      
+      <div class="field" style="margin-bottom:16px;">
+        <label for="sundayBookingToggle">Sunday Booking</label>
+        <select id="sundayBookingToggle">
+          <option value="false">OFF</option>
+          <option value="true">ON</option>
+        </select>
+      </div>
+      
+      <div class="field" style="margin-bottom:16px;">
+        <label for="bookingWindowMonths">Booking Window</label>
+        <select id="bookingWindowMonths">
+          <option value="1">Current month only</option>
+          <option value="2">Current + next month</option>
+          <option value="3">Current + 2 months</option>
+          <option value="4">Current + 3 months</option>
         </select>
       </div>
 
@@ -1432,7 +1460,11 @@ let bookings = [];
 let slotRules = [];
 let availabilityRules = [];
 let users = [];
-let weekendSettings = { autoCloseWeekends: false };
+let weekendSettings = {
+  saturdayOpen: false,
+  sundayOpen: false,
+  bookingWindowMonths: 1
+};
 
 let editingBookingRef = null;
 let editingSlotKey = null;
@@ -1897,14 +1929,30 @@ function renderUsersTable() {
 }
 
 function renderWeekendSettings() {
-  const toggle = document.getElementById("weekendBookingToggle");
-  const label = document.getElementById("weekendBookingLabel");
+  const saturdayToggle = document.getElementById("saturdayBookingToggle");
+  const sundayToggle = document.getElementById("sundayBookingToggle");
+  const bookingWindowSelect = document.getElementById("bookingWindowMonths");
 
-  if (!toggle || !label) return;
+  const saturdayLabel = document.getElementById("saturdayBookingLabel");
+  const sundayLabel = document.getElementById("sundayBookingLabel");
+  const bookingWindowLabel = document.getElementById("bookingWindowLabel");
 
-  const weekendBookingEnabled = !weekendSettings.autoCloseWeekends;
-  toggle.value = weekendBookingEnabled ? "true" : "false";
-  label.textContent = weekendBookingEnabled ? "Enabled" : "Disabled";
+  if (!saturdayToggle || !sundayToggle || !bookingWindowSelect) return;
+  if (!saturdayLabel || !sundayLabel || !bookingWindowLabel) return;
+
+  saturdayToggle.value = weekendSettings.saturdayOpen ? "true" : "false";
+  sundayToggle.value = weekendSettings.sundayOpen ? "true" : "false";
+  bookingWindowSelect.value = String(weekendSettings.bookingWindowMonths || 1);
+
+  saturdayLabel.textContent = weekendSettings.saturdayOpen ? "Enabled" : "Disabled";
+  sundayLabel.textContent = weekendSettings.sundayOpen ? "Enabled" : "Disabled";
+
+  const months = Number(weekendSettings.bookingWindowMonths || 1);
+  bookingWindowLabel.textContent =
+    months === 1 ? "Current month only" :
+    months === 2 ? "Current + next month" :
+    months === 3 ? "Current + 2 months" :
+    `Current + ${months - 1} months`;
 }
 
 function renderAll() {
@@ -1985,7 +2033,11 @@ async function loadAdminData() {
     slotRules = data.slotRules || [];
     availabilityRules = data.availabilityRules || [];
     users = data.users || [];
-    weekendSettings = data.systemSettings || { autoCloseWeekends: false };
+    weekendSettings = data.systemSettings || {
+    saturdayOpen: false,
+    sundayOpen: false,
+    bookingWindowMonths: 1
+  };
 
     renderAll();
   } catch (err) {
@@ -2001,24 +2053,32 @@ async function loadAdminData() {
 }
 
 async function saveWeekendSetting() {
-  const toggle = document.getElementById("weekendBookingToggle");
-  if (!toggle) return;
+  const saturdayToggle = document.getElementById("saturdayBookingToggle");
+  const sundayToggle = document.getElementById("sundayBookingToggle");
+  const bookingWindowSelect = document.getElementById("bookingWindowMonths");
 
-  const allowWeekendBooking = toggle.value === "true";
+  if (!saturdayToggle || !sundayToggle || !bookingWindowSelect) return;
 
   try {
     const result = await apiRequest({
       action: "adminSaveSystemSettings",
-      autoCloseWeekends: allowWeekendBooking ? "false" : "true"
+      saturdayOpen: saturdayToggle.value,
+      sundayOpen: sundayToggle.value,
+      bookingWindowMonths: bookingWindowSelect.value
     });
 
     if (result.status === "error") {
-      throw new Error(result.message || "Unable to save weekend setting.");
+      throw new Error(result.message || "Unable to save system settings.");
     }
 
-    weekendSettings = result.systemSettings || { autoCloseWeekends: false };
+    weekendSettings = result.systemSettings || {
+      saturdayOpen: false,
+      sundayOpen: false,
+      bookingWindowMonths: 1
+    };
+
     renderWeekendSettings();
-    showNotice("Weekend booking setting updated.");
+    showNotice("System settings updated.");
   } catch (err) {
     showNotice(err.message, "error");
   }
