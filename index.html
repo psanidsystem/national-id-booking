@@ -473,6 +473,16 @@ function setFormDisabled(disabled) {
   email.disabled = disabled;
   phone.disabled = disabled;
   submitBtn.disabled = disabled;
+
+  if (date._flatpickr) {
+    if (date._flatpickr.altInput) {
+      date._flatpickr.altInput.disabled = disabled;
+    }
+
+    if (disabled) {
+      date._flatpickr.close();
+    }
+  }
 }
 
 function openModal(id) {
@@ -1071,6 +1081,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
