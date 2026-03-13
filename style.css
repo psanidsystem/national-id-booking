@@ -835,7 +835,7 @@ button:disabled {
   border-radius: 22px;
   background: #ffffff;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
-  border: 1px solid rgba(215, 224, 234, 0.9);
+  border: 1px solid rgba(215, 224, 234, 0.85);
 }
 
 .confirm-header {
@@ -845,7 +845,7 @@ button:disabled {
 
 .confirm-modal-card h2 {
   margin: 0 0 8px;
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 800;
   color: #18212f;
   letter-spacing: -0.02em;
@@ -860,8 +860,8 @@ button:disabled {
 }
 
 .confirm-summary-card {
-  background: linear-gradient(180deg, #fcfdff 0%, #f7faff 100%);
-  border: 1px solid #d9e3ef;
+  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
+  border: 1px solid #dbe5f0;
   border-radius: 18px;
   overflow: hidden;
   margin-bottom: 18px;
@@ -869,11 +869,11 @@ button:disabled {
 
 .confirm-item {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 16px;
-  align-items: center;
-  padding: 16px 18px;
-  border-bottom: 1px solid #e3ebf4;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e6edf5;
 }
 
 .confirm-item:last-child {
@@ -881,11 +881,12 @@ button:disabled {
 }
 
 .confirm-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #667085;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  padding-top: 2px;
 }
 
 .confirm-value {
@@ -893,7 +894,13 @@ button:disabled {
   font-weight: 700;
   color: #1f2937;
   text-align: right;
+  line-height: 1.45;
   word-break: break-word;
+}
+
+.confirm-item:nth-child(2) .confirm-value {
+  font-size: 14px;
+  line-height: 1.55;
 }
 
 .confirm-actions {
@@ -903,7 +910,7 @@ button:disabled {
 
 .confirm-actions button {
   margin-top: 0;
-  min-height: 50px;
+  min-height: 48px;
   border-radius: 14px;
   font-size: 15px;
   font-weight: 700;
@@ -920,7 +927,7 @@ button:disabled {
 }
 
 .confirm-secondary {
-  background: #f7f9fc;
+  background: #f8fafc;
   color: #2459a6;
   border: 1px solid #d7e1ec;
   box-shadow: none;
@@ -938,7 +945,7 @@ button:disabled {
   }
 
   .confirm-modal-card h2 {
-    font-size: 22px;
+    font-size: 21px;
   }
 
   .confirm-subtext {
@@ -952,11 +959,11 @@ button:disabled {
   .confirm-item {
     grid-template-columns: 1fr;
     gap: 6px;
-    padding: 14px 14px;
+    padding: 13px 14px;
   }
 
   .confirm-label {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .confirm-value {
@@ -964,10 +971,12 @@ button:disabled {
     font-size: 14px;
   }
 
+  .confirm-item:nth-child(2) .confirm-value {
+    font-size: 14px;
+  }
+
   .confirm-actions button {
-    min-height: 48px;
+    min-height: 47px;
     font-size: 15px;
   }
 }
-
-
