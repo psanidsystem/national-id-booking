@@ -408,6 +408,13 @@ const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUO
 let monthlyBooked = {};
 let dailySlotCache = {};
 let systemSettings = {
+  saturdayOpen: false,
+  sundayOpen: false,
+  bookingWindowMonths: 1
+};
+
+let bookingWindowEndDate = null;
+	
   autoCloseWeekends: false
 };
 
@@ -969,3 +976,4 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
