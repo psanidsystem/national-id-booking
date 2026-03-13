@@ -906,6 +906,7 @@ const calendar = flatpickr("#date", {
   minDate: new Date(),
   disableMobile: true,
   monthSelectorType: "static",
+},
 
     onReady: function(selectedDates, dateStr, instance) {
       fetchMonthlyData(instance);
@@ -1069,6 +1070,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
