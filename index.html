@@ -374,33 +374,39 @@ collection and processing of your personal data for the stated purpose.
 <!-- ================= CONFIRM ================= -->
 <div class="modal" id="confirmModal" style="display:none;">
   <div class="modal-content confirm-modal-card">
-    <h2>Confirm Appointment</h2>
-    <p class="confirm-subtext">
-      Please review the appointment details before proceeding.
-    </p>
+    <div class="confirm-header">
+      <h2>Confirm Appointment</h2>
+      <p class="confirm-subtext">
+        Please review the appointment details before proceeding.
+      </p>
+    </div>
 
-    <div class="confirm-summary">
-      <div class="confirm-row">
+    <div class="confirm-summary-card">
+      <div class="confirm-item">
         <span class="confirm-label">Full Name</span>
         <span class="confirm-value" id="cName"></span>
       </div>
-      <div class="confirm-row">
+      <div class="confirm-item">
         <span class="confirm-label">Service</span>
         <span class="confirm-value" id="cService"></span>
       </div>
-      <div class="confirm-row">
+      <div class="confirm-item">
         <span class="confirm-label">Date</span>
         <span class="confirm-value" id="cDate"></span>
       </div>
-      <div class="confirm-row">
+      <div class="confirm-item">
         <span class="confirm-label">Time</span>
         <span class="confirm-value" id="cTime"></span>
       </div>
     </div>
 
     <div class="confirm-actions">
-      <button type="button" class="confirm-primary" onclick="confirmSubmit()">Confirm Appointment</button>
-      <button type="button" class="confirm-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+      <button type="button" class="confirm-primary" onclick="confirmSubmit()">
+        Confirm Appointment
+      </button>
+      <button type="button" class="confirm-secondary" onclick="closeModal('confirmModal')">
+        Cancel
+      </button>
     </div>
   </div>
 </div>
@@ -1110,6 +1116,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
