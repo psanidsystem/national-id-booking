@@ -405,7 +405,6 @@ onclick="document.getElementById('confirmModal').style.display='none'">Cancel</b
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
-let monthlyBooked = {};
 let dailySlotCache = {};
 let monthlySlotData = {};
 let systemSettings = { autoCloseWeekends: false };
@@ -414,6 +413,7 @@ function setFormDisabled(disabled) {
   const formCard = document.getElementById("mainFormCard");
   const service = document.getElementById("service");
   const date = document.getElementById("date");
+  const time = document.getElementById("time");
   const fullname = document.getElementById("fullname");
   const email = document.getElementById("email");
   const phone = document.getElementById("phone");
@@ -427,6 +427,7 @@ function setFormDisabled(disabled) {
 
   service.disabled = disabled;
   date.disabled = disabled;
+  time.disabled = disabled;
   fullname.disabled = disabled;
   email.disabled = disabled;
   phone.disabled = disabled;
@@ -454,35 +455,86 @@ function agreePrivacy() {
   setFormDisabled(false);
 }
 
-function openConfirmModal() {
-	const service = document.getElementById("service").value;
-	const fullname = document.getElementById("fullname").value.trim();
-	const date = document.getElementById("date").value;
-	const time = document.getElementById("time").value;
-	const email = document.getElementById("email").value.trim();
-	const phone = document.getElementById("phone").value.trim();
+function formatAppointmentDate(dateStr) {
+  const months = [
+    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+  ];
 
-  if (!service || !fullname || !date || !time) {
-    showSystemMessage("Missing Fields", "Please complete all required fields.");
-    return;
-  }
+  const parts = dateStr.split("-");
+  const year = parts[0];
+  const month = months[parseInt(parts[1], 10) - 1];
+  const day = parts[2];
 
-  if (!email && !phone) {
-    showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
-    return;
-  }
-
-	document.getElementById("cName").textContent = fullname;
-	document.getElementById("cService").textContent = service;
-	document.getElementById("cDate").textContent = date;
-	document.getElementById("cTime").textContent = time;
-
-  openModal("confirmModal");
+  return `${day} ${month} ${year}`;
 }
 
-function confirmSubmit() {
-  closeModal("confirmModal");
-  submitForm();
+function isWeekend(dateStr) {
+  const d = new Date(dateStr + "T00:00:00");
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+
+function isClosedDate(dateStr, slotInfo) {
+  if (systemSettings.autoCloseWeekends && isWeekend(dateStr)) {
+    return true;
+  }
+
+  if (slotInfo && slotInfo.open === false) {
+    return true;
+  }
+
+  return false;
+}
+
+function isFullDate(slotInfo) {
+  if (!slotInfo) return false;
+  return Number(slotInfo.booked || 0) >= Number(slotInfo.max || 0);
+}
+
+function resetForm() {
+  document.getElementById("service").value = "";
+  document.getElementById("time").value = "";
+  document.getElementById("fullname").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("serviceInfoText").innerHTML = "";
+  updateWeekendNotice();
+
+  const dateInput = document.getElementById("date");
+  if (dateInput._flatpickr) {
+    dateInput._flatpickr.clear();
+    dateInput._flatpickr.redraw();
+  }
+}
+
+function updateWeekendNotice() {
+  const el = document.getElementById("weekendNotice");
+  if (!el) return;
+
+  if (systemSettings.autoCloseWeekends) {
+    el.textContent = "Saturday and Sunday booking are currently unavailable.";
+  } else {
+    el.textContent = "";
+  }
+}
+
+function renderSlotInfo(data, info) {
+  if (data.status === "error") {
+    info.innerHTML = "⚠ " + (data.message || "Unable to check availability.");
+    info.style.color = "red";
+    return;
+  }
+
+  if (data.open === false) {
+    info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
+    info.style.color = "red";
+    return;
+  }
+
+  const remaining = Number(data.remaining ?? 0);
+  info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
+  info.style.color = remaining <= 0 ? "red" : "green";
 }
 
 function checkSlots() {
@@ -527,26 +579,35 @@ function checkSlots() {
     });
 }
 
-  if (data.open === false) {
-    info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
-    info.style.color = "red";
+function openConfirmModal() {
+  const service = document.getElementById("service").value;
+  const fullname = document.getElementById("fullname").value.trim();
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!service || !fullname || !date || !time) {
+    showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
 
-function updateWeekendNotice() {
-  const el = document.getElementById("weekendNotice");
-  if (!el) return;
-
-  if (systemSettings.autoCloseWeekends) {
-    el.textContent = "Saturday and Sunday booking are currently unavailable.";
-  } else {
-    el.textContent = "";
+  if (!email && !phone) {
+    showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
+    return;
   }
+
+  document.getElementById("cName").textContent = fullname;
+  document.getElementById("cService").textContent = service;
+  document.getElementById("cDate").textContent = date;
+  document.getElementById("cTime").textContent = time;
+
+  openModal("confirmModal");
 }
 
-  const remaining = Number(data.remaining ?? 0);
-  info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
-  info.style.color = remaining <= 0 ? "red" : "green";
+function confirmSubmit() {
+  closeModal("confirmModal");
+  submitForm();
 }
 
 window.closeNidModal = () => closeModal("nidModal");
@@ -562,57 +623,6 @@ function showCheckmark() {
   setTimeout(() => {
     overlay.style.display = "none";
   }, 2000);
-}
-
-function formatAppointmentDate(dateStr) {
-  const months = [
-    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
-  ];
-
-  const parts = dateStr.split("-");
-  const year = parts[0];
-  const month = months[parseInt(parts[1], 10) - 1];
-  const day = parts[2];
-
-  return `${day} ${month} ${year}`;
-}
-
-function isWeekend(dateStr) {
-  const d = new Date(dateStr + "T00:00:00");
-  const day = d.getDay();
-  return day === 0 || day === 6;
-}
-
-function isClosedDate(dateStr, slotInfo) {
-  if (systemSettings.autoCloseWeekends && isWeekend(dateStr)) {
-    return true;
-	  updateWeekendNotice();
-  }
-
-  if (slotInfo && slotInfo.open === false) {
-    return true;
-  }
-
-  return false;
-}
-
-function isFullDate(slotInfo) {
-  if (!slotInfo) return false;
-  return Number(slotInfo.booked || 0) >= Number(slotInfo.max || 0);
-}	
-function resetForm() {
-  document.getElementById("service").value = "";
-  document.getElementById("time").value = "";
-  document.getElementById("fullname").value = "";
-  document.getElementById("email").value = "";
-  document.getElementById("phone").value = "";
-  document.getElementById("serviceInfoText").innerHTML = "";
-
-  const dateInput = document.getElementById("date");
-  if (dateInput._flatpickr) {
-    dateInput._flatpickr.clear();
-  }
 }
 
 window.closeSlip = function() {
@@ -710,12 +720,12 @@ window.submitForm = function() {
       }
 
       if (r.status === "daily_full") {
-        return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
+        return showSystemMessage("Fully Booked", "This service is fully booked on the selected date and time.");
       }
 
       if (r.status === "success") {
         dailySlotCache = {};
-        monthlyBooked = {};
+        monthlySlotData = {};
 
         const now = new Date();
         const timestamp = now.toLocaleString();
@@ -744,10 +754,10 @@ window.submitForm = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
   const serviceSelect = document.getElementById("service");
+  const timeSelect = document.getElementById("time");
+
   setFormDisabled(true);
   openModal("privacyModal");
-
-document.getElementById("time").addEventListener("change", checkSlots);
 
   document.getElementById("fullname").addEventListener("input", function() {
     this.value = this.value
@@ -756,12 +766,7 @@ document.getElementById("time").addEventListener("change", checkSlots);
       .replace(/^\s+/, "");
   });
 
-  const DEFAULT_SLOTS = {
-    "National ID Registration": 32,
-    "Correction/Updating of Demographic Information": 16,
-    "Request National ID in Paper Format (ePhilID)": 50,
-    "Retrieval of TRN / Other Concern": 50
-  };
+  timeSelect.addEventListener("change", checkSlots);
 
   function fetchMonthlyData(instance) {
     const service = document.getElementById("service").value;
@@ -780,12 +785,20 @@ document.getElementById("time").addEventListener("change", checkSlots);
     })
       .then(res => res.json())
       .then(data => {
-        monthlyBooked = data || {};
+        if (data.status === "error") {
+          throw new Error(data.message || "Unable to load monthly slots.");
+        }
+
+        monthlySlotData = data.slots || {};
+        systemSettings = data.systemSettings || { autoCloseWeekends: false };
+        updateWeekendNotice();
         instance.redraw();
       })
       .catch(err => {
+        monthlySlotData = {};
+        systemSettings = { autoCloseWeekends: false };
+        updateWeekendNotice();
         console.error("Monthly fetch error:", err);
-		systemSettings = { autoCloseWeekends: false };
       });
   }
 
@@ -803,90 +816,75 @@ document.getElementById("time").addEventListener("change", checkSlots);
       fetchMonthlyData(instance);
     },
 
-onDayCreate: function(dObj, dStr, fp, dayElem) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    onChange: function() {
+      checkSlots();
+    },
 
-  if (dayElem.dateObj < today) {
-    dayElem.classList.add("flatpickr-disabled");
-    dayElem.style.pointerEvents = "none";
-    return;
-  }
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-  const year = dayElem.dateObj.getFullYear();
-  const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
-  const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
-  const date = `${year}-${month}-${day}`;
+      if (dayElem.dateObj < today) {
+        dayElem.classList.add("flatpickr-disabled");
+        dayElem.style.pointerEvents = "none";
+        return;
+      }
 
-  const service = document.getElementById("service").value;
-  if (!service) return;
+      const year = dayElem.dateObj.getFullYear();
+      const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+      const date = `${year}-${month}-${day}`;
 
-  const dayData = monthlySlotData[date] || null;
-  const closed = isClosedDate(date, dayData);
-  const full = !closed && isFullDate(dayData);
+      const service = document.getElementById("service").value;
+      if (!service) return;
 
-  let remaining = 0;
-  if (dayData) {
-    remaining = Number(dayData.max || 0) - Number(dayData.booked || 0);
-  }
+      const dayData = monthlySlotData[date] || null;
+      const closed = isClosedDate(date, dayData);
+      const full = !closed && isFullDate(dayData);
 
-  dayElem.classList.remove("weekend-closed", "date-full", "date-available");
+      let remaining = 0;
+      if (dayData) {
+        remaining = Number(dayData.max || 0) - Number(dayData.booked || 0);
+      }
 
-  const oldDot = dayElem.querySelector(".slot-dot");
-  if (oldDot) oldDot.remove();
+      dayElem.classList.remove("weekend-closed", "date-full", "date-available");
 
-  if (closed) {
-    dayElem.classList.add("flatpickr-disabled", "weekend-closed");
-    dayElem.style.pointerEvents = "none";
-    dayElem.setAttribute("data-tooltip", "Weekend booking is disabled");
-    dayElem.classList.add("has-tooltip");
-    return;
-  }
+      const oldDot = dayElem.querySelector(".slot-dot");
+      if (oldDot) oldDot.remove();
 
-  const dot = document.createElement("span");
-  dot.classList.add("slot-dot");
-
-  if (full) {
-    dot.classList.add("full");
-    dayElem.classList.add("flatpickr-disabled", "date-full");
-    dayElem.style.pointerEvents = "none";
-    dayElem.setAttribute("data-tooltip", "Fully booked");
-    dayElem.classList.add("has-tooltip");
-  } else {
-    dot.classList.add("many");
-    dayElem.classList.add("date-available");
-    dayElem.style.pointerEvents = "auto";
-    dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
-    dayElem.classList.add("has-tooltip");
-  }
-
-  dayElem.appendChild(dot);
-}
+      if (closed) {
+        dayElem.classList.add("flatpickr-disabled", "weekend-closed");
+        dayElem.style.pointerEvents = "none";
+        dayElem.setAttribute("data-tooltip", "Closed");
+        dayElem.classList.add("has-tooltip");
+        return;
+      }
 
       const dot = document.createElement("span");
       dot.classList.add("slot-dot");
 
-      if (remaining <= 0) {
+      if (full) {
         dot.classList.add("full");
-        dayElem.classList.add("flatpickr-disabled");
+        dayElem.classList.add("flatpickr-disabled", "date-full");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", "Fully booked");
-      } else if (remaining <= 3) {
-        dot.classList.add("few");
-        dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+        dayElem.classList.add("has-tooltip");
       } else {
         dot.classList.add("many");
+        dayElem.classList.add("date-available");
+        dayElem.style.pointerEvents = "auto";
         dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
+        dayElem.classList.add("has-tooltip");
       }
 
       dayElem.appendChild(dot);
-      dayElem.classList.add("has-tooltip");
     }
   });
 
   serviceSelect.addEventListener("change", function() {
-    monthlyBooked = {};
     dailySlotCache = {};
+    monthlySlotData = {};
+
     calendar.clear();
     calendar.redraw();
     fetchMonthlyData(calendar);
@@ -909,6 +907,7 @@ onDayCreate: function(dObj, dStr, fp, dayElem) {
   });
 
   document.getElementById("date").addEventListener("change", checkSlots);
+  updateWeekendNotice();
 });
 
 window.addEventListener("click", function(e) {
@@ -923,6 +922,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
