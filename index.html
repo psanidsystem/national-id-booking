@@ -24,56 +24,90 @@
 
     <div class="card" id="mainFormCard">
 
-      <label for="service">Select Services</label>
-      <select id="service" required>
-        <option value="">-- Select Service --</option>
-        <option>National ID Registration</option>
-        <option>Correction/Updating of Demographic Information</option>
-        <option>Request National ID in Paper Format (ePhilID)</option>
-        <option>Retrieval of TRN / Other Concern</option>
-      </select>
+  <div class="form-section">
+    <h3 class="section-title">Service Information</h3>
 
-		<label for="date">Preferred Date</label>
-		<input type="text" id="date" placeholder="Select appointment date" readonly>
-		<div id="weekendNotice" class="calendar-note"></div>
-		<div class="calendar-legend">
-		  <span><i class="dot dot-available"></i> Available</span>
-		  <span><i class="dot dot-full"></i> Full</span>
-		  <span><i class="dot dot-closed"></i> Closed</span>
-		</div>
-		<label for="time">Preferred Time</label>
-		<select id="time" required>
-		  <option value="">-- Select Time --</option>
-		  <option>8:00 AM</option>
-		  <option>9:00 AM</option>
-		  <option>10:00 AM</option>
-		  <option>11:00 AM</option>
-		  <option>1:00 PM</option>
-		  <option>2:00 PM</option>
-		  <option>3:00 PM</option>
-		  <option>4:00 PM</option>
-		</select>
+    <label for="service">Select Service <span class="req">*</span></label>
+    <select id="service" required>
+      <option value="">-- Select Service --</option>
+      <option>National ID Registration</option>
+      <option>Correction/Updating of Demographic Information</option>
+      <option>Request National ID in Paper Format (ePhilID)</option>
+      <option>Retrieval of TRN / Other Concern</option>
+    </select>
 
-      <div class="service-info" style="margin-top:8px; margin-bottom:15px;">
-        <small id="serviceInfoText" style="color:#555; display:block;"></small>
+    <div class="info-banner" id="weekendNotice"></div>
+  </div>
+
+  <div class="form-section">
+    <h3 class="section-title">Appointment Schedule</h3>
+
+    <div class="two-col">
+      <div>
+        <label for="date">Preferred Date <span class="req">*</span></label>
+        <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
       </div>
 
-      <label for="fullname">Full Name</label>
-      <input id="fullname" type="text" required>
+      <div>
+        <label for="time">Preferred Time <span class="req">*</span></label>
+        <select id="time" required>
+          <option value="">-- Select Time --</option>
+          <option>8:00 AM</option>
+          <option>9:00 AM</option>
+          <option>10:00 AM</option>
+          <option>11:00 AM</option>
+          <option>1:00 PM</option>
+          <option>2:00 PM</option>
+          <option>3:00 PM</option>
+          <option>4:00 PM</option>
+        </select>
+      </div>
+    </div>
 
-      <label for="email">Email Address (optional)</label>
-      <input id="email" type="email" placeholder="example@gmail.com">
+    <div class="calendar-legend">
+      <span><i class="dot dot-available"></i> Available</span>
+      <span><i class="dot dot-full"></i> Full</span>
+      <span><i class="dot dot-closed"></i> Closed</span>
+    </div>
 
-      <label for="phone">Mobile Number (optional)</label>
-      <input id="phone" type="tel" placeholder="09XXXXXXXXX">
-
-      <button type="button" id="submitBtn" onclick="openConfirmModal()">
-        <span id="btnText">Submit Appointment Request</span>
-        <span id="btnLoader" class="loading" style="display:none;"></span>
-      </button>
-
+    <div class="service-info">
+      <small id="serviceInfoText"></small>
     </div>
   </div>
+
+  <div class="form-section">
+    <h3 class="section-title">Applicant Details</h3>
+
+    <label for="fullname">Full Name <span class="req">*</span></label>
+    <input id="fullname" type="text" placeholder="Enter full name" required>
+
+    <div class="two-col">
+      <div>
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="example@gmail.com">
+      </div>
+
+      <div>
+        <label for="phone">Mobile Number</label>
+        <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+      </div>
+    </div>
+
+    <p class="helper-text">Provide at least one contact detail.</p>
+  </div>
+
+  <div class="summary-box">
+    <h4>Appointment Summary</h4>
+    <p><strong>Service:</strong> <span id="summaryService">Not selected</span></p>
+    <p><strong>Date:</strong> <span id="summaryDate">Not selected</span></p>
+    <p><strong>Time:</strong> <span id="summaryTime">Not selected</span></p>
+  </div>
+
+  <button type="button" id="submitBtn" onclick="openConfirmModal()">
+    <span id="btnText">Submit Appointment Request</span>
+    <span id="btnLoader" class="loading" style="display:none;"></span>
+  </button>
+
 </div>
 
 <!-- ================= PRIVACY NOTICE ================= -->
@@ -1009,6 +1043,7 @@ window.addEventListener("click", function(e) {
 </body>
 
 </html>
+
 
 
 
