@@ -774,7 +774,14 @@ function openConfirmModal() {
     return;
   }
 
-  document.getElementById("cName").textContent = fullname.toUpperCase();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (email && !emailPattern.test(email)) {
+    showSystemMessage("Invalid Email", "Please enter a valid email address.");
+    return;
+  }
+
+  document.getElementById("cName").textContent = fullname;
   document.getElementById("cService").textContent = service;
   document.getElementById("cDate").textContent = formatPrettyDate(date);
   document.getElementById("cTime").textContent = time;
