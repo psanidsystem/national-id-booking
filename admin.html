@@ -129,6 +129,7 @@
       padding: 26px 22px 28px;
       display: grid;
       gap: 20px;
+      align-content: start;
     }
 
     .topbar {
@@ -883,6 +884,22 @@
       .settings-info-item span {
         text-align: left;
       }
+      #dashboardSection,
+#bookingsSection,
+#slotsSection,
+#availabilitySection,
+#usersSection,
+#settingsSection {
+  align-self: start;
+}
+
+#bookingsSection .card,
+#slotsSection .card,
+#availabilitySection .card,
+#usersSection .card,
+#settingsSection .card {
+  margin-top: 0;
+}
     }
   </style>
 </head>
