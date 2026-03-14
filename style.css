@@ -498,28 +498,30 @@ button:disabled {
   margin: 15px 0;
 }
 
-/* ================= PREMIUM SLIP MODAL ================= */
+/* ================= RESPONSIVE PREMIUM SLIP MODAL ================= */
 
 .slip-card {
+  width: min(92vw, 560px);
   max-width: 560px;
   border-radius: 22px;
-  padding: 26px 24px 22px;
+  padding: 24px 22px 20px;
   background: #ffffff;
   border: 1px solid #dbe4ef;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  box-sizing: border-box;
 }
 
 .slip-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 14px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 .slip-logo {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
 }
 
@@ -527,9 +529,10 @@ button:disabled {
   text-align: center;
   margin: 0 0 6px;
   color: #1f4f9a;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .slip-subtitle {
@@ -537,13 +540,36 @@ button:disabled {
   margin: 0;
   color: #667085;
   font-size: 14px;
+  line-height: 1.45;
 }
 
 .slip-divider {
   height: 2px;
   background: linear-gradient(90deg, #1f5aa8, #4679c2);
-  margin: 18px 0 18px;
+  margin: 16px 0;
   border-radius: 999px;
+}
+
+.slip-qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4px 0 18px;
+}
+
+.slip-qr-box {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid #dbe5f0;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.slip-qr-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #667085;
+  text-align: center;
 }
 
 .slip-details {
@@ -559,7 +585,7 @@ button:disabled {
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 14px;
-  padding: 15px 18px;
+  padding: 14px 18px;
   border-bottom: 1px solid #e5edf6;
   align-items: start;
 }
@@ -581,9 +607,10 @@ button:disabled {
   font-size: 15px;
   font-weight: 700;
   color: #1f2937;
-  line-height: 1.55;
+  line-height: 1.5;
   text-align: right;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .slip-item-address .slip-value {
@@ -591,7 +618,7 @@ button:disabled {
 }
 
 .slip-note {
-  margin: 16px 0 18px;
+  margin: 14px 0 16px;
   padding: 12px 14px;
   border-radius: 14px;
   background: #f4f8ff;
@@ -609,7 +636,7 @@ button:disabled {
 
 .slip-actions button {
   margin-top: 0;
-  min-height: 50px;
+  min-height: 48px;
   border-radius: 14px;
   font-size: 15px;
   font-weight: 700;
@@ -627,15 +654,17 @@ button:disabled {
   color: #1b4684;
 }
 
+/* ===== TABLET ===== */
 @media (max-width: 768px) {
   .slip-card {
-    padding: 22px 16px 18px;
+    width: min(94vw, 520px);
+    padding: 20px 16px 18px;
     border-radius: 18px;
   }
 
   .slip-logo {
-    width: 62px;
-    height: 62px;
+    width: 56px;
+    height: 56px;
   }
 
   .slip-title {
@@ -647,18 +676,97 @@ button:disabled {
   }
 
   .slip-item {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .slip-label {
+    font-size: 11px;
+  }
+
+  .slip-value {
+    font-size: 14px;
+  }
+
+  .slip-actions button {
+    min-height: 46px;
+    font-size: 15px;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .slip-card {
+    width: calc(100vw - 24px);
+    max-width: none;
+    padding: 18px 14px 16px;
+    border-radius: 16px;
+  }
+
+  .slip-header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .slip-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .slip-title {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .slip-subtitle {
+    font-size: 12px;
+  }
+
+  .slip-divider {
+    margin: 14px 0;
+  }
+
+  .slip-qr-box {
+    padding: 8px;
+  }
+
+  .slip-details {
+    border-radius: 16px;
+  }
+
+  .slip-item {
     grid-template-columns: 1fr;
     gap: 6px;
-    padding: 13px 14px;
+    padding: 12px 12px;
+  }
+
+  .slip-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
   }
 
   .slip-value {
     text-align: left;
     font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .slip-note {
+    margin: 12px 0 14px;
+    padding: 10px 12px;
+    font-size: 12px;
+    border-radius: 12px;
+  }
+
+  .slip-actions {
+    gap: 8px;
   }
 
   .slip-actions button {
-    min-height: 48px;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 14px;
   }
 }
 
