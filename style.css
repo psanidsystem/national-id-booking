@@ -1,10 +1,8 @@
 :root {
   --bg: #eef2f7;
   --card: #ffffff;
-  --card-soft: #f8fbff;
   --primary: #2459a6;
   --primary-dark: #1b4684;
-  --primary-soft: #edf4ff;
   --text: #1f2937;
   --muted: #667085;
   --border: #d7e0ea;
@@ -153,10 +151,10 @@ textarea {
   font: inherit;
 }
 
-.card input,
-.card select,
 input,
-select {
+select,
+.card input,
+.card select {
   width: 100%;
   height: 50px;
   padding: 0 15px;
@@ -169,21 +167,22 @@ select {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.card input::placeholder,
-.card select::placeholder,
-input::placeholder {
+input::placeholder,
+.card input::placeholder {
   color: #98a2b3;
 }
 
-.card input:focus,
-.card select:focus,
 input:focus,
-select:focus {
+select:focus,
+.card input:focus,
+.card select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(36, 89, 166, 0.1);
   background: #ffffff;
 }
 
+input:disabled,
+select:disabled,
 .card input:disabled,
 .card select:disabled {
   background: #f5f7fb;
@@ -191,7 +190,7 @@ select:focus {
   cursor: not-allowed;
 }
 
-/* ================= BUTTON ================= */
+/* ================= BUTTONS ================= */
 
 button {
   margin-top: 20px;
@@ -240,7 +239,7 @@ button:disabled {
   border: 1px solid #d6e1ef;
   border-radius: 16px;
   background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .summary-box h4 {
@@ -375,7 +374,7 @@ button:disabled {
 .checkmark-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: none;
   justify-content: center;
   align-items: center;
@@ -421,7 +420,7 @@ button:disabled {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   border-top: 2px solid #ffffff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
@@ -447,167 +446,11 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ================= FINAL COMPACT RESPONSIVE SLIP ================= */
-
-.slip-card {
-  width: min(92vw, 540px);
-  max-width: 540px;
-  border-radius: 20px;
-  padding: 18px 18px 16px;
-  background: #ffffff;
-  border: 1px solid #dbe4ef;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
-  box-sizing: border-box;
-}
-
-.slip-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.slip-logo {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.slip-title {
-  text-align: center;
-  margin: 0 0 4px;
-  color: #1f4f9a;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.slip-subtitle {
-  text-align: center;
-  margin: 0;
-  color: #667085;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.slip-divider {
-  height: 2px;
-  background: linear-gradient(90deg, #1f5aa8, #4679c2);
-  margin: 12px 0;
-  border-radius: 999px;
-}
-
-.slip-qr-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 2px 0 14px;
-}
-
-.slip-qr-box {
-  background: #ffffff;
-  padding: 8px;
-  border-radius: 12px;
-  border: 1px solid #dbe5f0;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-}
-
-.slip-qr-note {
-  margin-top: 6px;
-  font-size: 11px;
-  color: #667085;
-  text-align: center;
-}
-
-.slip-details {
-  display: grid;
-  gap: 0;
-  border: 1px solid #dbe5f0;
-  border-radius: 16px;
-  overflow: hidden;
-  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
-}
-
-.slip-item {
-  display: grid;
-  grid-template-columns: 135px 1fr;
-  gap: 12px;
-  padding: 11px 16px;
-  border-bottom: 1px solid #e5edf6;
-  align-items: start;
-}
-
-.slip-item:last-child {
-  border-bottom: none;
-}
-
-.slip-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #667085;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding-top: 2px;
-}
-
-.slip-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1.45;
-  text-align: right;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.slip-item-address .slip-value {
-  font-weight: 600;
-}
-
-.slip-note {
-  margin: 12px 0 14px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #f4f8ff;
-  border: 1px solid #dbe7f5;
-  color: #475467;
-  font-size: 12px;
-  line-height: 1.45;
-  text-align: center;
-}
-
-.slip-actions {
-  display: grid;
-  gap: 8px;
-}
-
-.slip-actions button {
-  margin-top: 0;
-  min-height: 44px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.slip-actions .secondary {
-  background: #f8fafc;
-  color: #2459a6;
-  border: 1px solid #d7e1ec;
-  box-shadow: none;
-}
-
-.slip-actions .secondary:hover {
-  background: #eef3f9;
-  color: #1b4684;
-}
-
 /* ================= FLATPICKR ================= */
 
 .flatpickr-calendar {
   border-radius: 18px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.24);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.24);
   border: none;
   overflow: hidden;
   font-family: "Segoe UI", sans-serif;
@@ -617,7 +460,7 @@ button:disabled {
 .flatpickr-months {
   background: linear-gradient(135deg, var(--primary), #2f5fa5);
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .flatpickr-current-month {
@@ -708,22 +551,22 @@ button:disabled {
 
 .slot-dot.many {
   background: var(--success);
-  box-shadow: 0 0 4px rgba(22,163,74,0.6);
+  box-shadow: 0 0 4px rgba(22, 163, 74, 0.6);
 }
 
 .slot-dot.few {
   background: var(--warning);
-  box-shadow: 0 0 4px rgba(245,158,11,0.6);
+  box-shadow: 0 0 4px rgba(245, 158, 11, 0.6);
 }
 
 .slot-dot.full {
   background: var(--danger);
-  box-shadow: 0 0 4px rgba(220,38,38,0.6);
+  box-shadow: 0 0 4px rgba(220, 38, 38, 0.6);
 }
 
 .slot-dot.closed {
   background: var(--closed);
-  box-shadow: 0 0 4px rgba(209,213,219,0.6);
+  box-shadow: 0 0 4px rgba(209, 213, 219, 0.6);
 }
 
 .has-tooltip {
@@ -770,7 +613,7 @@ button:disabled {
   opacity: 1;
 }
 
-/* ================= PREMIUM CONFIRM MODAL ================= */
+/* ================= CONFIRM MODAL ================= */
 
 .confirm-modal-card {
   max-width: 560px;
@@ -881,7 +724,190 @@ button:disabled {
   color: #1b4684;
 }
 
-/* ================= TABLET / MOBILE ================= */
+/* ================= SLIP MODAL ================= */
+
+#slipModal {
+  align-items: center;
+  justify-content: center;
+}
+
+#slipContent {
+  width: 100%;
+  max-width: 600px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  text-align: center;
+}
+
+.slip-card {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 20px 20px 16px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #dbe4ef;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.slip-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.slip-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.slip-title {
+  margin: 0 0 4px;
+  text-align: center;
+  color: #1f4f9a;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.slip-subtitle {
+  margin: 0 auto;
+  text-align: center;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.45;
+  display: block;
+  width: 100%;
+}
+
+.slip-divider {
+  height: 2px;
+  margin: 14px 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1f5aa8, #4679c2);
+}
+
+.slip-qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2px 0 14px;
+}
+
+.slip-qr-box {
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid #dbe5f0;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+
+#qrCanvas {
+  display: block;
+  width: 130px;
+  height: 130px;
+}
+
+.slip-qr-note {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #667085;
+  text-align: center;
+}
+
+.slip-details {
+  display: grid;
+  gap: 0;
+  border: 1px solid #dbe5f0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
+}
+
+.slip-item {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5edf6;
+}
+
+.slip-item:last-child {
+  border-bottom: none;
+}
+
+.slip-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 2px;
+}
+
+.slip-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.5;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.slip-item-address .slip-value {
+  font-weight: 600;
+}
+
+.slip-note {
+  margin: 14px 0 0;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: #f4f8ff;
+  border: 1px solid #dbe7f5;
+  color: #475467;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.slip-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.slip-actions button {
+  margin-top: 0;
+  min-height: 46px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.slip-actions .secondary {
+  background: #f8fafc;
+  color: #2459a6;
+  border: 1px solid #d7e1ec;
+  box-shadow: none;
+}
+
+.slip-actions .secondary:hover {
+  background: #eef3f9;
+  color: #1b4684;
+}
+
+/* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
   body {
@@ -1008,15 +1034,21 @@ button:disabled {
     font-size: 17px;
   }
 
+  #slipContent {
+    max-width: 100%;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
   .slip-card {
-    width: min(94vw, 520px);
-    padding: 18px 14px 16px;
+    max-width: 100%;
+    padding: 18px 14px 14px;
     border-radius: 18px;
   }
 
   .slip-logo {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
   }
 
   .slip-title {
@@ -1028,9 +1060,9 @@ button:disabled {
   }
 
   .slip-item {
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 125px 1fr;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 11px 12px;
   }
 
   .slip-label {
@@ -1084,304 +1116,6 @@ button:disabled {
 }
 
 @media (max-width: 480px) {
-  .slip-card {
-    width: calc(100vw - 20px);
-    max-width: none;
-    padding: 16px 12px 14px;
-    border-radius: 16px;
-  }
-
-  .slip-header {
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-
-  .slip-logo {
-    width: 44px;
-    height: 44px;
-  }
-
-  .slip-title {
-    font-size: 16px;
-  }
-
-  .slip-subtitle {
-    font-size: 11px;
-  }
-
-  .slip-divider {
-    margin: 10px 0;
-  }
-
-  .slip-qr-box {
-    padding: 7px;
-  }
-
-  .slip-details {
-    border-radius: 14px;
-  }
-
-  .slip-item {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 10px 12px;
-  }
-
-  .slip-label {
-    font-size: 10px;
-  }
-
-  .slip-value {
-    text-align: left;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .slip-note {
-    font-size: 11px;
-    padding: 9px 10px;
-  }
-
-  .slip-actions button {
-    min-height: 42px;
-    font-size: 14px;
-  }
-}
-
-/* =========================================================
-   FINAL SLIP MODAL + PRINT CSS
-   Ibutang ni sa PINAKAILALOM sa style.css
-   ========================================================= */
-
-/* ===== Slip modal container ===== */
-#slipModal {
-  align-items: center;
-  justify-content: center;
-}
-
-#slipContent {
-  width: 100%;
-  max-width: 600px;
-  max-height: 92vh;
-  overflow-y: auto;
-  padding: 14px;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
-}
-
-/* ===== Main printable area ===== */
-.slip-card {
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
-  padding: 20px 20px 16px;
-  border-radius: 22px;
-  background: #ffffff;
-  border: 1px solid #dbe4ef;
-  box-shadow: none;
-  box-sizing: border-box;
-}
-
-/* ===== Header ===== */
-.slip-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.slip-logo {
-  width: 56px !important;
-  height: 56px !important;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.slip-title {
-  margin: 0 0 4px;
-  text-align: center;
-  color: #1f4f9a;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.slip-subtitle {
-  margin: 0;
-  text-align: center;
-  color: #667085;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.slip-divider {
-  height: 2px;
-  margin: 14px 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #1f5aa8, #4679c2);
-}
-
-/* ===== QR ===== */
-.slip-qr-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 2px 0 14px;
-}
-
-.slip-qr-box {
-  background: #ffffff;
-  padding: 8px;
-  border-radius: 14px;
-  border: 1px solid #dbe5f0;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
-}
-
-#qrCanvas {
-  display: block;
-  width: 130px;
-  height: 130px;
-}
-
-.slip-qr-note {
-  margin-top: 6px;
-  font-size: 11px;
-  color: #667085;
-  text-align: center;
-}
-
-/* ===== Details card ===== */
-.slip-details {
-  display: grid;
-  gap: 0;
-  border: 1px solid #dbe5f0;
-  border-radius: 18px;
-  overflow: hidden;
-  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
-}
-
-.slip-item {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 14px;
-  align-items: start;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5edf6;
-}
-
-.slip-item:last-child {
-  border-bottom: none;
-}
-
-.slip-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #667085;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding-top: 2px;
-}
-
-.slip-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1.5;
-  text-align: right;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.slip-item-address .slip-value {
-  font-weight: 600;
-}
-
-/* ===== Note ===== */
-.slip-note {
-  margin: 14px 0 0;
-  padding: 11px 12px;
-  border-radius: 14px;
-  background: #f4f8ff;
-  border: 1px solid #dbe7f5;
-  color: #475467;
-  font-size: 12px;
-  line-height: 1.45;
-  text-align: center;
-}
-
-/* ===== Buttons ===== */
-.slip-actions {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.slip-actions button {
-  margin-top: 0;
-  min-height: 46px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.slip-actions .secondary {
-  background: #f8fafc;
-  color: #2459a6;
-  border: 1px solid #d7e1ec;
-  box-shadow: none;
-}
-
-.slip-actions .secondary:hover {
-  background: #eef3f9;
-  color: #1b4684;
-}
-
-/* ===== Tablet ===== */
-@media (max-width: 768px) {
-  #slipContent {
-    max-width: 100%;
-    padding: 12px;
-    border-radius: 20px;
-  }
-
-  .slip-card {
-    max-width: 100%;
-    padding: 18px 14px 14px;
-    border-radius: 18px;
-  }
-
-  .slip-logo {
-    width: 50px !important;
-    height: 50px !important;
-  }
-
-  .slip-title {
-    font-size: 17px;
-  }
-
-  .slip-subtitle {
-    font-size: 11px;
-  }
-
-  .slip-item {
-    grid-template-columns: 125px 1fr;
-    gap: 10px;
-    padding: 11px 12px;
-  }
-
-  .slip-label {
-    font-size: 10px;
-  }
-
-  .slip-value {
-    font-size: 13px;
-  }
-}
-
-/* ===== Mobile ===== */
-@media (max-width: 480px) {
   #slipModal {
     padding: 10px;
     align-items: center;
@@ -1408,8 +1142,8 @@ button:disabled {
   }
 
   .slip-logo {
-    width: 44px !important;
-    height: 44px !important;
+    width: 44px;
+    height: 44px;
   }
 
   .slip-title {
@@ -1471,11 +1205,8 @@ button:disabled {
   }
 }
 
-/* =========================================================
-   CLEAN PRINT CSS
-   NOTE: popup print approach na ang gamiton sa JS,
-   pero naa gihapon ni as fallback
-   ========================================================= */
+/* ================= PRINT FALLBACK ================= */
+
 @media print {
   @page {
     size: A4 portrait;
@@ -1540,6 +1271,7 @@ button:disabled {
 
   .slip-subtitle {
     font-size: 10pt !important;
+    text-align: center !important;
   }
 
   .slip-divider {
