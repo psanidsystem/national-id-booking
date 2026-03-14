@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
 
@@ -17,101 +16,99 @@
   <div class="container" id="formContainer">
     <div class="card header">
       <div class="logos">
-        <img class="logo" src="logo-psa.png">
-        <img class="logo" src="logo-partner.png">
+        <img class="logo" src="logo-psa.png" alt="PSA Logo">
+        <img class="logo" src="logo-partner.png" alt="National ID Logo">
       </div>
       <h2>National ID System</h2>
       <p>Appointment Request<br>Philippine Statistics Authority - Fixed Registration Center - Cebu</p>
     </div>
 
     <div class="card" id="mainFormCard">
+      <div class="form-section">
+        <h3 class="section-title">Service Information</h3>
 
-  <div class="form-section">
-    <h3 class="section-title">Service Information</h3>
-
-    <label for="service">Select Service <span class="req">*</span></label>
-    <select id="service" required>
-      <option value="">-- Select Service --</option>
-      <option>National ID Registration</option>
-      <option>Correction/Updating of Demographic Information</option>
-      <option>Request National ID in Paper Format (ePhilID)</option>
-      <option>Retrieval of TRN / Other Concern</option>
-    </select>
-
-    <div class="info-banner" id="weekendNotice"></div>
-  </div>
-
-  <div class="form-section">
-    <h3 class="section-title">Appointment Schedule</h3>
-
-    <div class="two-col">
-      <div>
-        <label for="date">Preferred Date <span class="req">*</span></label>
-        <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
-      </div>
-
-      <div>
-        <label for="time">Preferred Time <span class="req">*</span></label>
-        <select id="time" required>
-          <option value="">-- Select Time --</option>
-          <option>8:00 AM</option>
-          <option>9:00 AM</option>
-          <option>10:00 AM</option>
-          <option>11:00 AM</option>
-          <option>1:00 PM</option>
-          <option>2:00 PM</option>
-          <option>3:00 PM</option>
-          <option>4:00 PM</option>
+        <label for="service">Select Service <span class="req">*</span></label>
+        <select id="service" required>
+          <option value="">-- Select Service --</option>
+          <option>National ID Registration</option>
+          <option>Correction/Updating of Demographic Information</option>
+          <option>Request National ID in Paper Format (ePhilID)</option>
+          <option>Retrieval of TRN / Other Concern</option>
         </select>
-      </div>
-    </div>
 
-    <div class="calendar-legend">
-      <span><i class="dot dot-available"></i> Available</span>
-      <span><i class="dot dot-full"></i> Full</span>
-      <span><i class="dot dot-closed"></i> Closed</span>
-    </div>
-
-    <div class="service-info">
-      <small id="serviceInfoText"></small>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h3 class="section-title">Applicant Details</h3>
-
-    <label for="fullname">Full Name <span class="req">*</span></label>
-    <input id="fullname" type="text" placeholder="Enter full name" required>
-
-    <div class="two-col">
-      <div>
-        <label for="email">Email Address</label>
-        <input id="email" type="email" placeholder="example@gmail.com">
+        <div class="info-banner" id="weekendNotice"></div>
       </div>
 
-      <div>
-        <label for="phone">Mobile Number</label>
-        <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+      <div class="form-section">
+        <h3 class="section-title">Appointment Schedule</h3>
+
+        <div class="two-col">
+          <div>
+            <label for="date">Preferred Date <span class="req">*</span></label>
+            <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
+          </div>
+
+          <div>
+            <label for="time">Preferred Time <span class="req">*</span></label>
+            <select id="time" required>
+              <option value="">-- Select Time --</option>
+              <option>8:00 AM</option>
+              <option>9:00 AM</option>
+              <option>10:00 AM</option>
+              <option>11:00 AM</option>
+              <option>1:00 PM</option>
+              <option>2:00 PM</option>
+              <option>3:00 PM</option>
+              <option>4:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calendar-legend">
+          <span><i class="dot dot-available"></i> Available</span>
+          <span><i class="dot dot-full"></i> Full</span>
+          <span><i class="dot dot-closed"></i> Closed</span>
+        </div>
+
+        <div class="service-info">
+          <small id="serviceInfoText"></small>
+        </div>
       </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Applicant Details</h3>
+
+        <label for="fullname">Full Name <span class="req">*</span></label>
+        <input id="fullname" type="text" placeholder="Enter full name" required>
+
+        <div class="two-col">
+          <div>
+            <label for="email">Email Address</label>
+            <input id="email" type="email" placeholder="example@gmail.com">
+          </div>
+
+          <div>
+            <label for="phone">Mobile Number</label>
+            <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+          </div>
+        </div>
+
+        <p class="helper-text">Provide at least one contact detail.</p>
+      </div>
+
+      <div class="summary-box">
+        <h4>Appointment Summary</h4>
+        <p><strong>Service:</strong> <span id="summaryService">Not selected</span></p>
+        <p><strong>Date:</strong> <span id="summaryDate">Not selected</span></p>
+        <p><strong>Time:</strong> <span id="summaryTime">Not selected</span></p>
+      </div>
+
+      <button type="button" id="submitBtn" onclick="openConfirmModal()">
+        <span id="btnText">Submit Appointment Request</span>
+        <span id="btnLoader" class="loading" style="display:none;"></span>
+      </button>
     </div>
-
-    <p class="helper-text">Provide at least one contact detail.</p>
   </div>
-
-  <div class="summary-box">
-    <h4>Appointment Summary</h4>
-    <p><strong>Service:</strong> <span id="summaryService">Not selected</span></p>
-    <p><strong>Date:</strong> <span id="summaryDate">Not selected</span></p>
-    <p><strong>Time:</strong> <span id="summaryTime">Not selected</span></p>
-  </div>
-
-  <button type="button" id="submitBtn" onclick="openConfirmModal()">
-    <span id="btnText">Submit Appointment Request</span>
-    <span id="btnLoader" class="loading" style="display:none;"></span>
-  </button>
-
-</div>
-</div>
 </div>
 
 <!-- ================= PRIVACY NOTICE ================= -->
@@ -119,48 +116,48 @@
   <div class="modal-content">
     <h2>Privacy Notice – National ID Appointment System</h2>
 
-<p>
-This system collects and processes limited personal information solely for the purpose of
-scheduling, managing, and confirming National ID System appointments, in accordance with
-the <b>Data Privacy Act of 2012 (RA 10173)</b> and applicable
-<b>Philippine Statistics Authority (PSA) policies</b>.
-</p>
+    <p>
+      This system collects and processes limited personal information solely for the purpose of
+      scheduling, managing, and confirming National ID System appointments, in accordance with
+      the <b>Data Privacy Act of 2012 (RA 10173)</b> and applicable
+      <b>Philippine Statistics Authority (PSA) policies</b>.
+    </p>
 
-<p>
-The personal data collected include your <b>full name</b>, <b>email address or mobile number</b>,
-<b>selected service</b>, and <b>preferred appointment schedule</b>.
-</p>
+    <p>
+      The personal data collected include your <b>full name</b>, <b>email address or mobile number</b>,
+      <b>selected service</b>, and <b>preferred appointment schedule</b>.
+    </p>
 
-<p>
-Your personal data shall be used exclusively for appointment management and communication
-purposes. These data are stored securely and protected by appropriate
-<b>administrative, technical, and physical safeguards</b>.
-</p>
+    <p>
+      Your personal data shall be used exclusively for appointment management and communication
+      purposes. These data are stored securely and protected by appropriate
+      <b>administrative, technical, and physical safeguards</b>.
+    </p>
 
-<p>
-Your personal data will not be shared or disclosed to unauthorized parties, except to
-<b>authorized PSA personnel</b> or when required by law.
-</p>
+    <p>
+      Your personal data will not be shared or disclosed to unauthorized parties, except to
+      <b>authorized PSA personnel</b> or when required by law.
+    </p>
 
-<p>
-As a data subject, you have the right to <b>access</b>, <b>correct</b>, or <b>request deletion</b>
-of your personal data, subject to applicable laws and regulations.
-</p>
+    <p>
+      As a data subject, you have the right to <b>access</b>, <b>correct</b>, or <b>request deletion</b>
+      of your personal data, subject to applicable laws and regulations.
+    </p>
 
-<p>
-For data privacy concerns, you may contact the <b>PSA Data Protection Officer</b> through
-the official PSA communication channels.
-</p>
+    <p>
+      For data privacy concerns, you may contact the <b>PSA Data Protection Officer</b> through
+      the official PSA communication channels.
+    </p>
 
-<p>
-By proceeding, you confirm that you have read, understood, and voluntarily consent to the
-collection and processing of your personal data for the stated purpose.
-</p>
+    <p>
+      By proceeding, you confirm that you have read, understood, and voluntarily consent to the
+      collection and processing of your personal data for the stated purpose.
+    </p>
 
-
-<button type="button" onclick="agreePrivacy()">I Agree</button>
+    <button type="button" onclick="agreePrivacy()">I Agree</button>
   </div>
 </div>
+
 <!-- ================= SUPPORTING DOCUMENTS ================= -->
 <div class="modal" id="nidModal" style="display:none;">
   <div class="modal-content docs">
@@ -209,7 +206,6 @@ collection and processing of your personal data for the stated purpose.
       <li>Professional ldentification Card issued by the Maritime lndustry Authority (MARINA)</li>
       <li>Eligibility Card issued by the Civil Service Commission</li>
       <li>Dependent’s lD lssued by the Armed Forces of the Philippines (AFP) and Philippine National Police (PNP)</li>
-      
     </ul>
 
     <h4>The following identification documents shall be accepted as secondary supporting documents provided that they have a front-facing photograph, signature/thumbmark, full name, permanent address, and date of birth.</h4>
@@ -506,9 +502,17 @@ collection and processing of your personal data for the stated purpose.
     </div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
+
+const DEFAULT_SLOTS = {
+  "National ID Registration": 32,
+  "Correction/Updating of Demographic Information": 16,
+  "Request National ID in Paper Format (ePhilID)": 50,
+  "Retrieval of TRN / Other Concern": 50
+};
 
 let monthlyBooked = {};
 let dailySlotCache = {};
@@ -518,6 +522,7 @@ let systemSettings = {
   bookingWindowMonths: 1
 };
 let bookingWindowEndDate = null;
+let activeCalendarRequestId = 0;
 
 /* ================= UTILITIES ================= */
 
@@ -576,11 +581,25 @@ function agreePrivacy() {
   setFormDisabled(false);
 }
 
+function normalizeMonthString(year, monthIndexZeroBased) {
+  return year + "-" + String(monthIndexZeroBased + 1).padStart(2, "0");
+}
+
 function updateWeekendNotice() {
   const el = document.getElementById("weekendNotice");
   if (!el) return;
 
-  el.textContent = "Appointment slots are available based on the current schedule and booking period.";
+  const parts = [];
+  parts.push(systemSettings.saturdayOpen ? "Saturday: OPEN" : "Saturday: CLOSED");
+  parts.push(systemSettings.sundayOpen ? "Sunday: OPEN" : "Sunday: CLOSED");
+
+  const months = Number(systemSettings.bookingWindowMonths || 1);
+  const bookingWindowText =
+    months === 1 ? "Booking window: current month only" :
+    months === 2 ? "Booking window: current + next month" :
+    `Booking window: current + ${months - 1} months`;
+
+  el.textContent = `${parts.join(" • ")} • ${bookingWindowText}`;
   el.style.color = "#475467";
 }
 
@@ -667,21 +686,32 @@ function resetConfirmButtons() {
   }
 }
 
+function resetSlotInfo() {
+  const info = document.getElementById("serviceInfoText");
+  if (!info) return;
+  info.innerHTML = "";
+  info.style.color = "#4b5563";
+}
+
 function resetForm() {
   document.getElementById("service").value = "";
   document.getElementById("time").value = "";
   document.getElementById("fullname").value = "";
   document.getElementById("email").value = "";
   document.getElementById("phone").value = "";
-  document.getElementById("serviceInfoText").innerHTML = "";
 
   const dateInput = document.getElementById("date");
   if (dateInput._flatpickr) {
     dateInput._flatpickr.clear();
   }
 
+  monthlyBooked = {};
+  dailySlotCache = {};
+  resetSlotInfo();
   updateWeekendNotice();
   updateSummary();
+
+  ["nidModal", "updateModal", "ephilidModal", "trnModal"].forEach(id => closeModal(id));
 }
 
 /* ================= SETTINGS ================= */
@@ -697,12 +727,14 @@ async function loadSystemSettings() {
 
     if (data.status === "success" && data.systemSettings) {
       systemSettings = data.systemSettings;
+      bookingWindowEndDate = data.bookingWindowEndDate || null;
     } else {
       systemSettings = {
         saturdayOpen: false,
         sundayOpen: false,
         bookingWindowMonths: 1
       };
+      bookingWindowEndDate = null;
     }
   } catch (err) {
     console.error("loadSystemSettings error:", err);
@@ -711,6 +743,7 @@ async function loadSystemSettings() {
       sundayOpen: false,
       bookingWindowMonths: 1
     };
+    bookingWindowEndDate = null;
   }
 
   updateWeekendNotice();
@@ -741,7 +774,7 @@ function openConfirmModal() {
     return;
   }
 
-  document.getElementById("cName").textContent = fullname;
+  document.getElementById("cName").textContent = fullname.toUpperCase();
   document.getElementById("cService").textContent = service;
   document.getElementById("cDate").textContent = formatPrettyDate(date);
   document.getElementById("cTime").textContent = time;
@@ -795,7 +828,7 @@ function checkSlots() {
   const info = document.getElementById("serviceInfoText");
 
   if (!service || !date || !time) {
-    info.innerHTML = "";
+    resetSlotInfo();
     return;
   }
 
@@ -1069,7 +1102,7 @@ window.printSlip = function() {
   }, 800);
 };
 
-window.downloadSlip = async function () {
+window.downloadSlip = async function() {
   const slip = document.getElementById("printableSlip");
   if (!slip) return;
 
@@ -1147,11 +1180,13 @@ window.submitForm = function() {
   const time = document.getElementById("time").value;
 
   if (!service || !fullname || !date || !time) {
+    resetConfirmButtons();
     showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
 
   if (!email && !phone) {
+    resetConfirmButtons();
     showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
     return;
   }
@@ -1193,11 +1228,11 @@ window.submitForm = function() {
       }
 
       if (r.status === "duplicate_email") {
-        return showSystemMessage("Duplicate Email", "This email already has an appointment.");
+        return showSystemMessage("Duplicate Email", "This email already has an appointment on this date.");
       }
 
       if (r.status === "duplicate_phone") {
-        return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment.");
+        return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment on this date.");
       }
 
       if (r.status === "closed_date") {
@@ -1205,7 +1240,7 @@ window.submitForm = function() {
       }
 
       if (r.status === "daily_full") {
-        return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
+        return showSystemMessage("Fully Booked", "This service is fully booked on the selected date and time.");
       }
 
       if (r.status === "success") {
@@ -1215,21 +1250,26 @@ window.submitForm = function() {
         monthlyBooked = {};
 
         document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname;
+        document.getElementById("sName").textContent = fullname.toUpperCase();
         document.getElementById("sService").textContent = service;
         document.getElementById("sDate").textContent = formatAppointmentDate(date);
         document.getElementById("sTime").textContent = time;
 
         const qrPayload =
           "Reference: " + r.refCode + "\n" +
-          "Name: " + fullname + "\n" +
+          "Name: " + fullname.toUpperCase() + "\n" +
           "Service: " + service + "\n" +
           "Date: " + formatAppointmentDate(date) + "\n" +
           "Time: " + time;
 
         drawSlipQR(qrPayload);
-
         openModal("slipModal");
+
+        const calendar = document.getElementById("date")._flatpickr;
+        if (calendar) {
+          fetchMonthlyData(calendar);
+        }
+
         return;
       }
 
@@ -1253,6 +1293,54 @@ window.submitForm = function() {
       showSystemMessage("System Error", "Unable to connect to server.");
     });
 };
+
+/* ================= MONTHLY CALENDAR DATA ================= */
+
+function fetchMonthlyData(instance) {
+  const service = document.getElementById("service").value;
+
+  if (!service) {
+    monthlyBooked = {};
+    updateWeekendNotice();
+    instance.redraw();
+    return;
+  }
+
+  const currentMonth = normalizeMonthString(instance.currentYear, instance.currentMonth);
+  const requestId = ++activeCalendarRequestId;
+
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "monthlySlots",
+      service: service,
+      month: currentMonth
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (requestId !== activeCalendarRequestId) return;
+
+      if (data.status === "error") {
+        throw new Error(data.message || "Unable to load monthly slots.");
+      }
+
+      monthlyBooked = data.slots || {};
+      systemSettings = data.systemSettings || systemSettings;
+      bookingWindowEndDate = data.bookingWindowEndDate || bookingWindowEndDate;
+
+      updateWeekendNotice();
+      instance.redraw();
+    })
+    .catch(err => {
+      if (requestId !== activeCalendarRequestId) return;
+
+      monthlyBooked = {};
+      updateWeekendNotice();
+      instance.redraw();
+      console.error("Monthly fetch error:", err);
+    });
+}
 
 /* ================= DOM READY ================= */
 
@@ -1278,55 +1366,6 @@ document.addEventListener("DOMContentLoaded", function() {
   timeSelect.addEventListener("change", checkSlots);
 
   updateSummary();
-
-  const DEFAULT_SLOTS = {
-    "National ID Registration": 32,
-    "Correction/Updating of Demographic Information": 16,
-    "Request National ID in Paper Format (ePhilID)": 50,
-    "Retrieval of TRN / Other Concern": 50
-  };
-
-  function fetchMonthlyData(instance) {
-    const service = document.getElementById("service").value;
-
-    if (!service) {
-      monthlyBooked = {};
-      updateWeekendNotice();
-      instance.redraw();
-      return;
-    }
-
-    const currentMonth = instance.currentYear + "-" +
-      String(instance.currentMonth + 1).padStart(2, "0");
-
-    fetch(EXEC_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "monthlySlots",
-        service: service,
-        month: currentMonth
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "error") {
-          throw new Error(data.message || "Unable to load monthly slots.");
-        }
-
-        monthlyBooked = data.slots || {};
-        systemSettings = data.systemSettings || systemSettings;
-        bookingWindowEndDate = data.bookingWindowEndDate || null;
-
-        updateWeekendNotice();
-        instance.redraw();
-      })
-      .catch(err => {
-        monthlyBooked = {};
-        updateWeekendNotice();
-        instance.redraw();
-        console.error("Monthly fetch error:", err);
-      });
-  }
 
   const calendar = flatpickr("#date", {
     dateFormat: "Y-m-d",
@@ -1461,6 +1500,7 @@ document.addEventListener("DOMContentLoaded", function() {
   serviceSelect.addEventListener("change", function() {
     monthlyBooked = {};
     dailySlotCache = {};
+    resetSlotInfo();
     calendar.clear();
     calendar.redraw();
     fetchMonthlyData(calendar);
@@ -1498,5 +1538,4 @@ window.addEventListener("click", function(e) {
 });
 </script>
 </body>
-
 </html>
