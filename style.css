@@ -1327,3 +1327,41 @@ button:disabled {
     background: #f7fbff !important;
   }
 }
+/* ================= SLIP MAIN LAYOUT ================= */
+
+#slipContent {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: center;
+  padding: 20px;
+}
+
+.slip-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ================= HEADER ================= */
+
+.slip-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.slip-title {
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.slip-subtitle {
+  text-align: center;
+  display: block;
+  width: 100%;
+  margin: 0 auto 14px;
+  color: #667085;
+}
