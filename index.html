@@ -639,20 +639,13 @@ function showCheckmark() {
   }, 2000);
 }
 
-function generateSlipQR(refCode, fullName, service, date, time) {
+function drawSlipQR(text) {
   const qrCanvas = document.getElementById("qrCanvas");
   if (!qrCanvas || typeof QRious === "undefined") return;
 
-  const qrText =
-    "Reference: " + refCode + "\n" +
-    "Name: " + fullName + "\n" +
-    "Service: " + service + "\n" +
-    "Date: " + date + "\n" +
-    "Time: " + time;
-
   new QRious({
     element: qrCanvas,
-    value: qrText,
+    value: text,
     size: 130,
     level: "H",
     background: "white",
@@ -862,32 +855,39 @@ window.closeSlip = function() {
 
 window.printSlip = function() {
   const slip = document.getElementById("printableSlip");
+  if (!slip) return;
+
   const printWindow = window.open("", "_blank", "width=900,height=700");
+  if (!printWindow) {
+    showSystemMessage("Popup Blocked", "Please allow popups to print the appointment slip.");
+    return;
+  }
 
   const printStyles = `
     <style>
-      body {
+      * { box-sizing: border-box; }
+      html, body {
         margin: 0;
-        padding: 20px;
-        font-family: "Segoe UI", sans-serif;
+        padding: 0;
         background: #ffffff;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #1f2937;
       }
-
+      body {
+        padding: 18px;
+      }
       #printArea {
+        width: 100%;
         max-width: 540px;
         margin: 0 auto;
       }
-
       .slip-card {
         width: 100%;
-        max-width: 540px;
         border-radius: 20px;
         padding: 18px 18px 16px;
         background: #ffffff;
         border: 1px solid #dbe4ef;
-        box-sizing: border-box;
       }
-
       .slip-header {
         display: flex;
         justify-content: center;
@@ -895,13 +895,11 @@ window.printSlip = function() {
         gap: 10px;
         margin-bottom: 8px;
       }
-
       .slip-logo {
         width: 52px;
         height: 52px;
         object-fit: contain;
       }
-
       .slip-title {
         text-align: center;
         margin: 0 0 4px;
@@ -910,7 +908,6 @@ window.printSlip = function() {
         font-weight: 800;
         line-height: 1.2;
       }
-
       .slip-subtitle {
         text-align: center;
         margin: 0;
@@ -918,35 +915,30 @@ window.printSlip = function() {
         font-size: 12px;
         line-height: 1.4;
       }
-
       .slip-divider {
         height: 2px;
-        background: linear-gradient(90deg, #1f5aa8, #4679c2);
+        background: #1f5aa8;
         margin: 12px 0;
         border-radius: 999px;
       }
-
       .slip-qr-wrap {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin: 2px 0 14px;
       }
-
       .slip-qr-box {
         background: #ffffff;
         padding: 8px;
         border-radius: 12px;
         border: 1px solid #dbe5f0;
       }
-
       .slip-qr-note {
         margin-top: 6px;
         font-size: 11px;
         color: #667085;
         text-align: center;
       }
-
       .slip-details {
         display: grid;
         gap: 0;
@@ -955,7 +947,6 @@ window.printSlip = function() {
         overflow: hidden;
         background: #fcfdff;
       }
-
       .slip-item {
         display: grid;
         grid-template-columns: 135px 1fr;
@@ -964,11 +955,9 @@ window.printSlip = function() {
         border-bottom: 1px solid #e5edf6;
         align-items: start;
       }
-
       .slip-item:last-child {
         border-bottom: none;
       }
-
       .slip-label {
         font-size: 11px;
         font-weight: 700;
@@ -977,7 +966,6 @@ window.printSlip = function() {
         letter-spacing: 0.06em;
         padding-top: 2px;
       }
-
       .slip-value {
         font-size: 14px;
         font-weight: 700;
@@ -986,11 +974,9 @@ window.printSlip = function() {
         text-align: right;
         word-break: break-word;
       }
-
       .slip-item-address .slip-value {
         font-weight: 600;
       }
-
       .slip-note {
         margin: 12px 0 0;
         padding: 10px 12px;
@@ -1002,26 +988,30 @@ window.printSlip = function() {
         line-height: 1.45;
         text-align: center;
       }
-
+      .slip-actions {
+        display: none !important;
+      }
       canvas {
         display: block;
       }
-
       @media print {
+        @page {
+          size: auto;
+          margin: 10mm;
+        }
         body {
           padding: 0;
-        }
-
-        #printArea {
-          max-width: 100%;
         }
       }
     </style>
   `;
 
+  printWindow.document.open();
   printWindow.document.write(`
+    <!DOCTYPE html>
     <html>
       <head>
+        <meta charset="UTF-8">
         <title>Print Appointment Slip</title>
         ${printStyles}
       </head>
@@ -1030,14 +1020,12 @@ window.printSlip = function() {
       </body>
     </html>
   `);
-
   printWindow.document.close();
 
   setTimeout(() => {
     printWindow.focus();
     printWindow.print();
-    printWindow.close();
-  }, 700);
+  }, 800);
 };
 
 window.downloadSlip = function() {
@@ -1132,29 +1120,29 @@ window.submitForm = function() {
       }
 
       if (r.status === "success") {
-  closeModal("confirmModal");
+        closeModal("confirmModal");
 
-  dailySlotCache = {};
-  monthlyBooked = {};
+        dailySlotCache = {};
+        monthlyBooked = {};
 
-  document.getElementById("sRef").textContent = r.refCode;
-  document.getElementById("sName").textContent = fullname;
-  document.getElementById("sService").textContent = service;
-  document.getElementById("sDate").textContent = formatAppointmentDate(date);
-  document.getElementById("sTime").textContent = time;
+        document.getElementById("sRef").textContent = r.refCode;
+        document.getElementById("sName").textContent = fullname;
+        document.getElementById("sService").textContent = service;
+        document.getElementById("sDate").textContent = formatAppointmentDate(date);
+        document.getElementById("sTime").textContent = time;
 
-  const qrPayload =
-    "Reference: " + r.refCode + "\n" +
-    "Name: " + fullname + "\n" +
-    "Service: " + service + "\n" +
-    "Date: " + formatAppointmentDate(date) + "\n" +
-    "Time: " + time;
+        const qrPayload =
+          "Reference: " + r.refCode + "\n" +
+          "Name: " + fullname + "\n" +
+          "Service: " + service + "\n" +
+          "Date: " + formatAppointmentDate(date) + "\n" +
+          "Time: " + time;
 
-  drawSlipQR(qrPayload);
+        drawSlipQR(qrPayload);
 
-  openModal("slipModal");
-  return;
-}
+        openModal("slipModal");
+        return;
+      }
 
       showSystemMessage("Notice", r.message || "Unexpected response from server.");
     })
