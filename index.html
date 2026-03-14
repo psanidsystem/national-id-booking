@@ -412,6 +412,7 @@ collection and processing of your personal data for the stated purpose.
 </div>
 
 <!-- ================= SLIP ================= -->
+<!-- ================= SLIP ================= -->
 <div class="modal" id="slipModal" style="display:none;">
   <div class="modal-content slip-card" id="slipContent">
 
@@ -424,6 +425,11 @@ collection and processing of your personal data for the stated purpose.
     <p class="slip-subtitle">Philippine Statistics Authority – Cebu</p>
 
     <div class="slip-divider"></div>
+
+    <div class="slip-qr-wrap">
+      <div id="slipQrCode" class="slip-qr-box"></div>
+      <p class="slip-qr-note">Scan for appointment verification</p>
+    </div>
 
     <div class="slip-details">
       <div class="slip-item">
@@ -496,6 +502,7 @@ collection and processing of your personal data for the stated purpose.
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
@@ -770,6 +777,25 @@ function formatAppointmentDate(dateStr) {
   return `${day} ${month} ${year}`;
 }
 
+function generateSlipQRCode(data) {
+  const qrContainer = document.getElementById("slipQrCode");
+  if (!qrContainer) return;
+
+  qrContainer.innerHTML = "";
+
+  const qrText =
+    "Reference: " + data.refCode + "\n" +
+    "Name: " + data.fullname + "\n" +
+    "Service: " + data.service + "\n" +
+    "Date: " + data.date + "\n" +
+    "Time: " + data.time;
+
+  new QRCode(qrContainer, {
+    text: qrText,
+    width: 120,
+    height: 120
+  });
+}	
 function updateSummary() {
   const service = document.getElementById("service").value || "Not selected";
   const rawDate = document.getElementById("date").value;
@@ -918,21 +944,29 @@ window.submitForm = function() {
         return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
       }
 
-      if (r.status === "success") {
-        closeModal("confirmModal");
-
-        dailySlotCache = {};
-        monthlyBooked = {};
-
-		document.getElementById("sRef").textContent = r.refCode;
-		document.getElementById("sName").textContent = fullname;
-		document.getElementById("sService").textContent = service;
-		document.getElementById("sDate").textContent = formatAppointmentDate(date);
-		document.getElementById("sTime").textContent = time;
-
-        openModal("slipModal");
-        return;
-      }
+		if (r.status === "success") {
+		  closeModal("confirmModal");
+		
+		  dailySlotCache = {};
+		  monthlyBooked = {};
+		
+		  document.getElementById("sRef").textContent = r.refCode;
+		  document.getElementById("sName").textContent = fullname;
+		  document.getElementById("sService").textContent = service;
+		  document.getElementById("sDate").textContent = formatAppointmentDate(date);
+		  document.getElementById("sTime").textContent = time;
+		
+		  generateSlipQRCode({
+		    refCode: r.refCode,
+		    fullname: fullname,
+		    service: service,
+		    date: formatAppointmentDate(date),
+		    time: time
+		  });
+		
+		  openModal("slipModal");
+		  return;
+		}
 
       showSystemMessage("Notice", r.message || "Unexpected response from server.");
     })
