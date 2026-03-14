@@ -412,7 +412,6 @@ collection and processing of your personal data for the stated purpose.
 </div>
 
 <!-- ================= SLIP ================= -->
-<!-- ================= SLIP ================= -->
 <div class="modal" id="slipModal" style="display:none;">
   <div class="modal-content slip-card" id="slipContent">
 
@@ -465,7 +464,7 @@ collection and processing of your personal data for the stated purpose.
       <div class="slip-item slip-item-address">
         <span class="slip-label">Center</span>
         <span class="slip-value">
-          National ID - Fixed Registration Center,<br>
+          National ID Fixed Registration Center<br>
           3rd Floor, Gaisano Capital South, Cebu City
         </span>
       </div>
@@ -783,19 +782,15 @@ function generateSlipQRCode(data) {
 
   qrContainer.innerHTML = "";
 
-  const qrText =
-    "Reference: " + data.refCode + "\n" +
-    "Name: " + data.fullname + "\n" +
-    "Service: " + data.service + "\n" +
-    "Date: " + data.date + "\n" +
-    "Time: " + data.time;
+  const qrText = "Reference: " + data.refCode;
 
   new QRCode(qrContainer, {
     text: qrText,
-    width: 120,
-    height: 120
+    width: 96,
+    height: 96
   });
-}	
+}
+	
 function updateSummary() {
   const service = document.getElementById("service").value || "Not selected";
   const rawDate = document.getElementById("date").value;
