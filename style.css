@@ -332,7 +332,7 @@ button:disabled {
   background: #ffffff;
   width: 100%;
   max-width: 520px;
-  max-height: 88vh;
+  max-height: min(88vh, 900px);
   overflow-y: auto;
   border-radius: 20px;
   padding: 24px;
@@ -447,57 +447,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ================= SLIP ================= */
-
-#slipContent {
-  max-width: 520px;
-  text-align: left;
-}
-
-.slip-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 12px;
-}
-
-.slip-logo {
-  width: 68px !important;
-  height: 68px !important;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-#slipContent img {
-  max-width: none;
-}
-
-#slipContent h2 {
-  text-align: center;
-  color: var(--primary);
-  margin-bottom: 6px;
-}
-
-#slipContent p {
-  margin-bottom: 12px;
-  line-height: 1.5;
-}
-
-.slip-subtitle {
-  text-align: center;
-  margin-top: -4px;
-  margin-bottom: 18px;
-  font-size: 13px;
-  color: #555;
-}
-
-.slip-divider {
-  height: 2px;
-  background: var(--primary);
-  margin: 15px 0;
-}
-
 /* ================= FINAL COMPACT RESPONSIVE SLIP ================= */
 
 .slip-card {
@@ -523,6 +472,7 @@ button:disabled {
   width: 52px;
   height: 52px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .slip-title {
@@ -651,108 +601,6 @@ button:disabled {
 .slip-actions .secondary:hover {
   background: #eef3f9;
   color: #1b4684;
-}
-
-/* ===== TABLET ===== */
-@media (max-width: 768px) {
-  .slip-card {
-    width: min(94vw, 520px);
-    padding: 18px 14px 16px;
-    border-radius: 18px;
-  }
-
-  .slip-logo {
-    width: 48px;
-    height: 48px;
-  }
-
-  .slip-title {
-    font-size: 17px;
-  }
-
-  .slip-subtitle {
-    font-size: 11px;
-  }
-
-  .slip-item {
-    grid-template-columns: 120px 1fr;
-    gap: 10px;
-    padding: 10px 12px;
-  }
-
-  .slip-label {
-    font-size: 10px;
-  }
-
-  .slip-value {
-    font-size: 13px;
-  }
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 480px) {
-  .slip-card {
-    width: calc(100vw - 20px);
-    max-width: none;
-    padding: 16px 12px 14px;
-    border-radius: 16px;
-  }
-
-  .slip-header {
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-
-  .slip-logo {
-    width: 44px;
-    height: 44px;
-  }
-
-  .slip-title {
-    font-size: 16px;
-  }
-
-  .slip-subtitle {
-    font-size: 11px;
-  }
-
-  .slip-divider {
-    margin: 10px 0;
-  }
-
-  .slip-qr-box {
-    padding: 7px;
-  }
-
-  .slip-details {
-    border-radius: 14px;
-  }
-
-  .slip-item {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 10px 12px;
-  }
-
-  .slip-label {
-    font-size: 10px;
-  }
-
-  .slip-value {
-    text-align: left;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .slip-note {
-    font-size: 11px;
-    padding: 9px 10px;
-  }
-
-  .slip-actions button {
-    min-height: 42px;
-    font-size: 14px;
-  }
 }
 
 /* ================= FLATPICKR ================= */
@@ -922,162 +770,118 @@ button:disabled {
   opacity: 1;
 }
 
-/* ================= PRINT ================= */
+/* ================= PREMIUM CONFIRM MODAL ================= */
 
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 10mm;
-  }
-
-  html, body {
-    width: 100%;
-    height: auto;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    overflow: visible !important;
-  }
-
-  body * {
-    visibility: hidden !important;
-  }
-
-  #slipContent,
-  #slipContent * {
-    visibility: visible !important;
-  }
-
-  #slipContent {
-    position: absolute !important;
-    left: 50% !important;
-    top: 0 !important;
-    transform: translateX(-50%) !important;
-    width: 88mm !important;
-    max-width: 88mm !important;
-    min-width: 88mm !important;
-    margin: 0 !important;
-    padding: 8mm 6mm !important;
-    background: #ffffff !important;
-    border: 1px solid #d9e2ec !important;
-    border-radius: 10px !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-  }
-
-  .slip-card {
-    width: 88mm !important;
-    max-width: 88mm !important;
-    padding: 8mm 6mm !important;
-    border: 1px solid #d9e2ec !important;
-    border-radius: 10px !important;
-    box-shadow: none !important;
-    background: #ffffff !important;
-  }
-
-  .slip-header {
-    margin-bottom: 4mm !important;
-    gap: 8px !important;
-  }
-
-  .slip-logo {
-    width: 16mm !important;
-    height: 16mm !important;
-  }
-
-  .slip-title {
-    font-size: 14pt !important;
-    margin: 0 0 2mm !important;
-    text-align: center !important;
-  }
-
-  .slip-subtitle {
-    font-size: 9pt !important;
-    text-align: center !important;
-  }
-
-  .slip-divider {
-    margin: 3mm 0 4mm !important;
-    height: 1px !important;
-  }
-
-  .slip-qr-wrap {
-    margin: 2mm 0 4mm !important;
-  }
-
-  .slip-qr-box {
-    padding: 2mm !important;
-    border: 1px solid #dbe5f0 !important;
-    box-shadow: none !important;
-    background: #fff !important;
-  }
-
-  .slip-qr-note {
-    font-size: 8pt !important;
-    margin-top: 2mm !important;
-  }
-
-  .slip-details {
-    border: 1px solid #dbe5f0 !important;
-    border-radius: 8px !important;
-    overflow: visible !important;
-    background: #fff !important;
-  }
-
-  .slip-item {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 1mm !important;
-    padding: 2.5mm 3mm !important;
-    border-bottom: 1px solid #e5edf6 !important;
-    background: #fff !important;
-  }
-
-  .slip-item:last-child {
-    border-bottom: none !important;
-  }
-
-  .slip-label {
-    font-size: 7.5pt !important;
-    color: #667085 !important;
-    letter-spacing: 0.03em !important;
-  }
-
-  .slip-value {
-    font-size: 9.5pt !important;
-    text-align: left !important;
-    line-height: 1.35 !important;
-    color: #1f2937 !important;
-    word-break: break-word !important;
-  }
-
-  .slip-note {
-    margin: 3mm 0 0 !important;
-    padding: 2.5mm 3mm !important;
-    font-size: 7.8pt !important;
-    border: 1px solid #dbe5f0 !important;
-    background: #f8fbff !important;
-    border-radius: 8px !important;
-  }
-
-  .slip-actions,
-  .actions,
-  button {
-    display: none !important;
-  }
-
-  .modal,
-  #slipModal {
-    background: #ffffff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
-  }
+.confirm-modal-card {
+  max-width: 560px;
+  padding: 28px 24px 22px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(215, 224, 234, 0.85);
 }
 
-/* ================= MOBILE ================= */
+.confirm-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.confirm-modal-card h2 {
+  margin: 0 0 8px;
+  font-size: 23px;
+  font-weight: 800;
+  color: #18212f;
+  letter-spacing: -0.02em;
+}
+
+.confirm-subtext {
+  margin: 0;
+  font-size: 14px;
+  color: #667085;
+  line-height: 1.5;
+  text-align: center !important;
+}
+
+.confirm-summary-card {
+  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
+  border: 1px solid #dbe5f0;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.confirm-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e6edf5;
+}
+
+.confirm-item:last-child {
+  border-bottom: none;
+}
+
+.confirm-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-top: 2px;
+}
+
+.confirm-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: right;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.confirm-item:nth-child(2) .confirm-value {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.confirm-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.confirm-actions button {
+  margin-top: 0;
+  min-height: 48px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.confirm-primary {
+  background: linear-gradient(180deg, #2b63b1 0%, #2459a6 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(36, 89, 166, 0.2);
+}
+
+.confirm-primary:hover {
+  background: linear-gradient(180deg, #23569b 0%, #1b4684 100%);
+}
+
+.confirm-secondary {
+  background: #f8fafc;
+  color: #2459a6;
+  border: 1px solid #d7e1ec;
+  box-shadow: none;
+}
+
+.confirm-secondary:hover {
+  background: #eef3f9;
+  color: #1b4684;
+}
+
+/* ================= TABLET / MOBILE ================= */
 
 @media (max-width: 768px) {
   body {
@@ -1203,120 +1007,40 @@ button:disabled {
   .modal-content h3 {
     font-size: 17px;
   }
-}
 
-/* ================= PREMIUM CONFIRM MODAL ================= */
+  .slip-card {
+    width: min(94vw, 520px);
+    padding: 18px 14px 16px;
+    border-radius: 18px;
+  }
 
-.confirm-modal-card {
-  max-width: 560px;
-  padding: 28px 24px 22px;
-  border-radius: 22px;
-  background: #ffffff;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
-  border: 1px solid rgba(215, 224, 234, 0.85);
-}
+  .slip-logo {
+    width: 48px;
+    height: 48px;
+  }
 
-.confirm-header {
-  text-align: center;
-  margin-bottom: 18px;
-}
+  .slip-title {
+    font-size: 17px;
+  }
 
-.confirm-modal-card h2 {
-  margin: 0 0 8px;
-  font-size: 23px;
-  font-weight: 800;
-  color: #18212f;
-  letter-spacing: -0.02em;
-}
+  .slip-subtitle {
+    font-size: 11px;
+  }
 
-.confirm-subtext {
-  margin: 0;
-  font-size: 14px;
-  color: #667085;
-  line-height: 1.5;
-  text-align: center !important;
-}
+  .slip-item {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+  }
 
-.confirm-summary-card {
-  background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
-  border: 1px solid #dbe5f0;
-  border-radius: 18px;
-  overflow: hidden;
-  margin-bottom: 18px;
-}
+  .slip-label {
+    font-size: 10px;
+  }
 
-.confirm-item {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 18px;
-  align-items: start;
-  padding: 14px 18px;
-  border-bottom: 1px solid #e6edf5;
-}
+  .slip-value {
+    font-size: 13px;
+  }
 
-.confirm-item:last-child {
-  border-bottom: none;
-}
-
-.confirm-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #667085;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding-top: 2px;
-}
-
-.confirm-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f2937;
-  text-align: right;
-  line-height: 1.45;
-  word-break: break-word;
-}
-
-.confirm-item:nth-child(2) .confirm-value {
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.confirm-actions {
-  display: grid;
-  gap: 10px;
-}
-
-.confirm-actions button {
-  margin-top: 0;
-  min-height: 48px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.confirm-primary {
-  background: linear-gradient(180deg, #2b63b1 0%, #2459a6 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(36, 89, 166, 0.2);
-}
-
-.confirm-primary:hover {
-  background: linear-gradient(180deg, #23569b 0%, #1b4684 100%);
-}
-
-.confirm-secondary {
-  background: #f8fafc;
-  color: #2459a6;
-  border: 1px solid #d7e1ec;
-  box-shadow: none;
-}
-
-.confirm-secondary:hover {
-  background: #eef3f9;
-  color: #1b4684;
-}
-
-@media (max-width: 768px) {
   .confirm-modal-card {
     padding: 22px 16px 18px;
     border-radius: 18px;
@@ -1358,6 +1082,72 @@ button:disabled {
     font-size: 15px;
   }
 }
+
+@media (max-width: 480px) {
+  .slip-card {
+    width: calc(100vw - 20px);
+    max-width: none;
+    padding: 16px 12px 14px;
+    border-radius: 16px;
+  }
+
+  .slip-header {
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .slip-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .slip-title {
+    font-size: 16px;
+  }
+
+  .slip-subtitle {
+    font-size: 11px;
+  }
+
+  .slip-divider {
+    margin: 10px 0;
+  }
+
+  .slip-qr-box {
+    padding: 7px;
+  }
+
+  .slip-details {
+    border-radius: 14px;
+  }
+
+  .slip-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 10px 12px;
+  }
+
+  .slip-label {
+    font-size: 10px;
+  }
+
+  .slip-value {
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .slip-note {
+    font-size: 11px;
+    padding: 9px 10px;
+  }
+
+  .slip-actions button {
+    min-height: 42px;
+    font-size: 14px;
+  }
+}
+
 /* ================= PRINT STYLES FOR APPOINTMENT SLIP ================= */
 
 @media print {
@@ -1371,20 +1161,22 @@ button:disabled {
     background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   body * {
     visibility: hidden !important;
   }
 
-  #slipModal,
-  #slipModal * {
+  #slipContent,
+  #slipContent * {
     visibility: visible !important;
   }
 
   #slipModal {
     position: static !important;
-    inset: auto !important;
     display: block !important;
     background: #ffffff !important;
     padding: 0 !important;
@@ -1394,16 +1186,31 @@ button:disabled {
 
   #slipContent {
     position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
     width: 100% !important;
     max-width: 180mm !important;
+    min-width: auto !important;
     min-height: auto !important;
     max-height: none !important;
+    height: auto !important;
     overflow: visible !important;
     margin: 0 auto !important;
     padding: 10mm 9mm 8mm !important;
     box-shadow: none !important;
     border: 1px solid #cfd8e3 !important;
     border-radius: 10px !important;
+    background: #ffffff !important;
+  }
+
+  .slip-card {
+    width: 100% !important;
+    max-width: 180mm !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     background: #ffffff !important;
   }
 
@@ -1421,11 +1228,13 @@ button:disabled {
     font-size: 18pt !important;
     margin: 0 0 2mm !important;
     color: #163f7a !important;
+    text-align: center !important;
   }
 
   .slip-subtitle {
     font-size: 10pt !important;
     color: #444 !important;
+    text-align: center !important;
   }
 
   .slip-divider {
@@ -1444,6 +1253,7 @@ button:disabled {
     border: 1px solid #d7dfe8 !important;
     border-radius: 8px !important;
     box-shadow: none !important;
+    background: #fff !important;
   }
 
   .slip-qr-note {
@@ -1457,9 +1267,11 @@ button:disabled {
     border-radius: 8px !important;
     background: #ffffff !important;
     page-break-inside: avoid !important;
+    overflow: hidden !important;
   }
 
   .slip-item {
+    display: grid !important;
     grid-template-columns: 44mm 1fr !important;
     gap: 5mm !important;
     padding: 3.5mm 4mm !important;
