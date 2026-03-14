@@ -703,6 +703,13 @@
       margin-top: auto;
     }
 
+    .hint-text {
+      font-size: 12px;
+      color: #667085;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
     .modal {
       position: fixed;
       inset: 0;
@@ -1039,13 +1046,14 @@
             <div class="field">
               <label for="filterStatus">Status</label>
               <select id="filterStatus">
-              <option value="">All statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Arrived">Arrived</option>
-              <option value="Assisted">Assisted</option>
-              <option value="Completed">Completed</option>
-              <option value="No Show">No Show</option>
-              <option value="Cancelled">Cancelled</option>
+                <option value="">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Arrived">Arrived</option>
+                <option value="Assisted">Assisted</option>
+                <option value="Completed">Completed</option>
+                <option value="No Show">No Show</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Confirmed">Confirmed</option>
               </select>
             </div>
             <div class="field">
@@ -1142,169 +1150,171 @@
       </section>
 
       <section id="settingsSection" class="hidden">
-  <div class="settings-grid">
-    <div class="card settings-card">
-      <div class="panel-title">
-        <h3>System Settings</h3>
-      </div>
+        <div class="settings-grid">
+          <div class="card settings-card">
+            <div class="panel-title">
+              <h3>System Settings</h3>
+            </div>
 
-      <p class="settings-text">
-        This admin dashboard is connected to the personnel login page and Google Apps Script backend.
-      </p>
+            <p class="settings-text">
+              This admin dashboard is connected to the personnel login page and Google Apps Script backend.
+            </p>
 
-      <div class="settings-info-list">
-        <div class="settings-info-item">
-          <strong>Access Control</strong>
-          <span>Authorized personnel only</span>
+            <div class="settings-info-list">
+              <div class="settings-info-item">
+                <strong>Access Control</strong>
+                <span>Authorized personnel only</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Data Source</strong>
+                <span>Google Sheets Appointment Database</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Dashboard Mode</strong>
+                <span>Live Admin View</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Saturday Booking</strong>
+                <span id="saturdayBookingLabel">Loading...</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Sunday Booking</strong>
+                <span id="sundayBookingLabel">Loading...</span>
+              </div>
+
+              <div class="settings-info-item">
+                <strong>Booking Window</strong>
+                <span id="bookingWindowLabel">Loading...</span>
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom:16px;">
+              <label for="saturdayBookingToggle">Saturday Booking</label>
+              <select id="saturdayBookingToggle">
+                <option value="false">OFF</option>
+                <option value="true">ON</option>
+              </select>
+            </div>
+
+            <div class="field" style="margin-bottom:16px;">
+              <label for="sundayBookingToggle">Sunday Booking</label>
+              <select id="sundayBookingToggle">
+                <option value="false">OFF</option>
+                <option value="true">ON</option>
+              </select>
+            </div>
+
+            <div class="field" style="margin-bottom:16px;">
+              <label for="bookingWindowMonths">Booking Window</label>
+              <select id="bookingWindowMonths">
+                <option value="1">Current month only</option>
+                <option value="2">Current + next month</option>
+                <option value="3">Current + 2 months</option>
+                <option value="4">Current + 3 months</option>
+              </select>
+            </div>
+
+            <div class="row-actions" style="margin-bottom:16px;">
+              <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Weekend Setting</button>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
+            </div>
+          </div>
+
+          <div class="card settings-card">
+            <div class="panel-title">
+              <h3>Admin Notes</h3>
+            </div>
+            <div class="empty-state">
+              <div class="empty-icon">🛡️</div>
+              <div>
+                <strong>System Ready</strong>
+                <p>Use this dashboard to manage bookings, adjust slot rules, monitor daily service demand, and control weekend booking access.</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div class="settings-info-item">
-          <strong>Data Source</strong>
-          <span>Google Sheets Appointment Database</span>
-        </div>
-
-        <div class="settings-info-item">
-          <strong>Dashboard Mode</strong>
-          <span>Live Admin View</span>
-        </div>
-
-        <div class="settings-info-item">
-          <strong>Saturday Booking</strong>
-          <span id="saturdayBookingLabel">Loading...</span>
-        </div>
-        
-        <div class="settings-info-item">
-          <strong>Sunday Booking</strong>
-          <span id="sundayBookingLabel">Loading...</span>
-        </div>
-        
-        <div class="settings-info-item">
-          <strong>Booking Window</strong>
-          <span id="bookingWindowLabel">Loading...</span>
-        </div>
-      </div>
-
-      <div class="field" style="margin-bottom:16px;">
-        <label for="saturdayBookingToggle">Saturday Booking</label>
-        <select id="saturdayBookingToggle">
-          <option value="false">OFF</option>
-          <option value="true">ON</option>
-        </select>
-      </div>
-      
-      <div class="field" style="margin-bottom:16px;">
-        <label for="sundayBookingToggle">Sunday Booking</label>
-        <select id="sundayBookingToggle">
-          <option value="false">OFF</option>
-          <option value="true">ON</option>
-        </select>
-      </div>
-      
-      <div class="field" style="margin-bottom:16px;">
-        <label for="bookingWindowMonths">Booking Window</label>
-        <select id="bookingWindowMonths">
-          <option value="1">Current month only</option>
-          <option value="2">Current + next month</option>
-          <option value="3">Current + 2 months</option>
-          <option value="4">Current + 3 months</option>
-        </select>
-      </div>
-
-      <div class="row-actions" style="margin-bottom:16px;">
-        <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Weekend Setting</button>
-      </div>
-
-      <div class="settings-actions">
-        <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
-      </div>
-    </div>
-
-    <div class="card settings-card">
-      <div class="panel-title">
-        <h3>Admin Notes</h3>
-      </div>
-      <div class="empty-state">
-        <div class="empty-icon">🛡️</div>
-        <div>
-          <strong>System Ready</strong>
-          <p>Use this dashboard to manage bookings, adjust slot rules, monitor daily service demand, and control weekend booking access.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
       <section id="usersSection" class="hidden">
-  <div class="card">
-    <div class="panel-title">
-      <h3>User Management</h3>
-      <button class="btn btn-primary" id="openUserModalBtn">New User</button>
-    </div>
+        <div class="card">
+          <div class="panel-title">
+            <h3>User Management</h3>
+            <button class="btn btn-primary" id="openUserModalBtn">New User</button>
+          </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="usersTableBody"></tbody>
-      </table>
-    </div>
-  </div>
-</section>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
   <div class="modal" id="userModal">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h3 id="userModalTitle">Create User</h3>
-      <button class="btn btn-secondary" data-close="userModal">Close</button>
-    </div>
-
-    <div class="form-grid">
-      <div class="field full">
-        <label for="userFullName">Full Name</label>
-        <input id="userFullName" type="text" />
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="userModalTitle">Create User</h3>
+        <button class="btn btn-secondary" data-close="userModal">Close</button>
       </div>
 
-      <div class="field">
-        <label for="userUsername">Username</label>
-        <input id="userUsername" type="text" />
+      <div class="form-grid">
+        <div class="field full">
+          <label for="userFullName">Full Name</label>
+          <input id="userFullName" type="text" />
+        </div>
+
+        <div class="field">
+          <label for="userUsername">Username</label>
+          <input id="userUsername" type="text" />
+        </div>
+
+        <div class="field">
+          <label for="userPassword">Password</label>
+          <input id="userPassword" type="password" />
+          <div class="hint-text" id="userPasswordHint">Enter a password.</div>
+        </div>
+
+        <div class="field">
+          <label for="userRole">Role</label>
+          <select id="userRole">
+            <option value="personnel">personnel</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="userStatus">Status</label>
+          <select id="userStatus">
+            <option value="active">active</option>
+            <option value="inactive">inactive</option>
+          </select>
+        </div>
       </div>
 
-      <div class="field">
-        <label for="userPassword">Password</label>
-        <input id="userPassword" type="text" />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" data-close="userModal">Cancel</button>
+        <button class="btn btn-primary" id="saveUserBtn">Save User</button>
       </div>
-
-      <div class="field">
-        <label for="userRole">Role</label>
-        <select id="userRole">
-          <option value="personnel">personnel</option>
-          <option value="admin">admin</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="userStatus">Status</label>
-        <select id="userStatus">
-          <option value="active">active</option>
-          <option value="inactive">inactive</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-secondary" data-close="userModal">Cancel</button>
-      <button class="btn btn-primary" id="saveUserBtn">Save User</button>
     </div>
   </div>
-</div>
 
   <div class="modal" id="bookingModal">
     <div class="modal-card">
@@ -1322,6 +1332,10 @@
           <select id="bookingStatus">
             <option>Confirmed</option>
             <option>Pending</option>
+            <option>Arrived</option>
+            <option>Assisted</option>
+            <option>Completed</option>
+            <option>No Show</option>
             <option>Cancelled</option>
           </select>
         </div>
@@ -1334,27 +1348,27 @@
           <select id="bookingService"></select>
         </div>
         <div class="field">
-  <label for="bookingDate">Date</label>
-  <input id="bookingDate" type="date" />
-    </div>
-    <div class="field">
-      <label for="bookingTime">Time</label>
-      <select id="bookingTime">
-        <option value="">-- Select Time --</option>
-        <option>8:00 AM</option>
-        <option>9:00 AM</option>
-        <option>10:00 AM</option>
-        <option>11:00 AM</option>
-        <option>1:00 PM</option>
-        <option>2:00 PM</option>
-        <option>3:00 PM</option>
-        <option>4:00 PM</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="bookingEmail">Email</label>
-      <input id="bookingEmail" type="email" />
-    </div>
+          <label for="bookingDate">Date</label>
+          <input id="bookingDate" type="date" />
+        </div>
+        <div class="field">
+          <label for="bookingTime">Time</label>
+          <select id="bookingTime">
+            <option value="">-- Select Time --</option>
+            <option>8:00 AM</option>
+            <option>9:00 AM</option>
+            <option>10:00 AM</option>
+            <option>11:00 AM</option>
+            <option>1:00 PM</option>
+            <option>2:00 PM</option>
+            <option>3:00 PM</option>
+            <option>4:00 PM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bookingEmail">Email</label>
+          <input id="bookingEmail" type="email" />
+        </div>
         <div class="field">
           <label for="bookingPhone">Phone</label>
           <input id="bookingPhone" type="text" />
@@ -1501,6 +1515,15 @@ function requireLogin() {
   return true;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function showNotice(message, type = "success", targetId = "notice") {
   const el = document.getElementById(targetId);
   if (!el) return;
@@ -1571,6 +1594,10 @@ function canEditBookings() {
   return userRole === "admin";
 }
 
+function isAdmin() {
+  return userRole === "admin";
+}
+
 function fillServiceOptions() {
   const ids = ["quickService", "filterService", "bookingService", "slotService"];
 
@@ -1591,15 +1618,15 @@ function fillServiceOptions() {
 }
 
 function switchSection(section) {
+  if (!sectionMap[section]) return;
+
   Object.values(sectionMap).forEach(([id]) => {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
   });
 
-  if (sectionMap[section]) {
-    document.getElementById(sectionMap[section][0]).classList.remove("hidden");
-    document.getElementById("sectionTitle").textContent = sectionMap[section][1];
-  }
+  document.getElementById(sectionMap[section][0]).classList.remove("hidden");
+  document.getElementById("sectionTitle").textContent = sectionMap[section][1];
 
   document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
@@ -1682,8 +1709,8 @@ function renderMetrics() {
     div.className = "slot-item";
     div.innerHTML = `
       <div>
-        <strong>${service}</strong>
-        <div class="slot-meta">Selected date: ${formatDate(selectedDate)}</div>
+        <strong>${escapeHtml(service)}</strong>
+        <div class="slot-meta">Selected date: ${escapeHtml(formatDate(selectedDate))}</div>
       </div>
       <span class="slot-pill">${count} booking${count !== 1 ? "s" : ""}</span>
     `;
@@ -1700,12 +1727,12 @@ function renderRecentBookings(list = bookings) {
   list.slice(0, 6).forEach(item => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${item.refCode}</td>
-      <td>${item.fullname}</td>
-      <td>${item.service}</td>
-      <td>${formatDate(item.date)}</td>
-      <td>${formatTime(item.time)}</td>
-      <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+      <td>${escapeHtml(item.refCode)}</td>
+      <td>${escapeHtml(item.fullname)}</td>
+      <td>${escapeHtml(item.service)}</td>
+      <td>${escapeHtml(formatDate(item.date))}</td>
+      <td>${escapeHtml(formatTime(item.time))}</td>
+      <td><span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span></td>
     `;
     tbody.appendChild(tr);
   });
@@ -1717,16 +1744,17 @@ function renderRecentBookings(list = bookings) {
 
 function getPersonnelActionButtons(item) {
   const status = (item.status || "").trim();
+  const safeRef = JSON.stringify(item.refCode);
 
   if (status === "Completed" || status === "Cancelled" || status === "No Show") {
-    return `<span class="${badgeClass(status)}">${status}</span>`;
+    return `<span class="${badgeClass(status)}">${escapeHtml(status)}</span>`;
   }
 
-  if (status === "Pending") {
+  if (status === "Pending" || status === "Confirmed") {
     return `
       <div class="row-actions">
-        <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Arrived')">Arrived</button>
-        <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+        <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Arrived')">Arrived</button>
+        <button class="mini-btn mini-delete" onclick="updateBookingStatus(${safeRef}, 'No Show')">No Show</button>
       </div>
     `;
   }
@@ -1734,8 +1762,8 @@ function getPersonnelActionButtons(item) {
   if (status === "Arrived") {
     return `
       <div class="row-actions">
-        <button class="mini-btn mini-edit" onclick="updateBookingStatus('${item.refCode}', 'Assisted')">Assist</button>
-        <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+        <button class="mini-btn mini-edit" onclick="updateBookingStatus(${safeRef}, 'Assisted')">Assist</button>
+        <button class="mini-btn mini-delete" onclick="updateBookingStatus(${safeRef}, 'No Show')">No Show</button>
       </div>
     `;
   }
@@ -1743,17 +1771,17 @@ function getPersonnelActionButtons(item) {
   if (status === "Assisted") {
     return `
       <div class="row-actions">
-        <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Completed')">Complete</button>
+        <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Completed')">Complete</button>
       </div>
     `;
   }
 
   return `
     <div class="row-actions">
-      <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Arrived')">Arrived</button>
-      <button class="mini-btn mini-edit" onclick="updateBookingStatus('${item.refCode}', 'Assisted')">Assist</button>
-      <button class="mini-btn mini-slot" onclick="updateBookingStatus('${item.refCode}', 'Completed')">Complete</button>
-      <button class="mini-btn mini-delete" onclick="updateBookingStatus('${item.refCode}', 'No Show')">No Show</button>
+      <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Arrived')">Arrived</button>
+      <button class="mini-btn mini-edit" onclick="updateBookingStatus(${safeRef}, 'Assisted')">Assist</button>
+      <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Completed')">Complete</button>
+      <button class="mini-btn mini-delete" onclick="updateBookingStatus(${safeRef}, 'No Show')">No Show</button>
     </div>
   `;
 }
@@ -1766,25 +1794,27 @@ function renderBookingsTable() {
   tbody.innerHTML = "";
 
   filtered.forEach(item => {
+    const safeRef = JSON.stringify(item.refCode);
+
     const actionHtml = canEditBookings()
       ? `
         <div class="row-actions">
-          <button class="mini-btn mini-edit" onclick="editBooking('${item.refCode}')">Edit</button>
-          <button class="mini-btn mini-delete" onclick="deleteBooking('${item.refCode}')">Delete</button>
+          <button class="mini-btn mini-edit" onclick="editBooking(${safeRef})">Edit</button>
+          <button class="mini-btn mini-delete" onclick="deleteBooking(${safeRef})">Delete</button>
         </div>
       `
       : getPersonnelActionButtons(item);
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${item.refCode}</td>
-      <td>${item.fullname}</td>
-      <td>${item.service}</td>
-      <td>${formatDate(item.date)}</td>
-      <td>${formatTime(item.time)}</td>
-      <td>${item.email || "—"}</td>
-      <td>${item.phone || "—"}</td>
-      <td><span class="${badgeClass(item.status)}">${item.status}</span></td>
+      <td>${escapeHtml(item.refCode)}</td>
+      <td>${escapeHtml(item.fullname)}</td>
+      <td>${escapeHtml(item.service)}</td>
+      <td>${escapeHtml(formatDate(item.date))}</td>
+      <td>${escapeHtml(formatTime(item.time))}</td>
+      <td>${escapeHtml(item.email || "—")}</td>
+      <td>${escapeHtml(item.phone || "—")}</td>
+      <td><span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span></td>
       <td>${actionHtml}</td>
     `;
     tbody.appendChild(tr);
@@ -1810,10 +1840,10 @@ function renderSlotLists() {
       div.className = "slot-item";
       div.innerHTML = `
         <div>
-          <strong>${formatDate(item.date)}</strong>
-          <div class="slot-meta">${item.service}</div>
+          <strong>${escapeHtml(formatDate(item.date))}</strong>
+          <div class="slot-meta">${escapeHtml(item.service)}</div>
         </div>
-        <span class="slot-pill">${item.available} slots</span>
+        <span class="slot-pill">${escapeHtml(item.available)} slots</span>
       `;
       dashboardList.appendChild(div);
     });
@@ -1833,16 +1863,16 @@ function renderSlotLists() {
 
   if (slotsTableBody) {
     slotRules.forEach(item => {
-      const tr = document.createElement("tr");
       const key = `${item.date}__${item.service}`;
+      const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${formatDate(item.date)}</td>
-        <td>${item.service}</td>
-        <td>${item.available}</td>
+        <td>${escapeHtml(formatDate(item.date))}</td>
+        <td>${escapeHtml(item.service)}</td>
+        <td>${escapeHtml(item.available)}</td>
         <td>
           <div class="row-actions">
-            <button class="mini-btn mini-slot" onclick="editSlotRule('${key}')">Edit</button>
-            <button class="mini-btn mini-delete" onclick="deleteSlotRule('${key}')">Delete</button>
+            <button class="mini-btn mini-slot" onclick="editSlotRule(${JSON.stringify(key)})">Edit</button>
+            <button class="mini-btn mini-delete" onclick="deleteSlotRule(${JSON.stringify(key)})">Delete</button>
           </div>
         </td>
       `;
@@ -1860,10 +1890,10 @@ function renderSlotLists() {
       div.className = "slot-item";
       div.innerHTML = `
         <div>
-          <strong>${service}</strong>
+          <strong>${escapeHtml(service)}</strong>
           <div class="slot-meta">Default capacity</div>
         </div>
-        <span class="slot-pill">${count} slots</span>
+        <span class="slot-pill">${escapeHtml(count)} slots</span>
       `;
       defaultList.appendChild(div);
     });
@@ -1879,16 +1909,16 @@ function renderAvailabilityTable() {
   availabilityRules.forEach(rule => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${formatDate(rule.date)}</td>
-      <td>${rule.status}</td>
-      <td>${rule.reason || "—"}</td>
-      <td>${rule.nidReg ?? 0}</td>
-      <td>${rule.updateDemo ?? 0}</td>
-      <td>${rule.ephilid ?? 0}</td>
-      <td>${rule.trn ?? 0}</td>
+      <td>${escapeHtml(formatDate(rule.date))}</td>
+      <td>${escapeHtml(rule.status)}</td>
+      <td>${escapeHtml(rule.reason || "—")}</td>
+      <td>${escapeHtml(rule.nidReg ?? "—")}</td>
+      <td>${escapeHtml(rule.updateDemo ?? "—")}</td>
+      <td>${escapeHtml(rule.ephilid ?? "—")}</td>
+      <td>${escapeHtml(rule.trn ?? "—")}</td>
       <td>
         <div class="row-actions">
-          <button class="mini-btn mini-delete" onclick="deleteAvailability('${rule.date}')">Delete</button>
+          <button class="mini-btn mini-delete" onclick="deleteAvailability(${JSON.stringify(rule.date)})">Delete</button>
         </div>
       </td>
     `;
@@ -1909,14 +1939,14 @@ function renderUsersTable() {
   users.forEach(user => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${user.fullName || "—"}</td>
-      <td>${user.username || "—"}</td>
-      <td>${user.role || "—"}</td>
-      <td>${user.status || "—"}</td>
+      <td>${escapeHtml(user.fullName || "—")}</td>
+      <td>${escapeHtml(user.username || "—")}</td>
+      <td>${escapeHtml(user.role || "—")}</td>
+      <td>${escapeHtml(user.status || "—")}</td>
       <td>
         <div class="row-actions">
-          <button class="mini-btn mini-edit" onclick="editUser('${user.username}')">Edit</button>
-          <button class="mini-btn mini-delete" onclick="deleteUser('${user.username}')">Delete</button>
+          <button class="mini-btn mini-edit" onclick="editUser(${JSON.stringify(user.username)})">Edit</button>
+          <button class="mini-btn mini-delete" onclick="deleteUser(${JSON.stringify(user.username)})">Delete</button>
         </div>
       </td>
     `;
@@ -2004,6 +2034,7 @@ function resetUserForm() {
   document.getElementById("userPassword").value = "";
   document.getElementById("userRole").value = "personnel";
   document.getElementById("userStatus").value = "active";
+  document.getElementById("userPasswordHint").textContent = "Enter a password.";
 }
 
 async function apiRequest(payload) {
@@ -2029,15 +2060,15 @@ async function loadAdminData() {
       throw new Error(data.message || "Unable to load admin data.");
     }
 
-    bookings = data.bookings || [];
-    slotRules = data.slotRules || [];
-    availabilityRules = data.availabilityRules || [];
-    users = data.users || [];
+    bookings = Array.isArray(data.bookings) ? data.bookings : [];
+    slotRules = Array.isArray(data.slotRules) ? data.slotRules : [];
+    availabilityRules = Array.isArray(data.availabilityRules) ? data.availabilityRules : [];
+    users = Array.isArray(data.users) ? data.users : [];
     weekendSettings = data.systemSettings || {
-    saturdayOpen: false,
-    sundayOpen: false,
-    bookingWindowMonths: 1
-  };
+      saturdayOpen: false,
+      sundayOpen: false,
+      bookingWindowMonths: 1
+    };
 
     renderAll();
   } catch (err) {
@@ -2045,14 +2076,23 @@ async function loadAdminData() {
     slotRules = [];
     availabilityRules = [];
     users = [];
-    weekendSettings = { autoCloseWeekends: false };
+    weekendSettings = {
+      saturdayOpen: false,
+      sundayOpen: false,
+      bookingWindowMonths: 1
+    };
 
     renderAll();
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to load admin data.", "error");
   }
 }
 
 async function saveWeekendSetting() {
+  if (!isAdmin()) {
+    showNotice("Only admin can update system settings.", "error");
+    return;
+  }
+
   const saturdayToggle = document.getElementById("saturdayBookingToggle");
   const sundayToggle = document.getElementById("sundayBookingToggle");
   const bookingWindowSelect = document.getElementById("bookingWindowMonths");
@@ -2080,11 +2120,16 @@ async function saveWeekendSetting() {
     renderWeekendSettings();
     showNotice("System settings updated.");
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to save system settings.", "error");
   }
 }
 
 async function saveAvailability() {
+  if (!isAdmin()) {
+    showNotice("Only admin can save availability rules.", "error");
+    return;
+  }
+
   const payload = {
     action: "adminSaveAvailability",
     date: document.getElementById("availabilityDate").value,
@@ -2101,17 +2146,20 @@ async function saveAvailability() {
     return;
   }
 
-  const res = await apiRequest(payload);
+  try {
+    const res = await apiRequest(payload);
 
-  if (res.status === "error") {
-    showNotice(res.message, "error");
-    return;
+    if (res.status === "error") {
+      throw new Error(res.message || "Unable to save availability.");
+    }
+
+    showNotice("Availability rule saved.");
+    closeModal("availabilityModal");
+    resetAvailabilityForm();
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message || "Unable to save availability.", "error");
   }
-
-  showNotice("Availability rule saved.");
-  closeModal("availabilityModal");
-  resetAvailabilityForm();
-  await loadAdminData();
 }
 
 async function saveBooking() {
@@ -2145,11 +2193,16 @@ async function saveBooking() {
     resetBookingForm();
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to save booking.", "error");
   }
 }
 
 async function saveSlotRule(fromQuickPanel = false) {
+  if (!isAdmin()) {
+    showNotice("Only admin can save slot rules.", "error");
+    return;
+  }
+
   const date = fromQuickPanel ? document.getElementById("quickDate").value : document.getElementById("slotDate").value;
   const service = fromQuickPanel ? document.getElementById("quickService").value : document.getElementById("slotService").value;
   const available = fromQuickPanel ? document.getElementById("quickSlots").value : document.getElementById("slotCount").value;
@@ -2182,23 +2235,35 @@ async function saveSlotRule(fromQuickPanel = false) {
 
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to save slot rule.", "error");
   }
 }
 
 async function saveUser() {
+  if (!isAdmin()) {
+    showNotice("Only admin can manage users.", "error");
+    return;
+  }
+
+  const passwordInput = document.getElementById("userPassword").value.trim();
+
   const payload = {
     action: editingUsername ? "adminUpdateUser" : "adminCreateUser",
     originalUsername: editingUsername,
     fullName: document.getElementById("userFullName").value.trim(),
     username: document.getElementById("userUsername").value.trim(),
-    password: document.getElementById("userPassword").value.trim(),
+    password: passwordInput,
     role: document.getElementById("userRole").value,
     status: document.getElementById("userStatus").value
   };
 
-  if (!payload.fullName || !payload.username || !payload.password || !payload.role) {
-    showNotice("Please complete all user fields.", "error");
+  if (!payload.fullName || !payload.username || !payload.role) {
+    showNotice("Please complete all required user fields.", "error");
+    return;
+  }
+
+  if (!editingUsername && !payload.password) {
+    showNotice("Password is required for new users.", "error");
     return;
   }
 
@@ -2214,7 +2279,7 @@ async function saveUser() {
     resetUserForm();
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to save user.", "error");
   }
 }
 
@@ -2254,7 +2319,7 @@ window.updateBookingStatus = async function(refCode, newStatus) {
     showNotice(`Status updated to ${newStatus}.`);
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to update booking status.", "error");
   }
 };
 
@@ -2291,7 +2356,7 @@ window.deleteBooking = async function(refCode) {
     showNotice("Booking deleted.");
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to delete booking.", "error");
   }
 };
 
@@ -2326,25 +2391,28 @@ window.deleteSlotRule = async function(key) {
     showNotice("Slot rule deleted.");
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to delete slot rule.", "error");
   }
 };
 
 window.deleteAvailability = async function(date) {
   if (!confirm("Delete availability rule for " + date + "?")) return;
 
-  const res = await apiRequest({
-    action: "adminDeleteAvailability",
-    date: date
-  });
+  try {
+    const res = await apiRequest({
+      action: "adminDeleteAvailability",
+      date: date
+    });
 
-  if (res.status === "error") {
-    showNotice(res.message, "error");
-    return;
+    if (res.status === "error") {
+      throw new Error(res.message || "Unable to delete availability.");
+    }
+
+    showNotice("Availability rule deleted.");
+    await loadAdminData();
+  } catch (err) {
+    showNotice(err.message || "Unable to delete availability.", "error");
   }
-
-  showNotice("Availability rule deleted.");
-  await loadAdminData();
 };
 
 window.editUser = function(usernameToEdit) {
@@ -2355,9 +2423,10 @@ window.editUser = function(usernameToEdit) {
   document.getElementById("userModalTitle").textContent = "Edit User";
   document.getElementById("userFullName").value = user.fullName || "";
   document.getElementById("userUsername").value = user.username || "";
-  document.getElementById("userPassword").value = user.password || "";
+  document.getElementById("userPassword").value = "";
   document.getElementById("userRole").value = user.role || "personnel";
   document.getElementById("userStatus").value = user.status || "active";
+  document.getElementById("userPasswordHint").textContent = "Leave blank to keep the current password.";
 
   openModal("userModal");
 };
@@ -2378,7 +2447,7 @@ window.deleteUser = async function(usernameToDelete) {
     showNotice("User deleted.");
     await loadAdminData();
   } catch (err) {
-    showNotice(err.message, "error");
+    showNotice(err.message || "Unable to delete user.", "error");
   }
 };
 
@@ -2396,6 +2465,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("openSlotModalBtn")?.remove();
     document.getElementById("openAvailabilityModalBtn")?.remove();
     document.getElementById("openUserModalBtn")?.remove();
+
+    document.getElementById("saveQuickSlotBtn")?.remove();
 
     switchSection("bookings");
   }
@@ -2473,12 +2544,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = e.target.value.toUpperCase().replace(/\s+/g, " ").replace(/^\s+/, "");
   });
 
+  document.getElementById("userFullName")?.addEventListener("input", e => {
+    e.target.value = e.target.value.replace(/\s+/g, " ").replace(/^\s+/, "");
+  });
+
   window.addEventListener("click", e => {
     document.querySelectorAll(".modal").forEach(modal => {
       if (e.target === modal) closeModal(modal.id);
     });
   });
 });
-</script>
+  </script>
 </body>
 </html>
