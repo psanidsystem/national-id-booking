@@ -417,6 +417,7 @@ collection and processing of your personal data for the stated purpose.
 <div class="modal" id="slipModal" style="display:none;">
   <div class="modal-content" id="slipContent">
     <div class="slip-card" id="printableSlip">
+
       <div class="slip-header">
         <img src="logo-psa.png" class="slip-logo" alt="PSA Logo">
         <img src="logo-partner.png" class="slip-logo" alt="National ID Logo">
@@ -428,7 +429,7 @@ collection and processing of your personal data for the stated purpose.
 
       <div class="slip-qr-wrap">
         <div class="slip-qr-box">
-          <canvas id="qrCanvas"></canvas>
+          <canvas id="qrCanvas" width="130" height="130"></canvas>
         </div>
         <div class="slip-qr-note">Scan for appointment verification</div>
       </div>
@@ -476,12 +477,13 @@ collection and processing of your personal data for the stated purpose.
       <div class="slip-note">
         Please present this appointment slip during your scheduled visit.
       </div>
-    </div>
 
-    <div class="slip-actions">
-      <button type="button" onclick="printSlip()">Print</button>
-      <button type="button" onclick="downloadSlip()">Download</button>
-      <button type="button" class="secondary" onclick="closeSlip()">Close</button>
+      <div class="slip-actions">
+        <button type="button" onclick="printSlip()">Print</button>
+        <button type="button" onclick="downloadSlip()">Download</button>
+        <button type="button" class="secondary" onclick="closeSlip()">Close</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1130,28 +1132,29 @@ window.submitForm = function() {
       }
 
       if (r.status === "success") {
-        closeModal("confirmModal");
+  closeModal("confirmModal");
 
-        dailySlotCache = {};
-        monthlyBooked = {};
+  dailySlotCache = {};
+  monthlyBooked = {};
 
-        document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname;
-        document.getElementById("sService").textContent = service;
-        document.getElementById("sDate").textContent = formatAppointmentDate(date);
-        document.getElementById("sTime").textContent = time;
+  document.getElementById("sRef").textContent = r.refCode;
+  document.getElementById("sName").textContent = fullname;
+  document.getElementById("sService").textContent = service;
+  document.getElementById("sDate").textContent = formatAppointmentDate(date);
+  document.getElementById("sTime").textContent = time;
 
-        generateSlipQR(
-          r.refCode,
-          fullname,
-          service,
-          formatAppointmentDate(date),
-          time
-        );
+  const qrPayload =
+    "Reference: " + r.refCode + "\n" +
+    "Name: " + fullname + "\n" +
+    "Service: " + service + "\n" +
+    "Date: " + formatAppointmentDate(date) + "\n" +
+    "Time: " + time;
 
-        openModal("slipModal");
-        return;
-      }
+  drawSlipQR(qrPayload);
+
+  openModal("slipModal");
+  return;
+}
 
       showSystemMessage("Notice", r.message || "Unexpected response from server.");
     })
