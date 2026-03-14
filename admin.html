@@ -930,106 +930,106 @@
 
       <div id="notice" class="notice"></div>
 
-      <section id="dashboardSection">
-        <div class="card dashboard-filter-card">
-          <div class="dashboard-filter-bar">
-            <div>
-              <h3>Dashboard Date Filter</h3>
-              <p>Choose a date to view booking totals and service breakdown.</p>
-            </div>
-
-            <div class="field compact-field">
-              <label for="dashboardDate">Select Date</label>
-              <input type="date" id="dashboardDate" />
-            </div>
-          </div>
+      <section id="dashboardSection" class="dashboard-shell">
+  <div class="dashboard-left">
+    <div class="card dashboard-filter-card">
+      <div class="dashboard-filter-bar">
+        <div>
+          <h3>Dashboard Date Filter</h3>
+          <p>Choose a date to view booking totals and service breakdown.</p>
         </div>
 
-        <div class="cards">
-          <div class="card metric-card metric-total">
-            <div class="metric-label">Total Bookings</div>
-            <div class="metric-value" id="metricTotal">0</div>
-            <div class="metric-sub">All fetched records</div>
-          </div>
-
-          <div class="card metric-card metric-today">
-            <div class="metric-label">Selected Date</div>
-            <div class="metric-value" id="metricToday">0</div>
-            <div class="metric-sub">Total bookings for chosen date</div>
-          </div>
-
-          <div class="card metric-card metric-pending">
-            <div class="metric-label">Pending</div>
-            <div class="metric-value" id="metricPending">0</div>
-            <div class="metric-sub">Need review or confirmation</div>
-          </div>
-
-          <div class="card metric-card metric-slots">
-            <div class="metric-label">Available Slot Rules</div>
-            <div class="metric-value" id="metricSlots">0</div>
-            <div class="metric-sub">Configured custom slot entries</div>
-          </div>
+        <div class="field compact-field">
+          <label for="dashboardDate">Select Date</label>
+          <input type="date" id="dashboardDate" />
         </div>
+      </div>
+    </div>
 
-        <div class="panel-grid dashboard-main-grid">
-          <div class="card">
-            <div class="panel-title">
-              <h3>Recent Bookings</h3>
-              <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Reference</th>
-                    <th>Name</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="recentBookingsBody"></tbody>
-              </table>
-            </div>
-          </div>
+    <div class="cards dashboard-metrics">
+      <div class="card metric-card metric-total">
+        <div class="metric-label">Total Bookings</div>
+        <div class="metric-value" id="metricTotal">0</div>
+        <div class="metric-sub">All fetched records</div>
+      </div>
 
-          <div class="stack">
-            <div class="card">
-              <div class="panel-title">
-                <h3>Bookings by Service</h3>
-              </div>
-              <div id="serviceBreakdown" class="slot-list service-breakdown"></div>
-            </div>
+      <div class="card metric-card metric-today">
+        <div class="metric-label">Selected Date</div>
+        <div class="metric-value" id="metricToday">0</div>
+        <div class="metric-sub">Total bookings for chosen date</div>
+      </div>
 
-            <div class="card">
-              <div class="panel-title">
-                <h3>Quick Slot Update</h3>
-              </div>
-              <div class="field">
-                <label for="quickService">Service</label>
-                <select id="quickService"></select>
-              </div>
-              <div class="field">
-                <label for="quickDate">Date</label>
-                <input type="date" id="quickDate" />
-              </div>
-              <div class="field">
-                <label for="quickSlots">Available Slots</label>
-                <input type="number" id="quickSlots" min="0" />
-              </div>
-              <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
-            </div>
+      <div class="card metric-card metric-pending">
+        <div class="metric-label">Pending</div>
+        <div class="metric-value" id="metricPending">0</div>
+        <div class="metric-sub">Need review or confirmation</div>
+      </div>
 
-            <div class="card">
-              <div class="panel-title">
-                <h3>Custom Slot Rules</h3>
-              </div>
-              <div class="slot-list" id="dashboardSlotList"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div class="card metric-card metric-slots">
+        <div class="metric-label">Available Slot Rules</div>
+        <div class="metric-value" id="metricSlots">0</div>
+        <div class="metric-sub">Configured custom slot entries</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="panel-title">
+        <h3>Recent Bookings</h3>
+        <input class="search-input" id="quickSearch" placeholder="Search name, reference, email..." />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Name</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recentBookingsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-right">
+    <div class="card dashboard-right-top">
+      <div class="panel-title">
+        <h3>Bookings by Service</h3>
+      </div>
+      <div id="serviceBreakdown" class="slot-list service-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <div class="panel-title">
+        <h3>Quick Slot Update</h3>
+      </div>
+      <div class="field">
+        <label for="quickService">Service</label>
+        <select id="quickService"></select>
+      </div>
+      <div class="field">
+        <label for="quickDate">Date</label>
+        <input type="date" id="quickDate" />
+      </div>
+      <div class="field">
+        <label for="quickSlots">Available Slots</label>
+        <input type="number" id="quickSlots" min="0" />
+      </div>
+      <button class="btn btn-primary" id="saveQuickSlotBtn">Save Slot Rule</button>
+    </div>
+
+    <div class="card">
+      <div class="panel-title">
+        <h3>Custom Slot Rules</h3>
+      </div>
+      <div class="slot-list" id="dashboardSlotList"></div>
+    </div>
+  </div>
+</section>
 
       <section id="bookingsSection" class="hidden">
         <div class="card">
