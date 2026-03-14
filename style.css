@@ -1237,3 +1237,156 @@ button:disabled {
     font-size: 15px;
   }
 }
+/* ================= PRINT STYLES FOR APPOINTMENT SLIP ================= */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #slipModal,
+  #slipModal * {
+    visibility: visible !important;
+  }
+
+  #slipModal {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  #slipContent {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 180mm !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 auto !important;
+    padding: 10mm 9mm 8mm !important;
+    box-shadow: none !important;
+    border: 1px solid #cfd8e3 !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+  }
+
+  .slip-header {
+    margin-bottom: 6px !important;
+    gap: 10px !important;
+  }
+
+  .slip-logo {
+    width: 20mm !important;
+    height: 20mm !important;
+  }
+
+  .slip-title {
+    font-size: 18pt !important;
+    margin: 0 0 2mm !important;
+    color: #163f7a !important;
+  }
+
+  .slip-subtitle {
+    font-size: 10pt !important;
+    color: #444 !important;
+  }
+
+  .slip-divider {
+    margin: 4mm 0 !important;
+    height: 1px !important;
+    background: #2a5ea8 !important;
+  }
+
+  .slip-qr-wrap {
+    margin: 3mm 0 5mm !important;
+    page-break-inside: avoid !important;
+  }
+
+  .slip-qr-box {
+    padding: 2mm !important;
+    border: 1px solid #d7dfe8 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .slip-qr-note {
+    margin-top: 2mm !important;
+    font-size: 8.5pt !important;
+    color: #555 !important;
+  }
+
+  .slip-details {
+    border: 1px solid #d7dfe8 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    page-break-inside: avoid !important;
+  }
+
+  .slip-item {
+    grid-template-columns: 44mm 1fr !important;
+    gap: 5mm !important;
+    padding: 3.5mm 4mm !important;
+    border-bottom: 1px solid #e6ebf2 !important;
+    background: #ffffff !important;
+  }
+
+  .slip-item:last-child {
+    border-bottom: none !important;
+  }
+
+  .slip-label {
+    font-size: 8.5pt !important;
+    letter-spacing: 0.04em !important;
+    color: #5f6b7a !important;
+  }
+
+  .slip-value {
+    font-size: 10.5pt !important;
+    color: #1d2733 !important;
+    font-weight: 700 !important;
+    text-align: right !important;
+    line-height: 1.45 !important;
+  }
+
+  .slip-item-address .slip-value {
+    font-weight: 600 !important;
+  }
+
+  .slip-note {
+    margin: 4mm 0 0 !important;
+    padding: 3mm 4mm !important;
+    border-radius: 8px !important;
+    border: 1px solid #dbe5f0 !important;
+    background: #f7fbff !important;
+    font-size: 8.8pt !important;
+    color: #475467 !important;
+    text-align: center !important;
+  }
+
+  .slip-actions,
+  .actions,
+  button {
+    display: none !important;
+  }
+
+  .modal::-webkit-scrollbar,
+  .modal-content::-webkit-scrollbar {
+    display: none !important;
+  }
+}
