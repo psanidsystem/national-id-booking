@@ -842,10 +842,9 @@ window.closeSlip = function() {
 };
 
 window.printSlip = function() {
-  window.print();
-  closeModal("slipModal");
-  showCheckmark();
-  resetForm();
+  setTimeout(() => {
+    window.print();
+  }, 250);
 };
 
 window.downloadSlip = function() {
@@ -1222,6 +1221,12 @@ window.addEventListener("click", function(e) {
     }
   });
 });
+	window.addEventListener("afterprint", function() {
+  closeModal("slipModal");
+  showCheckmark();
+  resetForm();
+});
+	
 </script>
 </body>
 
