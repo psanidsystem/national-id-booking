@@ -1069,30 +1069,67 @@ window.printSlip = function() {
   }, 800);
 };
 
-window.downloadSlip = function() {
+window.downloadSlip = async function () {
   const slip = document.getElementById("printableSlip");
   if (!slip) return;
 
-  html2canvas(slip, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false,
-    width: slip.scrollWidth,
-    height: slip.scrollHeight,
-    windowWidth: slip.scrollWidth,
-    windowHeight: slip.scrollHeight,
-    ignoreElements: function(element) {
-      return element.classList && element.classList.contains("slip-actions");
-    }
-  }).then(function(canvas) {
+  const actionBox = slip.querySelector(".slip-actions");
+
+  const originalStyles = {
+    width: slip.style.width,
+    maxWidth: slip.style.maxWidth,
+    margin: slip.style.margin,
+    transform: slip.style.transform,
+    boxShadow: slip.style.boxShadow
+  };
+
+  const originalActionDisplay = actionBox ? actionBox.style.display : "";
+
+  try {
+    if (actionBox) actionBox.style.display = "none";
+
+    slip.style.width = "420px";
+    slip.style.maxWidth = "420px";
+    slip.style.margin = "0 auto";
+    slip.style.transform = "none";
+    slip.style.boxShadow = "none";
+
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    const canvas = await html2canvas(slip, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false
+    });
+
+    const trimmedCanvas = document.createElement("canvas");
+    const ctx = trimmedCanvas.getContext("2d");
+
+    trimmedCanvas.width = canvas.width;
+    trimmedCanvas.height = canvas.height;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, trimmedCanvas.width, trimmedCanvas.height);
+    ctx.drawImage(canvas, 0, 0);
+
     const link = document.createElement("a");
     link.download = "National_ID_Appointment_Slip.png";
-    link.href = canvas.toDataURL("image/png");
+    link.href = trimmedCanvas.toDataURL("image/png");
     link.click();
-  }).catch(function(err) {
+
+  } catch (err) {
     console.error("downloadSlip error:", err);
-  });
+    showSystemMessage("Download Error", "Unable to generate appointment slip image.");
+  } finally {
+    slip.style.width = originalStyles.width;
+    slip.style.maxWidth = originalStyles.maxWidth;
+    slip.style.margin = originalStyles.margin;
+    slip.style.transform = originalStyles.transform;
+    slip.style.boxShadow = originalStyles.boxShadow;
+
+    if (actionBox) actionBox.style.display = originalActionDisplay;
+  }
 };
 
 /* ================= SUBMIT FORM ================= */
