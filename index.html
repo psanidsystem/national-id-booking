@@ -686,21 +686,15 @@ function checkSlots() {
   info.innerHTML = "⏳ Checking available slots...";
   info.style.color = "#555";
 
-const controller = new AbortController();
-const timeoutId = setTimeout(() => controller.abort(), 20000);
-
-		fetch(EXEC_URL, {
-		  method: "POST",
-		  body: JSON.stringify({
-		    service,
-		    fullname,
-		    email,
-		    phone,
-		    date,
-		    time
-		  }),
-		  signal: controller.signal
-		})
+  fetch(EXEC_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "slots",
+      date,
+      service,
+      time
+    })
+  })
     .then(res => res.json())
     .then(data => {
       dailySlotCache[cacheKey] = data;
@@ -827,11 +821,13 @@ window.submitForm = function() {
   const time = document.getElementById("time").value;
 
   if (!service || !fullname || !date || !time) {
+    resetConfirmButtons();
     showSystemMessage("Missing Fields", "Please complete all required fields.");
     return;
   }
 
   if (!email && !phone) {
+    resetConfirmButtons();
     showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
     return;
   }
@@ -839,6 +835,9 @@ window.submitForm = function() {
   btn.disabled = true;
   btnText.style.display = "none";
   loader.style.display = "inline-block";
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
 
   fetch(EXEC_URL, {
     method: "POST",
@@ -849,16 +848,17 @@ window.submitForm = function() {
       phone,
       date,
       time
-    })
+    }),
+    signal: controller.signal
   })
     .then(res => res.json())
-		.then(r => {
-		  clearTimeout(timeoutId);
-		
-		  btn.disabled = false;
-		  btnText.style.display = "inline";
-		  loader.style.display = "none";
-		  resetConfirmButtons();
+    .then(r => {
+      clearTimeout(timeoutId);
+
+      btn.disabled = false;
+      btnText.style.display = "inline";
+      loader.style.display = "none";
+      resetConfirmButtons();
 
       if (r.status === "error") {
         return showSystemMessage("Notice", r.message || "System error.");
@@ -884,44 +884,44 @@ window.submitForm = function() {
         return showSystemMessage("Fully Booked", "This service is fully booked on this date and time.");
       }
 
-		if (r.status === "success") {
-		  closeModal("confirmModal");
-		
-		  dailySlotCache = {};
-		  monthlyBooked = {};
-		
-		  const now = new Date();
-		  const timestamp = now.toLocaleString();
-		
-		  document.getElementById("sRef").textContent = r.refCode;
-		  document.getElementById("sName").textContent = fullname;
-		  document.getElementById("sDate").textContent = formatAppointmentDate(date);
-		  document.getElementById("sTime").textContent = time;
-		  document.getElementById("sTimestamp").textContent = timestamp;
-		
-		  openModal("slipModal");
-		  return;
-		}
+      if (r.status === "success") {
+        closeModal("confirmModal");
+
+        dailySlotCache = {};
+        monthlyBooked = {};
+
+        const now = new Date();
+        const timestamp = now.toLocaleString();
+
+        document.getElementById("sRef").textContent = r.refCode;
+        document.getElementById("sName").textContent = fullname;
+        document.getElementById("sDate").textContent = formatAppointmentDate(date);
+        document.getElementById("sTime").textContent = time;
+        document.getElementById("sTimestamp").textContent = timestamp;
+
+        openModal("slipModal");
+        return;
+      }
 
       showSystemMessage("Notice", r.message || "Unexpected response from server.");
     })
-.catch(err => {
-  clearTimeout(timeoutId);
+    .catch(err => {
+      clearTimeout(timeoutId);
 
-  btn.disabled = false;
-  btnText.style.display = "inline";
-  loader.style.display = "none";
-  resetConfirmButtons();
+      btn.disabled = false;
+      btnText.style.display = "inline";
+      loader.style.display = "none";
+      resetConfirmButtons();
 
-  console.error("submitForm error:", err);
+      console.error("submitForm error:", err);
 
-  if (err.name === "AbortError") {
-    showSystemMessage("Request Timeout", "The server took too long to respond. Please try again.");
-    return;
-  }
+      if (err.name === "AbortError") {
+        showSystemMessage("Request Timeout", "The server took too long to respond. Please try again.");
+        return;
+      }
 
-  showSystemMessage("System Error", "Unable to connect to server.");
-});
+      showSystemMessage("System Error", "Unable to connect to server.");
+    });
 };
 
 document.addEventListener("DOMContentLoaded", function() {
