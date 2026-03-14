@@ -1323,3 +1323,31 @@ button:disabled {
     display: none !important;
   }
 }
+#slipContent {
+  max-width: 580px;
+  padding: 14px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+#printableSlip {
+  margin: 0 auto;
+}
+
+#qrCanvas {
+  display: block;
+  width: 130px;
+  height: 130px;
+}
+
+@media (max-width: 480px) {
+  #slipContent {
+    padding: 10px;
+  }
+
+  #qrCanvas {
+    width: 110px;
+    height: 110px;
+  }
+}
