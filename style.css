@@ -498,13 +498,13 @@ button:disabled {
   margin: 15px 0;
 }
 
-/* ================= RESPONSIVE PREMIUM SLIP MODAL ================= */
+/* ================= FINAL COMPACT RESPONSIVE SLIP ================= */
 
 .slip-card {
-  width: min(92vw, 560px);
-  max-width: 560px;
-  border-radius: 22px;
-  padding: 24px 22px 20px;
+  width: min(92vw, 540px);
+  max-width: 540px;
+  border-radius: 20px;
+  padding: 18px 18px 16px;
   background: #ffffff;
   border: 1px solid #dbe4ef;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
@@ -515,23 +515,22 @@ button:disabled {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .slip-logo {
-  width: 64px;
-  height: 64px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
 }
 
 .slip-title {
   text-align: center;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   color: #1f4f9a;
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
@@ -539,14 +538,14 @@ button:disabled {
   text-align: center;
   margin: 0;
   color: #667085;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .slip-divider {
   height: 2px;
   background: linear-gradient(90deg, #1f5aa8, #4679c2);
-  margin: 16px 0;
+  margin: 12px 0;
   border-radius: 999px;
 }
 
@@ -554,20 +553,20 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 4px 0 18px;
+  margin: 2px 0 14px;
 }
 
 .slip-qr-box {
   background: #ffffff;
-  padding: 10px;
-  border-radius: 14px;
+  padding: 8px;
+  border-radius: 12px;
   border: 1px solid #dbe5f0;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 .slip-qr-note {
-  margin-top: 8px;
-  font-size: 12px;
+  margin-top: 6px;
+  font-size: 11px;
   color: #667085;
   text-align: center;
 }
@@ -576,16 +575,16 @@ button:disabled {
   display: grid;
   gap: 0;
   border: 1px solid #dbe5f0;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   background: linear-gradient(180deg, #fcfdff 0%, #f8fbff 100%);
 }
 
 .slip-item {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 14px;
-  padding: 14px 18px;
+  grid-template-columns: 135px 1fr;
+  gap: 12px;
+  padding: 11px 16px;
   border-bottom: 1px solid #e5edf6;
   align-items: start;
 }
@@ -595,7 +594,7 @@ button:disabled {
 }
 
 .slip-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #667085;
   text-transform: uppercase;
@@ -604,10 +603,10 @@ button:disabled {
 }
 
 .slip-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #1f2937;
-  line-height: 1.5;
+  line-height: 1.45;
   text-align: right;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -618,27 +617,27 @@ button:disabled {
 }
 
 .slip-note {
-  margin: 14px 0 16px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  margin: 12px 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: #f4f8ff;
   border: 1px solid #dbe7f5;
   color: #475467;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.45;
   text-align: center;
 }
 
 .slip-actions {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .slip-actions button {
   margin-top: 0;
-  min-height: 48px;
-  border-radius: 14px;
-  font-size: 15px;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -658,55 +657,8 @@ button:disabled {
 @media (max-width: 768px) {
   .slip-card {
     width: min(94vw, 520px);
-    padding: 20px 16px 18px;
-    border-radius: 18px;
-  }
-
-  .slip-logo {
-    width: 56px;
-    height: 56px;
-  }
-
-  .slip-title {
-    font-size: 22px;
-  }
-
-  .slip-subtitle {
-    font-size: 13px;
-  }
-
-  .slip-item {
-    grid-template-columns: 120px 1fr;
-    gap: 10px;
-    padding: 12px 14px;
-  }
-
-  .slip-label {
-    font-size: 11px;
-  }
-
-  .slip-value {
-    font-size: 14px;
-  }
-
-  .slip-actions button {
-    min-height: 46px;
-    font-size: 15px;
-  }
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 480px) {
-  .slip-card {
-    width: calc(100vw - 24px);
-    max-width: none;
     padding: 18px 14px 16px;
-    border-radius: 16px;
-  }
-
-  .slip-header {
-    gap: 10px;
-    margin-bottom: 10px;
+    border-radius: 18px;
   }
 
   .slip-logo {
@@ -715,57 +667,90 @@ button:disabled {
   }
 
   .slip-title {
-    font-size: 20px;
-    line-height: 1.25;
+    font-size: 17px;
   }
 
   .slip-subtitle {
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  .slip-item {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .slip-label {
+    font-size: 10px;
+  }
+
+  .slip-value {
+    font-size: 13px;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .slip-card {
+    width: calc(100vw - 20px);
+    max-width: none;
+    padding: 16px 12px 14px;
+    border-radius: 16px;
+  }
+
+  .slip-header {
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .slip-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .slip-title {
+    font-size: 16px;
+  }
+
+  .slip-subtitle {
+    font-size: 11px;
   }
 
   .slip-divider {
-    margin: 14px 0;
+    margin: 10px 0;
   }
 
   .slip-qr-box {
-    padding: 8px;
+    padding: 7px;
   }
 
   .slip-details {
-    border-radius: 16px;
+    border-radius: 14px;
   }
 
   .slip-item {
     grid-template-columns: 1fr;
-    gap: 6px;
-    padding: 12px 12px;
+    gap: 4px;
+    padding: 10px 12px;
   }
 
   .slip-label {
-    font-size: 11px;
-    letter-spacing: 0.05em;
+    font-size: 10px;
   }
 
   .slip-value {
     text-align: left;
-    font-size: 14px;
-    line-height: 1.45;
+    font-size: 13px;
+    line-height: 1.4;
   }
 
   .slip-note {
-    margin: 12px 0 14px;
-    padding: 10px 12px;
-    font-size: 12px;
-    border-radius: 12px;
-  }
-
-  .slip-actions {
-    gap: 8px;
+    font-size: 11px;
+    padding: 9px 10px;
   }
 
   .slip-actions button {
-    min-height: 44px;
-    border-radius: 12px;
+    min-height: 42px;
     font-size: 14px;
   }
 }
