@@ -1365,3 +1365,59 @@ button:disabled {
   margin: 0 auto 14px;
   color: #667085;
 }
+/* ================= FINAL SLIP CENTER FIX ================= */
+
+#slipContent {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  padding: 20px !important;
+  text-align: center !important;
+}
+
+#printableSlip,
+.slip-card {
+  display: block !important;
+  width: 100% !important;
+  max-width: 420px !important;
+  margin: 0 auto !important;
+}
+
+.slip-header {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.slip-title {
+  text-align: center !important;
+  margin: 0 0 6px !important;
+}
+
+.slip-subtitle {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin: 0 auto 14px !important;
+}
+
+.slip-qr-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 2px 0 14px !important;
+}
+
+.slip-note {
+  text-align: center !important;
+}
+
+@media (max-width: 480px) {
+  #printableSlip,
+  .slip-card {
+    max-width: 100% !important;
+  }
+}
