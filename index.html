@@ -413,29 +413,63 @@ collection and processing of your personal data for the stated purpose.
 
 <!-- ================= SLIP ================= -->
 <div class="modal" id="slipModal" style="display:none;">
-  <div class="modal-content" id="slipContent">
+  <div class="modal-content slip-card" id="slipContent">
 
-	<div class="slip-header">
-	  <img src="logo-psa.png" class="slip-logo">
-	  <img src="logo-partner.png" class="slip-logo">
-	</div>
-	
-	<h2>National ID Appointment Slip</h2>
-	<p class="slip-subtitle">Philippine Statistics Authority – Cebu</p>
-	<div class="slip-divider"></div>
-    <p><b>Reference:</b> <span id="sRef"></span></p>
-	<p><b>Booking Time:</b> <span id="sTimestamp"></span></p>
-	<p><b>Name:</b> <span id="sName"></span></p>
-	<p><b>Date:</b> <span id="sDate"></span></p>
-	<p><b>Time:</b> <span id="sTime"></span></p>
-	<p><b>Office Hours:</b> 8:00 AM to 5:00 PM</p>
-	
-	<p><b>Center:</b><br>
-	  National ID - Fixed Registration Center,<br>
-	  3rd Floor, Gaisano Capital South, Cebu City
-	</p>
+    <div class="slip-header">
+      <img src="logo-psa.png" class="slip-logo" alt="PSA Logo">
+      <img src="logo-partner.png" class="slip-logo" alt="National ID Logo">
+    </div>
 
-    <div class="actions">
+    <h2 class="slip-title">National ID Appointment Slip</h2>
+    <p class="slip-subtitle">Philippine Statistics Authority – Cebu</p>
+
+    <div class="slip-divider"></div>
+
+    <div class="slip-details">
+      <div class="slip-item">
+        <span class="slip-label">Reference Number</span>
+        <span class="slip-value" id="sRef"></span>
+      </div>
+
+      <div class="slip-item">
+        <span class="slip-label">Full Name</span>
+        <span class="slip-value" id="sName"></span>
+      </div>
+
+      <div class="slip-item">
+        <span class="slip-label">Service</span>
+        <span class="slip-value" id="sService"></span>
+      </div>
+
+      <div class="slip-item">
+        <span class="slip-label">Appointment Date</span>
+        <span class="slip-value" id="sDate"></span>
+      </div>
+
+      <div class="slip-item">
+        <span class="slip-label">Appointment Time</span>
+        <span class="slip-value" id="sTime"></span>
+      </div>
+
+      <div class="slip-item">
+        <span class="slip-label">Office Hours</span>
+        <span class="slip-value">8:00 AM to 5:00 PM</span>
+      </div>
+
+      <div class="slip-item slip-item-address">
+        <span class="slip-label">Center</span>
+        <span class="slip-value">
+          National ID - Fixed Registration Center,<br>
+          3rd Floor, Gaisano Capital South, Cebu City
+        </span>
+      </div>
+    </div>
+
+    <p class="slip-note">
+      Please present this appointment slip during your scheduled visit.
+    </p>
+
+    <div class="slip-actions">
       <button type="button" onclick="printSlip()">Print</button>
       <button type="button" onclick="downloadSlip()">Download</button>
       <button type="button" class="secondary" onclick="closeSlip()">Close</button>
@@ -890,14 +924,11 @@ window.submitForm = function() {
         dailySlotCache = {};
         monthlyBooked = {};
 
-        const now = new Date();
-        const timestamp = now.toLocaleString();
-
-        document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname;
-        document.getElementById("sDate").textContent = formatAppointmentDate(date);
-        document.getElementById("sTime").textContent = time;
-        document.getElementById("sTimestamp").textContent = timestamp;
+		document.getElementById("sRef").textContent = r.refCode;
+		document.getElementById("sName").textContent = fullname;
+		document.getElementById("sService").textContent = service;
+		document.getElementById("sDate").textContent = formatAppointmentDate(date);
+		document.getElementById("sTime").textContent = time;
 
         openModal("slipModal");
         return;
