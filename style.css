@@ -1421,59 +1421,41 @@ button:disabled {
     max-width: 100% !important;
   }
 }
-/* ================= FINAL SLIP CENTER FIX ================= */
+/* ================= FINAL SLIP LABEL ALIGN FIX ================= */
 
-#slipContent {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: flex-start !important;
-  padding: 20px !important;
-  text-align: center !important;
+.slip-details {
+  text-align: initial !important;
 }
 
-#printableSlip,
-.slip-card {
-  display: block !important;
-  width: 100% !important;
-  max-width: 420px !important;
-  margin: 0 auto !important;
+.slip-item {
+  display: grid !important;
+  grid-template-columns: 150px 1fr !important;
+  gap: 14px !important;
+  align-items: start !important;
+  text-align: initial !important;
 }
 
-.slip-header {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 10px !important;
-  margin-bottom: 10px !important;
+.slip-label {
+  text-align: left !important;
+  justify-self: start !important;
+  align-self: start !important;
 }
 
-.slip-title {
-  text-align: center !important;
-  margin: 0 0 6px !important;
-}
-
-.slip-subtitle {
-  display: block !important;
-  width: 100% !important;
-  text-align: center !important;
-  margin: 0 auto 14px !important;
-}
-
-.slip-qr-wrap {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin: 2px 0 14px !important;
-}
-
-.slip-note {
-  text-align: center !important;
+.slip-value {
+  text-align: right !important;
+  justify-self: stretch !important;
 }
 
 @media (max-width: 480px) {
-  #printableSlip,
-  .slip-card {
-    max-width: 100% !important;
+  .slip-item {
+    grid-template-columns: 1fr !important;
+  }
+
+  .slip-label {
+    text-align: left !important;
+  }
+
+  .slip-value {
+    text-align: left !important;
   }
 }
