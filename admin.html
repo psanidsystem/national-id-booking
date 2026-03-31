@@ -901,7 +901,21 @@
   margin-top: 0;
 }
     }
-  </style>
+  
+  .status-cell{display:flex;flex-direction:column;gap:6px}
+  .status-note{font-size:12px;line-height:1.45;color:#667085;max-width:220px}
+  .personnel-help-banner{
+    margin-bottom:16px;
+    padding:12px 14px;
+    border-radius:14px;
+    background:linear-gradient(180deg,#f7fbff 0%,#eef5ff 100%);
+    border:1px solid #dbe7fb;
+    color:#2459a6;
+    line-height:1.5;
+  }
+  .single-grid{grid-template-columns:1fr}
+  #outcomeReason{min-height:100px;resize:vertical}
+</style>
 </head>
 <body>
   <div id="adminApp" class="layout">
@@ -1496,7 +1510,8 @@
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
 let username = sessionStorage.getItem("nid_username") || "";
-let password = sessionStorage.getItem("nid_password") || "";
+let sessionToken = sessionStorage.getItem("nid_session_token") || "";
+let sessionExpiresAt = Number(sessionStorage.getItem("nid_session_expires") || 0);
 let userRole = sessionStorage.getItem("nid_role") || "";
 let displayName = sessionStorage.getItem("nid_name") || "";
 
@@ -1537,11 +1552,26 @@ const sectionMap = {
   settings: ["settingsSection", "System Settings"]
 };
 
+function clearStoredSession() {
+  sessionStorage.removeItem("nid_session_token");
+  sessionStorage.removeItem("nid_session_expires");
+  sessionStorage.removeItem("nid_username");
+  sessionStorage.removeItem("nid_role");
+  sessionStorage.removeItem("nid_name");
+}
+
 function requireLogin() {
-  if (!username || !password || !userRole) {
+  if (!username || !sessionToken || !userRole || !sessionExpiresAt) {
     window.location.href = "login.html";
     return false;
   }
+
+  if (Date.now() >= sessionExpiresAt) {
+    clearStoredSession();
+    window.location.href = "login.html";
+    return false;
+  }
+
   return true;
 }
 
@@ -1614,9 +1644,9 @@ function formatTime(timeValue) {
 }
 
 function badgeClass(status) {
-  if (status === "Cancelled" || status === "No Show") return "badge badge-cancelled";
+  if (status === "Cancelled" || status === "No Show" || status === "Not Successful") return "badge badge-cancelled";
   if (status === "Pending" || status === "Arrived" || status === "Assisted") return "badge badge-pending";
-  if (status === "Completed") return "badge badge-confirmed";
+  if (status === "Completed" || status === "Successful") return "badge badge-confirmed";
   return "badge badge-confirmed";
 }
 
@@ -1762,7 +1792,12 @@ function renderRecentBookings(list = bookings) {
       <td>${escapeHtml(item.service)}</td>
       <td>${escapeHtml(formatDate(item.date))}</td>
       <td>${escapeHtml(formatTime(item.time))}</td>
-      <td><span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span></td>
+      <td>
+        <div class="status-cell">
+          <span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span>
+          ${item.outcomeReason ? `<div class="status-note">${escapeHtml(item.outcomeReason)}</div>` : ""}
+        </div>
+      </td>
     `;
     tbody.appendChild(tr);
   });
@@ -1776,7 +1811,7 @@ function getPersonnelActionButtons(item) {
   const status = (item.status || "").trim();
   const safeRef = JSON.stringify(item.refCode);
 
-  if (status === "Completed" || status === "Cancelled" || status === "No Show") {
+  if (status === "Completed" || status === "Cancelled" || status === "No Show" || status === "Not Successful") {
     return `<span class="${badgeClass(status)}">${escapeHtml(status)}</span>`;
   }
 
@@ -1789,19 +1824,12 @@ function getPersonnelActionButtons(item) {
     `;
   }
 
-  if (status === "Arrived") {
+  if (status === "Arrived" || status === "Assisted") {
     return `
       <div class="row-actions">
-        <button class="mini-btn mini-edit" onclick="updateBookingStatus(${safeRef}, 'Assisted')">Assist</button>
+        <button class="mini-btn mini-slot" onclick="savePersonnelOutcome(${safeRef}, 'Successful')">Successful</button>
+        <button class="mini-btn mini-edit" onclick="openOutcomeModal(${safeRef})">Not Successful</button>
         <button class="mini-btn mini-delete" onclick="updateBookingStatus(${safeRef}, 'No Show')">No Show</button>
-      </div>
-    `;
-  }
-
-  if (status === "Assisted") {
-    return `
-      <div class="row-actions">
-        <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Completed')">Complete</button>
       </div>
     `;
   }
@@ -1809,8 +1837,6 @@ function getPersonnelActionButtons(item) {
   return `
     <div class="row-actions">
       <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Arrived')">Arrived</button>
-      <button class="mini-btn mini-edit" onclick="updateBookingStatus(${safeRef}, 'Assisted')">Assist</button>
-      <button class="mini-btn mini-slot" onclick="updateBookingStatus(${safeRef}, 'Completed')">Complete</button>
       <button class="mini-btn mini-delete" onclick="updateBookingStatus(${safeRef}, 'No Show')">No Show</button>
     </div>
   `;
@@ -1844,7 +1870,12 @@ function renderBookingsTable() {
       <td>${escapeHtml(formatTime(item.time))}</td>
       <td>${escapeHtml(item.email || "—")}</td>
       <td>${escapeHtml(item.phone || "—")}</td>
-      <td><span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span></td>
+      <td>
+        <div class="status-cell">
+          <span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span>
+          ${item.outcomeReason ? `<div class="status-note">${escapeHtml(item.outcomeReason)}</div>` : ""}
+        </div>
+      </td>
       <td>${actionHtml}</td>
     `;
     tbody.appendChild(tr);
@@ -2067,11 +2098,40 @@ function resetUserForm() {
   document.getElementById("userPasswordHint").textContent = "Enter a password.";
 }
 
+
+function isAuthErrorResponse(data) {
+  const message = String(data?.message || "");
+  return data?.status === "error" && /unauthorized|session expired|session invalid/i.test(message);
+}
+
+async function forceLogout(redirectMessage) {
+  try {
+    if (sessionToken) {
+      await fetch(EXEC_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "logout",
+          sessionToken
+        })
+      });
+    }
+  } catch (err) {
+    // Ignore logout network errors
+  }
+
+  clearStoredSession();
+
+  if (redirectMessage) {
+    sessionStorage.setItem("nid_logout_notice", redirectMessage);
+  }
+
+  window.location.href = "login.html";
+}
+
 async function apiRequest(payload) {
   const finalPayload = {
     ...payload,
-    authUsername: username,
-    authPassword: password
+    sessionToken
   };
 
   const res = await fetch(EXEC_URL, {
@@ -2079,41 +2139,139 @@ async function apiRequest(payload) {
     body: JSON.stringify(finalPayload)
   });
 
-  return res.json();
+  const data = await res.json();
+
+  if (isAuthErrorResponse(data)) {
+    await forceLogout("Your session has expired. Please log in again.");
+    throw new Error(data.message || "Your session has expired. Please log in again.");
+  }
+
+  return data;
 }
 
-async function loadAdminData() {
+function defaultWeekendSettings() {
+  return {
+    saturdayOpen: false,
+    sundayOpen: false,
+    bookingWindowMonths: 1
+  };
+}
+
+function setAdminState(data) {
+  bookings = Array.isArray(data?.bookings) ? data.bookings : [];
+  slotRules = Array.isArray(data?.slotRules) ? data.slotRules : [];
+  availabilityRules = Array.isArray(data?.availabilityRules) ? data.availabilityRules : [];
+  users = Array.isArray(data?.users) ? data.users : [];
+  weekendSettings = data?.systemSettings || defaultWeekendSettings();
+}
+
+function resetAdminState() {
+  bookings = [];
+  slotRules = [];
+  availabilityRules = [];
+  users = [];
+  weekendSettings = defaultWeekendSettings();
+}
+
+function rerenderState() {
+  renderAll();
+}
+
+function bookingSortValue(item) {
+  const raw = item?.timestamp ? new Date(item.timestamp).getTime() : NaN;
+  return Number.isFinite(raw) ? raw : 0;
+}
+
+function sortBookingsLocal() {
+  bookings.sort((a, b) => bookingSortValue(b) - bookingSortValue(a));
+}
+
+function upsertBookingLocal(item, originalRefCode = "") {
+  if (!item || !item.refCode) return;
+
+  const original = String(originalRefCode || "").trim();
+  const ref = String(item.refCode || "").trim();
+
+  bookings = bookings.filter(row => {
+    const rowRef = String(row?.refCode || "").trim();
+    if (!rowRef) return true;
+    return rowRef !== original && rowRef !== ref;
+  });
+
+  bookings.unshift(item);
+  sortBookingsLocal();
+}
+
+function removeBookingLocal(refCode) {
+  const cleanRef = String(refCode || "").trim();
+  bookings = bookings.filter(item => String(item?.refCode || "").trim() !== cleanRef);
+}
+
+function upsertSlotRuleLocal(item) {
+  if (!item || !item.date || !item.service) return;
+
+  slotRules = slotRules.filter(rule => !(rule.date === item.date && rule.service === item.service));
+  slotRules.push(item);
+  slotRules.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")) || String(a.service || "").localeCompare(String(b.service || "")));
+}
+
+function removeSlotRuleLocal(date, service) {
+  slotRules = slotRules.filter(rule => !(rule.date === date && rule.service === service));
+}
+
+function upsertAvailabilityLocal(item) {
+  if (!item || !item.date) return;
+
+  availabilityRules = availabilityRules.filter(rule => rule.date !== item.date);
+  availabilityRules.push(item);
+  availabilityRules.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+}
+
+function removeAvailabilityLocal(date) {
+  availabilityRules = availabilityRules.filter(rule => rule.date !== date);
+}
+
+function upsertUserLocal(item, originalUsername = "") {
+  if (!item || !item.username) return;
+
+  const original = String(originalUsername || "").trim().toLowerCase();
+  const usernameKey = String(item.username || "").trim().toLowerCase();
+
+  users = users.filter(user => {
+    const userKey = String(user?.username || "").trim().toLowerCase();
+    return userKey !== original && userKey !== usernameKey;
+  });
+
+  users.push(item);
+  users.sort((a, b) => String(a.fullName || "").localeCompare(String(b.fullName || "")));
+}
+
+function removeUserLocal(usernameToDelete) {
+  const target = String(usernameToDelete || "").trim().toLowerCase();
+  users = users.filter(user => String(user?.username || "").trim().toLowerCase() !== target);
+}
+
+async function loadAdminData(options = {}) {
+  const { silent = false } = options;
+
   try {
-    const data = await apiRequest({ action: "adminList" });
+    const data = await apiRequest({
+      action: userRole === "personnel" ? "adminListBookings" : "adminList"
+    });
 
     if (data.status === "error") {
       throw new Error(data.message || "Unable to load admin data.");
     }
 
-    bookings = Array.isArray(data.bookings) ? data.bookings : [];
-    slotRules = Array.isArray(data.slotRules) ? data.slotRules : [];
-    availabilityRules = Array.isArray(data.availabilityRules) ? data.availabilityRules : [];
-    users = Array.isArray(data.users) ? data.users : [];
-    weekendSettings = data.systemSettings || {
-      saturdayOpen: false,
-      sundayOpen: false,
-      bookingWindowMonths: 1
-    };
-
-    renderAll();
+    setAdminState(data);
+    rerenderState();
   } catch (err) {
-    bookings = [];
-    slotRules = [];
-    availabilityRules = [];
-    users = [];
-    weekendSettings = {
-      saturdayOpen: false,
-      sundayOpen: false,
-      bookingWindowMonths: 1
-    };
+    resetAdminState();
+    rerenderState();
 
-    renderAll();
-    showNotice(err.message || "Unable to load admin data.", "error");
+    if (!silent) {
+      showNotice(err.message || "Unable to load admin data.", "error");
+    }
   }
 }
 
@@ -2154,6 +2312,7 @@ async function saveWeekendSetting() {
   }
 }
 
+
 async function saveAvailability() {
   if (!isAdmin()) {
     showNotice("Only admin can save availability rules.", "error");
@@ -2183,14 +2342,26 @@ async function saveAvailability() {
       throw new Error(res.message || "Unable to save availability.");
     }
 
+    upsertAvailabilityLocal({
+      date: payload.date,
+      status: payload.status,
+      reason: payload.reason || "",
+      nidReg: payload.nidReg === "" ? null : Number(payload.nidReg),
+      updateDemo: payload.updateDemo === "" ? null : Number(payload.updateDemo),
+      ephilid: payload.ephilid === "" ? null : Number(payload.ephilid),
+      trn: payload.trn === "" ? null : Number(payload.trn)
+    });
+
+    rerenderState();
     showNotice("Availability rule saved.");
     closeModal("availabilityModal");
     resetAvailabilityForm();
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to save availability.", "error");
   }
 }
+
+
 
 async function saveBooking() {
   const payload = {
@@ -2211,6 +2382,10 @@ async function saveBooking() {
     return;
   }
 
+  const previous = editingBookingRef
+    ? bookings.find(item => item.refCode === editingBookingRef)
+    : null;
+
   try {
     const result = await apiRequest(payload);
 
@@ -2218,14 +2393,31 @@ async function saveBooking() {
       throw new Error(result.message || "Unable to save booking.");
     }
 
+    const nextBooking = {
+      timestamp: previous?.timestamp || new Date().toISOString(),
+      refCode: (result.refCode || payload.refCode || previous?.refCode || "").trim(),
+      service: payload.service,
+      fullname: payload.fullname,
+      email: payload.email || "",
+      phone: payload.phone || "",
+      date: payload.date,
+      time: payload.time,
+      status: payload.status,
+      userType: previous?.userType || "ADMIN"
+    };
+
+    upsertBookingLocal(nextBooking, editingBookingRef || payload.originalRefCode || "");
+
+    rerenderState();
     showNotice(editingBookingRef ? "Booking updated." : "Booking added.");
     closeModal("bookingModal");
     resetBookingForm();
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to save booking.", "error");
   }
 }
+
+
 
 async function saveSlotRule(fromQuickPanel = false) {
   if (!isAdmin()) {
@@ -2254,6 +2446,15 @@ async function saveSlotRule(fromQuickPanel = false) {
       throw new Error(result.message || "Unable to save slot rule.");
     }
 
+    upsertSlotRuleLocal({
+      date,
+      service,
+      available: Number(available),
+      personnel: null,
+      extraSlots: null
+    });
+
+    rerenderState();
     showNotice("Slot rule saved.");
     closeModal("slotModal");
     resetSlotForm();
@@ -2262,12 +2463,12 @@ async function saveSlotRule(fromQuickPanel = false) {
     const quickSlots = document.getElementById("quickSlots");
     if (quickDate) quickDate.value = "";
     if (quickSlots) quickSlots.value = "";
-
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to save slot rule.", "error");
   }
 }
+
+
 
 async function saveUser() {
   if (!isAdmin()) {
@@ -2297,6 +2498,10 @@ async function saveUser() {
     return;
   }
 
+  const existing = editingUsername
+    ? users.find(item => item.username === editingUsername)
+    : null;
+
   try {
     const result = await apiRequest(payload);
 
@@ -2304,22 +2509,89 @@ async function saveUser() {
       throw new Error(result.message || "Unable to save user.");
     }
 
+    upsertUserLocal({
+      fullName: payload.fullName,
+      username: payload.username,
+      role: payload.role,
+      status: payload.status,
+      createdAt: existing?.createdAt || new Date().toISOString()
+    }, editingUsername || payload.originalUsername || "");
+
+    rerenderState();
     showNotice(editingUsername ? "User updated." : "User created.");
     closeModal("userModal");
     resetUserForm();
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to save user.", "error");
   }
 }
 
+
 function logout() {
-  sessionStorage.removeItem("nid_username");
-  sessionStorage.removeItem("nid_password");
-  sessionStorage.removeItem("nid_role");
-  sessionStorage.removeItem("nid_name");
-  window.location.href = "login.html";
+  forceLogout("");
 }
+
+
+let activeOutcomeRef = "";
+
+window.openOutcomeModal = function(refCode) {
+  const item = bookings.find(b => b.refCode === refCode);
+  if (!item) {
+    showNotice("Booking not found.", "error");
+    return;
+  }
+
+  activeOutcomeRef = refCode;
+  document.getElementById("outcomeRef").value = refCode;
+  document.getElementById("outcomeReason").value = item.outcomeReason || "";
+  openModal("outcomeModal");
+};
+
+window.submitOutcomeModal = async function() {
+  if (!activeOutcomeRef) {
+    showNotice("Booking not found.", "error");
+    return;
+  }
+  const reason = String(document.getElementById("outcomeReason").value || "").trim();
+  await savePersonnelOutcome(activeOutcomeRef, "Not Successful", reason);
+};
+
+window.savePersonnelOutcome = async function(refCode, outcome, reason = "") {
+  const item = bookings.find(b => b.refCode === refCode);
+  if (!item) {
+    showNotice("Booking not found.", "error");
+    return;
+  }
+
+  try {
+    const result = await apiRequest({
+      action: "personnelSaveOutcome",
+      refCode,
+      outcome,
+      reason
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to save assistance outcome.");
+    }
+
+    const nextStatus = outcome === "Successful" ? "Completed" : "Not Successful";
+
+    upsertBookingLocal({
+      ...item,
+      status: nextStatus,
+      outcome,
+      outcomeReason: reason
+    }, item.refCode);
+
+    rerenderState();
+    closeModal("outcomeModal");
+    activeOutcomeRef = "";
+    showNotice(outcome === "Successful" ? "Marked as successful." : "Marked as not successful.");
+  } catch (err) {
+    showNotice(err.message || "Unable to save assistance outcome.", "error");
+  }
+};
 
 window.updateBookingStatus = async function(refCode, newStatus) {
   const item = bookings.find(b => b.refCode === refCode);
@@ -2346,8 +2618,13 @@ window.updateBookingStatus = async function(refCode, newStatus) {
       throw new Error(result.message || "Unable to update booking status.");
     }
 
+    upsertBookingLocal({
+      ...item,
+      status: newStatus
+    }, item.refCode);
+
+    rerenderState();
     showNotice(`Status updated to ${newStatus}.`);
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to update booking status.", "error");
   }
@@ -2383,8 +2660,9 @@ window.deleteBooking = async function(refCode) {
       throw new Error(result.message || "Unable to delete booking.");
     }
 
+    removeBookingLocal(refCode);
+    rerenderState();
     showNotice("Booking deleted.");
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to delete booking.", "error");
   }
@@ -2418,8 +2696,9 @@ window.deleteSlotRule = async function(key) {
       throw new Error(result.message || "Unable to delete slot rule.");
     }
 
+    removeSlotRuleLocal(date, service);
+    rerenderState();
     showNotice("Slot rule deleted.");
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to delete slot rule.", "error");
   }
@@ -2438,8 +2717,9 @@ window.deleteAvailability = async function(date) {
       throw new Error(res.message || "Unable to delete availability.");
     }
 
+    removeAvailabilityLocal(date);
+    rerenderState();
     showNotice("Availability rule deleted.");
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to delete availability.", "error");
   }
@@ -2474,17 +2754,45 @@ window.deleteUser = async function(usernameToDelete) {
       throw new Error(result.message || "Unable to delete user.");
     }
 
+    removeUserLocal(usernameToDelete);
+    rerenderState();
     showNotice("User deleted.");
-    await loadAdminData();
   } catch (err) {
     showNotice(err.message || "Unable to delete user.", "error");
   }
 };
 
+async function validateSessionOnLoad() {
+  const result = await apiRequest({
+    action: "validateSession"
+  });
+
+  if (result.status !== "success") {
+    throw new Error(result.message || "Session expired or invalid.");
+  }
+
+  username = result.username || username;
+  userRole = result.role || userRole;
+  displayName = result.name || displayName;
+  sessionStorage.setItem("nid_username", username);
+  sessionStorage.setItem("nid_role", userRole);
+  sessionStorage.setItem("nid_name", displayName);
+  if (result.sessionExpiresAt) {
+    sessionExpiresAt = Number(result.sessionExpiresAt);
+    sessionStorage.setItem("nid_session_expires", String(sessionExpiresAt));
+  }
+
+  return result;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+
   if (!requireLogin()) return;
 
   if (userRole === "personnel") {
+    const helpBanner = document.getElementById("personnelHelpBanner");
+    if (helpBanner) helpBanner.style.display = "block";
+    document.querySelector('.nav-btn[data-section="dashboard"]')?.remove();
     document.querySelector('.nav-btn[data-section="slots"]')?.remove();
     document.querySelector('.nav-btn[data-section="availability"]')?.remove();
     document.querySelector('.nav-btn[data-section="users"]')?.remove();
@@ -2497,6 +2805,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("openUserModalBtn")?.remove();
     document.getElementById("saveQuickSlotBtn")?.remove();
 
+    const pageTitle = document.querySelector(".page-title h1");
+    const pageDesc = document.querySelector(".page-title p");
+    if (pageTitle) pageTitle.textContent = "Personnel Assistance Dashboard";
+    if (pageDesc) pageDesc.textContent = "Track client attendance and record whether the assistance was successful or not successful.";
+
     switchSection("bookings");
   }
 
@@ -2507,14 +2820,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fillServiceOptions();
   renderAll();
-  loadAdminData();
+
+  validateSessionOnLoad()
+    .then(() => loadAdminData({ silent: false }))
+    .catch(() => {
+      // forceLogout already redirects on auth error
+    });
 
   document.querySelectorAll(".nav-btn").forEach(btn => {
     btn.addEventListener("click", () => switchSection(btn.dataset.section));
   });
 
   document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
-  document.getElementById("refreshBtn")?.addEventListener("click", loadAdminData);
+  document.getElementById("refreshBtn")?.addEventListener("click", () => {
+    if (!requireLogin()) return;
+    loadAdminData({ silent: false });
+  });
 
   document.getElementById("openNewBookingBtn")?.addEventListener("click", () => {
     resetBookingForm();
@@ -2584,5 +2905,30 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
   </script>
+
+<div class="modal" id="outcomeModal">
+  <div class="modal-card compact-modal">
+    <div class="modal-head">
+      <h3>Mark Assistance Outcome</h3>
+      <button class="ghost-btn" type="button" onclick="closeModal('outcomeModal')">Close</button>
+    </div>
+    <div class="form-grid single-grid">
+      <div class="field">
+        <label for="outcomeRef">Reference</label>
+        <input id="outcomeRef" type="text" readonly />
+      </div>
+      <div class="field">
+        <label for="outcomeReason">Reason if not successful</label>
+        <textarea id="outcomeReason" rows="4" placeholder="Enter the reason why the assistance was not successful."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost-btn" type="button" onclick="closeModal('outcomeModal')">Cancel</button>
+      <button class="primary-btn" type="button" onclick="submitOutcomeModal()">Save Reason</button>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
