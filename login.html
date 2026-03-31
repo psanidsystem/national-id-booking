@@ -272,6 +272,9 @@
       try {
         const res = await fetch(EXEC_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=UTF-8"
+          },
           body: JSON.stringify({
             action: "login",
             username: enteredUsername,
@@ -288,16 +291,23 @@
           throw new Error(data.message || "Login failed.");
         }
 
-        if (!data.sessionToken) {
+        const sessionToken = data.sessionToken || data.session_token || data.token || data.authToken || data.sessionId || data.session;
+        const sessionExpiresAt = data.sessionExpiresAt || data.session_expires_at || data.expiresAt || data.expiry || 0;
+        const role = data.role || data.userRole || data.roleName || "";
+        const name = data.name || data.fullname || data.displayName || "";
+        const usernameResp = data.username || data.user || data.userName || enteredUsername;
+
+        if (!sessionToken) {
           throw new Error("Login succeeded but no session token was returned.");
         }
 
         clearStoredSession();
-        sessionStorage.setItem("nid_session_token", data.sessionToken);
-        sessionStorage.setItem("nid_session_expires", String(data.sessionExpiresAt || 0));
-        sessionStorage.setItem("nid_role", data.role || "");
-        sessionStorage.setItem("nid_name", data.name || "");
-        sessionStorage.setItem("nid_username", data.username || enteredUsername);
+        sessionStorage.setItem("nid_session_token", sessionToken);
+        sessionStorage.setItem("nid_session_expires", String(sessionExpiresAt || 0));
+        sessionStorage.setItem("nid_role", role);
+        sessionStorage.setItem("nid_name", name);
+        sessionStorage.setItem("nid_username", usernameResp);
+
 
         showNotice("Login successful. Redirecting...", "success");
 
