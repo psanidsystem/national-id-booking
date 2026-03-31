@@ -2109,6 +2109,9 @@ async function forceLogout(redirectMessage) {
     if (sessionToken) {
       await fetch(EXEC_URL, {
         method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
         body: JSON.stringify({
           action: "logout",
           sessionToken
@@ -2136,6 +2139,9 @@ async function apiRequest(payload) {
 
   const res = await fetch(EXEC_URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
     body: JSON.stringify(finalPayload)
   });
 
