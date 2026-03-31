@@ -253,6 +253,32 @@
       return String(value || "").trim();
     }
 
+    function findNestedValue(obj, keys) {
+      if (!obj || typeof obj !== "object") return null;
+
+      for (const key of keys) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] != null) {
+          const value = obj[key];
+          if (typeof value === "string" && value.trim()) return value.trim();
+          if (typeof value === "number" && !Number.isNaN(value)) return value;
+          if (typeof value === "boolean") return value;
+        }
+      }
+
+      for (const value of Object.values(obj)) {
+        if (typeof value === "object") {
+          const nested = findNestedValue(value, keys);
+          if (nested != null) return nested;
+        }
+      }
+
+      return null;
+    }
+
+    function isSuccessStatus(value) {
+      return value === "success" || value === true || value === "true" || value === 1 || value === "1";
+    }
+
     async function login() {
       clearNotice();
 
@@ -287,15 +313,16 @@
 
         const data = await res.json();
 
-        if (data.status !== "success") {
-          throw new Error(data.message || "Login failed.");
+        const success = isSuccessStatus(data.status) || isSuccessStatus(data.result?.status) || isSuccessStatus(data.data?.status);
+        if (!success) {
+          throw new Error(data.message || data.result?.message || data.data?.message || "Login failed.");
         }
 
-        const sessionToken = data.sessionToken || data.session_token || data.token || data.authToken || data.sessionId || data.session;
-        const sessionExpiresAt = data.sessionExpiresAt || data.session_expires_at || data.expiresAt || data.expiry || 0;
-        const role = data.role || data.userRole || data.roleName || "";
-        const name = data.name || data.fullname || data.displayName || "";
-        const usernameResp = data.username || data.user || data.userName || enteredUsername;
+        const sessionToken = findNestedValue(data, ["sessionToken", "session_token", "token", "authToken", "sessionId", "session"]);
+        const sessionExpiresAt = findNestedValue(data, ["sessionExpiresAt", "session_expires_at", "expiresAt", "expiry", "expireAt"]);
+        const role = findNestedValue(data, ["role", "userRole", "roleName"]);
+        const name = findNestedValue(data, ["name", "fullname", "displayName", "full_name"]);
+        const usernameResp = findNestedValue(data, ["username", "user", "userName"]);
 
         if (!sessionToken) {
           throw new Error("Login succeeded but no session token was returned.");
