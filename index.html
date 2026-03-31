@@ -1022,6 +1022,66 @@ function populateTimeSelect(items = []) {
   timeSelect.value = stillExists ? current : "";
 }
 
+async function fetchSlotByTime(service, date, time) {
+  try {
+    const res = await postJson({
+      action: "slots",
+      date,
+      service,
+      time
+    });
+    const data = await res.json();
+
+    return {
+      time,
+      open: data.open !== false,
+      reason: data.reason || "",
+      remaining: Number(data.remaining ?? 0),
+      max: Number(data.max ?? 0)
+    };
+  } catch (err) {
+    console.warn("fetchSlotByTime fallback error:", err);
+    return {
+      time,
+      open: false,
+      reason: "Unable to load slot information.",
+      remaining: 0,
+      max: 0
+    };
+  }
+}
+
+async function loadSlotsForDate(service, date) {
+  try {
+    const res = await postJson({
+      action: "slotsForDate",
+      date,
+      service
+    });
+    const data = await res.json();
+
+    if (data.status === "success" && Array.isArray(data.items)) {
+      return data.items.map(item => ({
+        time: item.time,
+        open: item.open,
+        reason: item.reason || "",
+        remaining: Number(item.remaining ?? 0),
+        max: Number(item.max ?? 0)
+      }));
+    }
+
+    console.warn("slotsForDate fallback triggered:", data);
+  } catch (err) {
+    console.warn("slotsForDate request failed, falling back to individual slots:", err);
+  }
+
+  const slotResults = await Promise.all(
+    TIME_OPTIONS.map(time => fetchSlotByTime(service, date, time))
+  );
+
+  return slotResults;
+}
+
 async function prefetchTimeSlotsForDate() {
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
@@ -1046,24 +1106,7 @@ async function prefetchTimeSlotsForDate() {
     let results = dateSlotCache[dateCacheKey];
 
     if (!results) {
-      const res = await postJson({
-        action: "slotsForDate",
-        date,
-        service
-      });
-      const data = await res.json();
-
-      if (data.status !== "success" || !Array.isArray(data.items)) {
-        throw new Error(data.message || "Unable to load slot availability.");
-      }
-
-      results = data.items.map(item => ({
-        time: item.time,
-        open: item.open,
-        reason: item.reason || "",
-        remaining: Number(item.remaining ?? 0),
-        max: Number(item.max ?? 0)
-      }));
+      results = await loadSlotsForDate(service, date);
 
       dateSlotCache[dateCacheKey] = results;
 
