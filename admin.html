@@ -1561,12 +1561,12 @@ function clearStoredSession() {
 }
 
 function requireLogin() {
-  if (!username || !sessionToken || !userRole || !sessionExpiresAt) {
+  if (!sessionToken) {
     window.location.href = "login.html";
     return false;
   }
 
-  if (Date.now() >= sessionExpiresAt) {
+  if (sessionExpiresAt && Date.now() >= sessionExpiresAt) {
     clearStoredSession();
     window.location.href = "login.html";
     return false;
@@ -2145,7 +2145,10 @@ async function forceLogout(redirectMessage) {
 async function apiRequest(payload) {
   const finalPayload = {
     ...payload,
-    sessionToken
+    sessionToken,
+    token: sessionToken,
+    authToken: sessionToken,
+    session_token: sessionToken
   };
 
   const res = await fetch(EXEC_URL, {
