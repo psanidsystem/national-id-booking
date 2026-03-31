@@ -20,12 +20,38 @@
         <img class="logo" src="logo-partner.png" alt="National ID Logo">
       </div>
       <h2>National ID System</h2>
-      <p>Appointment Request<br>Philippine Statistics Authority - Fixed Registration Center - Cebu</p>
+      <p>Appointment Request<br>PSA Cebu Fixed Registration Center</p>
     </div>
 
     <div class="card" id="mainFormCard">
-      <div class="form-section">
-        <h3 class="section-title">Service Information</h3>
+      <div class="wizard-steps" id="wizardSteps">
+        <div class="wizard-step active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="wizard-step-label"><strong>Service</strong><small>Choose service</small></div>
+        </div>
+        <div class="wizard-step" data-step="2">
+          <div class="step-number">2</div>
+          <div class="wizard-step-label"><strong>Schedule</strong><small>Date and time</small></div>
+        </div>
+        <div class="wizard-step" data-step="3">
+          <div class="step-number">3</div>
+          <div class="wizard-step-label"><strong>Details</strong><small>Applicant details</small></div>
+        </div>
+        <div class="wizard-step" data-step="4">
+          <div class="step-number">4</div>
+          <div class="wizard-step-label"><strong>Confirm</strong><small>Review</small></div>
+        </div>
+      </div>
+
+      <div class="wizard-note">
+        <div>
+          <strong>Appointment Schedule</strong>
+        </div>
+        <span class="soft-note booking-badge" id="bookingWindowBadge">Loading booking window...</span>
+      </div>
+
+      <div class="form-section step-section" data-step="1" data-step-label="Step 1 · Service">
+        <h3 class="section-title">Select Service</h3>
 
         <label for="service">Select Service <span class="req">*</span></label>
         <select id="service" required>
@@ -37,15 +63,28 @@
         </select>
 
         <div class="info-banner" id="weekendNotice"></div>
+
+        <div class="quick-guide" id="serviceGuideBox">
+          <h4 id="serviceGuideTitle">Service reminder</h4>
+          <p id="serviceGuideText">Check the basic requirements for the selected service.</p>
+          <ul class="quick-points" id="serviceGuideList"></ul>
+          <div class="quick-guide-actions">
+            <button type="button" class="outline-btn" id="serviceGuideBtn" onclick="openSelectedServiceGuide()">Requirements</button>
+            <button type="button" class="ghost-btn" onclick="scrollToStep(2)">Next</button>
+          </div>
+        </div>
       </div>
 
-      <div class="form-section">
-        <h3 class="section-title">Appointment Schedule</h3>
+      <div class="form-section step-section" data-step="2" data-step-label="Step 2 · Schedule">
+        <h3 class="section-title">Schedule</h3>
 
         <div class="two-col">
           <div>
             <label for="date">Preferred Date <span class="req">*</span></label>
             <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
+            <div id="selectedDateBadge" class="selected-date-badge" style="display:none;"></div>
+            <div class="calendar-note">Only available dates can be selected. Choose the exact time below.</div>
+            <div id="calendarLoadingHint" class="calendar-loading-hint" style="display:none;">Loading calendar availability...</div>
           </div>
 
           <div>
@@ -63,53 +102,89 @@
             </select>
           </div>
         </div>
-
-        <div class="calendar-legend">
-          <span><i class="dot dot-available"></i> Available</span>
-          <span><i class="dot dot-full"></i> Full</span>
-          <span><i class="dot dot-closed"></i> Closed</span>
-        </div>
-
-        <div class="service-info">
+<div class="service-info">
           <small id="serviceInfoText"></small>
         </div>
+
+        <div class="time-grid" id="timeGrid"></div>
+        <p class="soft-note schedule-tip">Select a time below.</p>
       </div>
 
-      <div class="form-section">
+      <div class="form-section step-section" data-step="3" data-step-label="Step 3 · Applicant Details">
         <h3 class="section-title">Applicant Details</h3>
 
         <label for="fullname">Full Name <span class="req">*</span></label>
         <input id="fullname" type="text" placeholder="Enter full name" required>
+        <div class="inline-error" id="fullnameError"></div>
 
         <div class="two-col">
           <div>
             <label for="email">Email Address</label>
             <input id="email" type="email" placeholder="example@gmail.com">
+            <div class="inline-error" id="emailError"></div>
           </div>
 
           <div>
             <label for="phone">Mobile Number</label>
-            <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+            <input id="phone" type="tel" placeholder="09XXXXXXXXX" maxlength="11">
+            <div class="inline-error" id="phoneError"></div>
           </div>
         </div>
 
-        <p class="helper-text">Provide at least one contact detail.</p>
+        <div class="helper-row compact-helper">
+          <p class="helper-text">Enter at least one contact detail.</p>
+        </div>
       </div>
 
-      <div class="summary-box">
+      <div class="summary-box enhanced step-section" data-step="4" data-step-label="Step 4 · Review">
         <h4>Appointment Summary</h4>
-        <p><strong>Service:</strong> <span id="summaryService">Not selected</span></p>
-        <p><strong>Date:</strong> <span id="summaryDate">Not selected</span></p>
-        <p><strong>Time:</strong> <span id="summaryTime">Not selected</span></p>
-      </div>
 
-      <button type="button" id="submitBtn" onclick="openConfirmModal()">
-        <span id="btnText">Submit Appointment Request</span>
-        <span id="btnLoader" class="loading" style="display:none;"></span>
-      </button>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Service</span>
+            <strong id="summaryService">Not selected</strong>
+          </div>
+          <div class="summary-item">
+            <span>Date</span>
+            <strong id="summaryDate">Not selected</strong>
+          </div>
+          <div class="summary-item">
+            <span>Time</span>
+            <strong id="summaryTime">Not selected</strong>
+          </div>
+        </div>
+
+        <div class="summary-progress">
+          <div class="summary-pill" id="pillStep1">Service Ready</div>
+          <div class="summary-pill" id="pillStep2">Schedule Ready</div>
+          <div class="summary-pill" id="pillStep3">Details Ready</div>
+          <div class="summary-pill" id="pillStep4">Ready to Submit</div>
+        </div>
+
+        <div class="submit-wrap">
+          <button type="button" id="submitBtn" onclick="openConfirmModal()">
+            <span id="btnText">Submit Appointment Request</span>
+            <span id="btnLoader" class="loading" style="display:none;"></span>
+          </button>
+          <div class="submit-subtext">Please review the details before submitting.</div>
+          <div class="booking-reminder-box">
+            <strong>Reminder</strong>
+            <span>Not all clients may receive an email notification. If your Appointment Slip is generated, your booking was recorded successfully.</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+
+  <footer class="mini-official-footer">
+    <div class="mini-official-footer-inner">
+      <div>Philippine Statistics Authority</div>
+      <div>National ID System (PhilSys) · Official Appointment Booking Portal</div>
+      <div>© 2026 All Rights Reserved</div>
+    </div>
+  </footer>
 
 <!-- ================= PRIVACY NOTICE ================= -->
 <div class="modal" id="privacyModal">
@@ -161,7 +236,6 @@
 <!-- ================= SUPPORTING DOCUMENTS ================= -->
 <div class="modal" id="nidModal" style="display:none;">
   <div class="modal-content docs">
-
     <h3>Supporting Documents – Filipino Citizens</h3>
 
     <h4>PRIMARY SUPPORTING DOCUMENTS</h4>
@@ -170,8 +244,8 @@
       <li>PSA-issued Certificate of Live Birth and one (1) government-issued identification document which bears a full name, front-facing photograph, and signature or thumb mark;</li>
       <li>Philippine Passport or ePassport issued by the Department of Foreign Affairs (DFA)</li>
       <li>UMID (GSIS or SSS)</li>
-      <li>Unified Multi-purpose ldentification (UMID) Card issued by the Government Service lnsurance System (GSIS) or Social Security Systen (SSS)</li>
-      <li>Student’s License Permit or Non- Professional/Professional Driver’s License issued by the LTO</li>
+      <li>Unified Multi-purpose Identification (UMID) Card issued by the Government Service Insurance System (GSIS) or Social Security System (SSS)</li>
+      <li>Student’s License Permit or Non-Professional/Professional Driver’s License issued by the LTO</li>
     </ul>
 
     <p class="note">
@@ -180,7 +254,7 @@
 
     <h4>SECONDARY SUPPORTING DOCUMENTS</h4>
     <ul>
-      <li>PSA-issued Certificate of Live Birth/National Statistics Office (NSO)-issued Certificate of Live Blrth with Birth Reference Number (BreN)</li>
+      <li>PSA-issued Certificate of Live Birth/National Statistics Office (NSO)-issued Certificate of Live Birth with Birth Reference Number (BreN)</li>
       <li>Local Civil Registry Office (LCRO)-issued Certificate of Live Birth</li>
       <li>PSA-issued Report of Birth</li>
       <li>PSA-issued Certificate of Foundling</li>
@@ -188,30 +262,30 @@
       <li>Professional Regulatory Commission (PRC) ID</li>
       <li>Seaman’s Book (Seafarer’s Record Book)</li>
       <li>Overseas Workers Welfare Administration (OWWA) ID</li>
-      <li>Senior Citizen’s lD issued by the Office of Senior Citizens Affairs (OSCA) and/or LocalGovernment Units (LGU)</li>
-      <li>Social Security System (SSS) lD</li>
+      <li>Senior Citizen’s ID issued by the Office of Senior Citizens Affairs (OSCA) and/or Local Government Units (LGU)</li>
+      <li>Social Security System (SSS) ID</li>
       <li>Pantawid Pamilyang Pilipino Program (4Ps) ID</li>
       <li>License to Own or Possess Firearms (LTOPF)</li>
-      <li>National Bureau of lnvestigation (NBl) Clearance</li>
+      <li>National Bureau of Investigation (NBI) Clearance</li>
       <li>Police Clearance/ID</li>
       <li>Solo Parent’s ID</li>
-      <li>Person with Disability (PWD) lD issued by the National Council of Disability Affairs (NCDA) or its regional counterpart, Office of the Mayor, Department of Social Welfare and Development (DSWD) Office and other participating organizations with a Memorandum of Agreement with the Department of Health (DOH)</li>
-      <li>Voter’s lD issued by the Commission on Elections (COMELEC)</li>
-      <li>Postal lD issued by the Philippine Postal Corporation (PhlPost)</li>
-      <li>Taxpayer ldentification Number (TlN) ID</li>
+      <li>Person with Disability (PWD) ID issued by the National Council of Disability Affairs (NCDA) or its regional counterpart, Office of the Mayor, Department of Social Welfare and Development (DSWD) Office and other participating organizations with a Memorandum of Agreement with the Department of Health (DOH)</li>
+      <li>Voter’s ID issued by the Commission on Elections (COMELEC)</li>
+      <li>Postal ID issued by the Philippine Postal Corporation (PhilPost)</li>
+      <li>Taxpayer Identification Number (TIN) ID</li>
       <li>PhilHealth ID</li>
       <li>Special Resident Retiree’s Visa (SRRV) issued by the Philippine Retirement Authority (PRA)</li>
       <li>National ID from other countries</li>
       <li>Residence ID from other countries</li>
-      <li>Professional ldentification Card issued by the Maritime lndustry Authority (MARINA)</li>
+      <li>Professional Identification Card issued by the Maritime Industry Authority (MARINA)</li>
       <li>Eligibility Card issued by the Civil Service Commission</li>
-      <li>Dependent’s lD lssued by the Armed Forces of the Philippines (AFP) and Philippine National Police (PNP)</li>
+      <li>Dependent’s ID issued by the Armed Forces of the Philippines (AFP) and Philippine National Police (PNP)</li>
     </ul>
 
     <h4>The following identification documents shall be accepted as secondary supporting documents provided that they have a front-facing photograph, signature/thumbmark, full name, permanent address, and date of birth.</h4>
     <ul>
       <li>Employee ID</li>
-      <li>School ID (for pre-school, elementary and signature/thumbmark of the lD owner is not required)</li>
+      <li>School ID (for pre-school and elementary, signature/thumbmark of the ID owner is not required)</li>
       <li>City / Municipal ID</li>
       <li>Barangay Clearance / Certificate / ID</li>
       <li>Barangay ID</li>
@@ -230,7 +304,6 @@
 <!-- ================= DEMOGRAPHIC UPDATE MODAL ================= -->
 <div class="modal" id="updateModal" style="display:none;">
   <div class="modal-content docs">
-
     <h3>Updating of Demographic Information</h3>
     <p><strong>Fields to be Changed and List of Identification and/or Supporting Documents</strong></p>
 
@@ -288,14 +361,12 @@
     </p>
 
     <button type="button" onclick="closeUpdateModal()">I Understand</button>
-
   </div>
 </div>
 
 <!-- ================= EPHILID MODAL ================= -->
 <div class="modal" id="ephilidModal" style="display:none;">
   <div class="modal-content docs">
-
     <h3>Important Reminder – ePhilID Printing</h3>
 
     <p>
@@ -329,14 +400,12 @@
     </p>
 
     <button type="button" onclick="closeEphilidModal()">I Understand</button>
-
   </div>
 </div>
 
 <!-- ================= TRN / OTHER CONCERN MODAL ================= -->
 <div class="modal" id="trnModal" style="display:none;">
   <div class="modal-content">
-
     <h3>Important Reminder – TRN Retrieval / Other Concern</h3>
 
     <p>
@@ -365,7 +434,6 @@
     </p>
 
     <button type="button" onclick="closeTrnModal()">I Understand</button>
-
   </div>
 </div>
 
@@ -398,6 +466,11 @@
       </div>
     </div>
 
+    <div id="confirmStatus" class="confirm-status" style="display:none;">
+      <span class="confirm-spinner"></span>
+      <span id="confirmStatusText">Processing appointment...</span>
+    </div>
+
     <div class="confirm-actions">
       <button type="button" class="confirm-primary" onclick="confirmSubmit()">
         Confirm Appointment
@@ -425,7 +498,7 @@
 
       <div class="slip-qr-wrap">
         <div class="slip-qr-box">
-          <canvas id="qrCanvas" width="130" height="130"></canvas>
+          <canvas id="qrCanvas" width="88" height="88"></canvas>
         </div>
         <div class="slip-qr-note">Scan for appointment verification</div>
       </div>
@@ -465,19 +538,25 @@
           <div class="slip-label">Center</div>
           <div class="slip-value">
             National ID Fixed Registration Center<br>
-            3rd Floor, Gaisano Capital South, Cebu City
+            3rd Floor, Gaisano Capital South,<br>
+            Cebu City
           </div>
         </div>
       </div>
 
-      <div class="slip-note">
-        Please present this appointment slip during your scheduled visit.
+      <div class="slip-reminder compact">
+        <div class="slip-reminder-title">Important Reminder</div>
+        <p class="slip-reminder-text">
+          Please screenshot, download, or print this slip. If you cannot save it,
+          write down your <strong>Reference Number</strong>. Present this slip or your
+          Reference Number upon arrival, and kindly keep a copy for verification purposes.
+        </p>
       </div>
 
-      <div class="slip-actions">
+      <div class="slip-actions compact-actions" data-no-export="true">
         <button type="button" onclick="printSlip()">Print</button>
         <button type="button" onclick="downloadSlip()">Download</button>
-        <button type="button" class="secondary" onclick="closeSlip()">Close</button>
+        <button type="button" class="secondary close-btn" onclick="closeSlip()">Close</button>
       </div>
 
     </div>
@@ -506,6 +585,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
+const TIME_OPTIONS = ["08:00 AM","09:00 AM","10:00 AM","11:00 AM","01:00 PM","02:00 PM","03:00 PM","04:00 PM"];
 
 const DEFAULT_SLOTS = {
   "National ID Registration": 32,
@@ -516,6 +596,8 @@ const DEFAULT_SLOTS = {
 
 let monthlyBooked = {};
 let dailySlotCache = {};
+let monthlySlotCache = {};
+let dateSlotCache = {};
 let systemSettings = {
   saturdayOpen: false,
   sundayOpen: false,
@@ -523,18 +605,25 @@ let systemSettings = {
 };
 let bookingWindowEndDate = null;
 let activeCalendarRequestId = 0;
+let activeTimeGridRequestId = 0;
+let systemMessageAutoTimer = null;
 
 /* ================= UTILITIES ================= */
+
+function postJson(payload, options = {}) {
+  return fetch(EXEC_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
+    body: JSON.stringify(payload),
+    ...options
+  });
+}
 
 function setFormDisabled(disabled) {
   const formCard = document.getElementById("mainFormCard");
   const service = document.getElementById("service");
-  const date = document.getElementById("date");
-  const time = document.getElementById("time");
-  const fullname = document.getElementById("fullname");
-  const email = document.getElementById("email");
-  const phone = document.getElementById("phone");
-  const submitBtn = document.getElementById("submitBtn");
 
   if (disabled) {
     formCard.classList.add("form-disabled");
@@ -543,21 +632,46 @@ function setFormDisabled(disabled) {
   }
 
   service.disabled = disabled;
-  date.disabled = disabled;
-  time.disabled = disabled;
-  fullname.disabled = disabled;
-  email.disabled = disabled;
-  phone.disabled = disabled;
-  submitBtn.disabled = disabled;
+}
 
-  if (date._flatpickr) {
-    if (date._flatpickr.altInput) {
-      date._flatpickr.altInput.disabled = disabled;
+function setDateInputDisabled(disabled) {
+  const dateInput = document.getElementById("date");
+  if (!dateInput) return;
+
+  dateInput.disabled = disabled;
+
+  if (dateInput._flatpickr) {
+    if (dateInput._flatpickr.altInput) {
+      dateInput._flatpickr.altInput.disabled = disabled;
     }
     if (disabled) {
-      date._flatpickr.close();
+      dateInput._flatpickr.close();
     }
   }
+}
+
+function setTimeInputDisabled(disabled) {
+  const time = document.getElementById("time");
+  if (time) time.disabled = disabled;
+}
+
+function setApplicantFieldsDisabled(disabled) {
+  const fullname = document.getElementById("fullname");
+  const email = document.getElementById("email");
+  const phone = document.getElementById("phone");
+  const submitBtn = document.getElementById("submitBtn");
+
+  if (fullname) fullname.disabled = disabled;
+  if (email) email.disabled = disabled;
+  if (phone) phone.disabled = disabled;
+  if (submitBtn) submitBtn.disabled = disabled;
+}
+
+function setAvailabilityInfo(message, color = "#4b5563") {
+  const info = document.getElementById("serviceInfoText");
+  if (!info) return;
+  info.innerHTML = message || "";
+  info.style.color = color;
 }
 
 function openModal(id) {
@@ -576,9 +690,32 @@ function showSystemMessage(title, message) {
   openModal("systemModal");
 }
 
+function showSystemMessageAuto(title, message, callback, delay = 1400) {
+  if (systemMessageAutoTimer) {
+    clearTimeout(systemMessageAutoTimer);
+    systemMessageAutoTimer = null;
+  }
+
+  document.getElementById("systemTitle").textContent = title;
+  document.getElementById("systemMessage").textContent = message;
+  openModal("systemModal");
+
+  systemMessageAutoTimer = setTimeout(() => {
+    closeModal("systemModal");
+    systemMessageAutoTimer = null;
+    if (typeof callback === "function") callback();
+  }, delay);
+}
+
 function agreePrivacy() {
   closeModal("privacyModal");
   setFormDisabled(false);
+
+  setDateInputDisabled(true);
+  setTimeInputDisabled(true);
+  setApplicantFieldsDisabled(true);
+  setAvailabilityInfo("Select a service to continue.");
+  updateSummary();
 }
 
 function normalizeMonthString(year, monthIndexZeroBased) {
@@ -602,6 +739,394 @@ function updateWeekendNotice() {
   el.textContent = `${parts.join(" • ")} • ${bookingWindowText}`;
   el.style.color = "#475467";
 }
+
+function updateBookingWindowBadge() {
+  const badge = document.getElementById("bookingWindowBadge");
+  if (!badge) return;
+  badge.textContent = bookingWindowEndDate
+    ? `Booking until ${formatPrettyDate(bookingWindowEndDate)}`
+    : "Loading booking window...";
+}
+
+function updateSelectedDateBadge() {
+  const badge = document.getElementById("selectedDateBadge");
+  const rawDate = document.getElementById("date")?.value || "";
+
+  if (!badge) return;
+
+  if (!rawDate) {
+    badge.style.display = "none";
+    badge.innerHTML = "";
+    return;
+  }
+
+  badge.style.display = "inline-flex";
+  badge.innerHTML = `<span class="badge-dot"></span><span>Selected: ${formatPrettyDate(rawDate)}</span>`;
+}
+
+function setCalendarLoadingHint(isLoading, message = "Loading calendar availability...") {
+  const el = document.getElementById("calendarLoadingHint");
+  if (!el) return;
+  el.textContent = message;
+  el.style.display = isLoading ? "inline-flex" : "none";
+}
+
+function getServiceGuide(service) {
+  const guides = {
+    "National ID Registration": {
+      title: "National ID Registration",
+      text: "Bring original supporting documents for first-time registration.",
+      list: [
+        "Prepare one primary or acceptable secondary supporting document.",
+        "Ensure your full name and date of birth are readable.",
+        "Arrive before your selected appointment time."
+      ],
+      modalId: "nidModal"
+    },
+    "Correction/Updating of Demographic Information": {
+      title: "Correction/Updating of Demographic Information",
+      text: "Prepare documents that support the exact field to be corrected.",
+      list: [
+        "Bring original PSA/LCRO or other required supporting documents.",
+        "Review the field to be changed before visiting the center.",
+        "Additional evaluation may be required depending on the correction."
+      ],
+      modalId: "updateModal"
+    },
+    "Request National ID in Paper Format (ePhilID)": {
+      title: "Request National ID in Paper Format (ePhilID)",
+      text: "This service is for clients requesting their National ID in paper format.",
+      list: [
+        "Bring your transaction details if available.",
+        "Prepare a contact detail for follow-up if needed.",
+        "Please verify that your demographic information is correct."
+      ],
+      modalId: "ephilidModal"
+    },
+    "Retrieval of TRN / Other Concern": {
+      title: "Retrieval of TRN / Other Concern",
+      text: "Prepare details that can help personnel verify your concern quickly.",
+      list: [
+        "Bring any available reference, old slip, or transaction details.",
+        "Describe the concern clearly during your appointment.",
+        "Additional review may be required depending on the concern type."
+      ],
+      modalId: "trnModal"
+    }
+  };
+  return guides[service] || null;
+}
+
+function updateServiceGuide() {
+  const service = document.getElementById("service").value;
+  const box = document.getElementById("serviceGuideBox");
+  const title = document.getElementById("serviceGuideTitle");
+  const text = document.getElementById("serviceGuideText");
+  const list = document.getElementById("serviceGuideList");
+  const btn = document.getElementById("serviceGuideBtn");
+
+  if (!box || !title || !text || !list || !btn) return;
+
+  const guide = getServiceGuide(service);
+
+  if (!guide) {
+    box.classList.remove("show");
+    list.innerHTML = "";
+    return;
+  }
+
+  title.textContent = guide.title;
+  text.textContent = guide.text;
+  list.innerHTML = guide.list.map(item => `<li>${item}</li>`).join("");
+  btn.dataset.modalId = guide.modalId;
+  box.classList.add("show");
+}
+
+function openSelectedServiceGuide() {
+  const btn = document.getElementById("serviceGuideBtn");
+  const modalId = btn && btn.dataset.modalId;
+  if (modalId) openModal(modalId);
+}
+
+function scrollToStep(stepNumber) {
+  const section = document.querySelector(`.step-section[data-step="${stepNumber}"]`);
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function setInlineError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  const error = document.getElementById(fieldId + "Error");
+  if (field) field.classList.toggle("field-error", !!message);
+  if (error) {
+    error.textContent = message || "";
+    error.style.display = message ? "block" : "none";
+  }
+}
+
+function validateApplicantFields(showErrors = false) {
+  const fullname = document.getElementById("fullname").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  let valid = true;
+
+  const nameError = !fullname
+    ? "Full name is required."
+    : fullname.replace(/[^A-Z .'-]/gi, "").trim().length < 4
+      ? "Please enter a valid full name."
+      : "";
+  if (nameError) valid = false;
+
+  const emailError = email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? "Please enter a valid email address."
+    : "";
+  if (emailError) valid = false;
+
+  const phoneError = phone && !/^09\d{9}$/.test(phone)
+    ? "Use 11 digits starting with 09."
+    : "";
+  if (phoneError) valid = false;
+
+  const contactError = !email && !phone
+    ? "Provide at least one contact detail."
+    : "";
+  if (contactError) valid = false;
+
+  if (showErrors) {
+    setInlineError("fullname", nameError);
+    setInlineError("email", emailError || (contactError && !email ? contactError : ""));
+    setInlineError("phone", phoneError || (contactError && !phone ? contactError : ""));
+  }
+
+  return { valid, fullname, email, phone };
+}
+
+function updateStepState() {
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const applicant = validateApplicantFields(false);
+  const readyToSubmit = !!(service && date && time && applicant.valid && !document.getElementById("submitBtn").disabled);
+
+  document.querySelectorAll(".wizard-step").forEach(stepEl => {
+    const step = Number(stepEl.dataset.step || 0);
+    stepEl.classList.remove("active", "done");
+
+    if (step === 1 && service) stepEl.classList.add("done");
+    if (step === 2 && service && date && time) stepEl.classList.add("done");
+    if (step === 3 && service && date && time && applicant.valid) stepEl.classList.add("done");
+    if (step === 4 && readyToSubmit) stepEl.classList.add("done");
+
+    if ((step === 1 && !service) ||
+        (step === 2 && service && (!date || !time)) ||
+        (step === 3 && service && date && time && !applicant.valid) ||
+        (step === 4 && service && date && time && applicant.valid && !readyToSubmit)) {
+      stepEl.classList.add("active");
+    }
+  });
+
+  document.getElementById("pillStep1")?.classList.toggle("done", !!service);
+  document.getElementById("pillStep2")?.classList.toggle("done", !!(service && date && time));
+  document.getElementById("pillStep3")?.classList.toggle("done", !!(service && date && time && applicant.valid));
+  document.getElementById("pillStep4")?.classList.toggle("done", readyToSubmit);
+
+  document.getElementById("pillStep1")?.classList.toggle("active", !service);
+  document.getElementById("pillStep2")?.classList.toggle("active", !!service && (!date || !time));
+  document.getElementById("pillStep3")?.classList.toggle("active", !!(service && date && time && !applicant.valid));
+  document.getElementById("pillStep4")?.classList.toggle("active", !!(service && date && time && applicant.valid && !readyToSubmit));
+}
+
+function renderTimeGrid(items = [], loading = false) {
+  const grid = document.getElementById("timeGrid");
+  if (!grid) return;
+
+  if (loading) {
+    grid.innerHTML = `
+      <div class="loading-panel" aria-live="polite">
+        <span class="formal-spinner dark"></span>
+        <div>
+          <strong>Loading available time slots</strong>
+          <small>Please wait while the schedule is being prepared.</small>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (!items.length) {
+    grid.innerHTML = "";
+    return;
+  }
+
+  const selected = document.getElementById("time").value;
+  const availableItems = items.filter(item => item.open !== false && Number(item.remaining ?? 0) > 0);
+  const closedItems = items.filter(item => item.open === false);
+  const fullItems = items.filter(item => item.open !== false && Number(item.remaining ?? 0) <= 0);
+
+  if (!availableItems.length) {
+    let title = "No available schedule";
+    let message = "No appointment time is available for the selected date. Please choose another date.";
+
+    if (closedItems.length === items.length) {
+      const commonReason = closedItems[0]?.reason || "Closed";
+      title = "Selected date is unavailable";
+      message = commonReason;
+    } else if (fullItems.length === items.length) {
+      title = "Selected date is fully booked";
+      message = "All appointment times for this date are already full. Please choose another date.";
+    }
+
+    grid.innerHTML = `
+      <div class="slot-empty-state">
+        <strong>${title}</strong>
+        <span>${message}</span>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = availableItems.map(item => {
+    const normalizedTime = item.time;
+    const remaining = Number(item.remaining ?? 0);
+
+    return `
+      <button type="button"
+        class="time-chip available ${selected === normalizedTime ? "selected" : ""}"
+        data-time="${normalizedTime}"
+        onclick="selectTimeSlot('${normalizedTime.replace(/'/g, "\'")}')">
+        <strong>${normalizedTime}</strong>
+        <small>${remaining} slot${remaining > 1 ? "s" : ""} available</small>
+      </button>
+    `;
+  }).join("");
+}
+
+function populateTimeSelect(items = []) {
+  const timeSelect = document.getElementById("time");
+  const current = timeSelect.value;
+  const availableItems = items.filter(item => item.open !== false && Number(item.remaining ?? 0) > 0);
+
+  timeSelect.innerHTML = `<option value="">${availableItems.length ? "-- Select Time --" : "-- No Available Time --"}</option>`;
+
+  availableItems.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.time;
+    const remaining = Number(item.remaining ?? 0);
+    option.textContent = `${item.time} — ${remaining} slot${remaining > 1 ? "s" : ""} available`;
+    timeSelect.appendChild(option);
+  });
+
+  const stillExists = [...timeSelect.options].some(opt => opt.value === current && !opt.disabled);
+  timeSelect.value = stillExists ? current : "";
+}
+
+async function prefetchTimeSlotsForDate() {
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+
+  setApplicantFieldsDisabled(true);
+
+  if (!service || !date) {
+    renderTimeGrid([]);
+    populateTimeSelect([]);
+    updateStepState();
+    return;
+  }
+
+  const requestId = ++activeTimeGridRequestId;
+  const dateCacheKey = `${service}_${date}`;
+
+  setTimeInputDisabled(true);
+  renderTimeGrid([], true);
+  setAvailabilityInfo("Loading available time slots...", "#475467");
+
+  try {
+    let results = dateSlotCache[dateCacheKey];
+
+    if (!results) {
+      const res = await postJson({
+        action: "slotsForDate",
+        date,
+        service
+      });
+      const data = await res.json();
+
+      if (data.status !== "success" || !Array.isArray(data.items)) {
+        throw new Error(data.message || "Unable to load slot availability.");
+      }
+
+      results = data.items.map(item => ({
+        time: item.time,
+        open: item.open,
+        reason: item.reason || "",
+        remaining: Number(item.remaining ?? 0),
+        max: Number(item.max ?? 0)
+      }));
+
+      dateSlotCache[dateCacheKey] = results;
+
+      results.forEach(item => {
+        const timeCacheKey = `${service}_${date}_${item.time}`;
+        dailySlotCache[timeCacheKey] = {
+          open: item.open,
+          reason: item.reason || "",
+          remaining: Number(item.remaining ?? 0),
+          max: Number(item.max ?? 0)
+        };
+      });
+    }
+
+    if (requestId !== activeTimeGridRequestId) return;
+
+    const availableItems = results.filter(item => item.open !== false && Number(item.remaining ?? 0) > 0);
+
+    populateTimeSelect(results);
+    renderTimeGrid(results);
+    setTimeInputDisabled(availableItems.length === 0);
+
+    if (!availableItems.length) {
+      const allClosed = results.length && results.every(item => item.open === false);
+      const allFull = results.length && results.every(item => item.open !== false && Number(item.remaining ?? 0) <= 0);
+
+      if (allClosed) {
+        setAvailabilityInfo(results[0]?.reason || "Selected date is unavailable.", "#b42318");
+      } else if (allFull) {
+        setAvailabilityInfo("Selected date is fully booked. Please choose another date.", "#b42318");
+      } else {
+        setAvailabilityInfo("No available time for the selected date.", "#b42318");
+      }
+    } else if (document.getElementById("time").value) {
+      checkSlots();
+    } else {
+      setAvailabilityInfo("Select a time below.", "#475467");
+    }
+
+    updateStepState();
+  } catch (err) {
+    if (requestId !== activeTimeGridRequestId) return;
+    console.error("prefetchTimeSlotsForDate error:", err);
+    renderTimeGrid([]);
+    populateTimeSelect([]);
+    setTimeInputDisabled(true);
+    setAvailabilityInfo("Unable to load available time slots. Please try again.", "#b42318");
+    updateStepState();
+  }
+}
+
+function selectTimeSlot(timeValue) {
+  const timeSelect = document.getElementById("time");
+  if (!timeSelect || !timeValue) return;
+
+  const targetOption = [...timeSelect.options].find(opt => opt.value === timeValue && !opt.disabled);
+  if (!targetOption) return;
+
+  timeSelect.value = timeValue;
+  updateSummary();
+  checkSlots();
+}
+
 
 function formatAppointmentDate(dateStr) {
   if (!dateStr) return "";
@@ -647,6 +1172,11 @@ function updateSummary() {
   document.getElementById("summaryService").textContent = service;
   document.getElementById("summaryDate").textContent = rawDate ? formatPrettyDate(rawDate) : "Not selected";
   document.getElementById("summaryTime").textContent = time;
+
+  updateServiceGuide();
+  updateBookingWindowBadge();
+  updateSelectedDateBadge();
+  updateStepState();
 }
 
 function showCheckmark() {
@@ -665,32 +1195,44 @@ function drawSlipQR(text) {
   new QRious({
     element: qrCanvas,
     value: text,
-    size: 130,
+    size: 88,
     level: "H",
     background: "white",
     foreground: "black"
   });
 }
 
-function resetConfirmButtons() {
+function setConfirmLoading(isLoading, message = "Processing appointment request...") {
   const primaryBtn = document.querySelector(".confirm-primary");
   const secondaryBtn = document.querySelector(".confirm-secondary");
+  const statusBox = document.getElementById("confirmStatus");
+  const statusText = document.getElementById("confirmStatusText");
+
+  if (statusText) {
+    statusText.textContent = message;
+  }
+
+  if (statusBox) {
+    statusBox.style.display = isLoading ? "flex" : "none";
+    statusBox.classList.toggle("formal-loading-row", !!isLoading);
+  }
 
   if (primaryBtn) {
-    primaryBtn.disabled = false;
-    primaryBtn.textContent = "Confirm Appointment";
+    primaryBtn.disabled = isLoading;
+    primaryBtn.textContent = isLoading ? "Processing..." : "Confirm Appointment";
   }
 
   if (secondaryBtn) {
-    secondaryBtn.disabled = false;
+    secondaryBtn.disabled = isLoading;
   }
 }
 
+function resetConfirmButtons() {
+  setConfirmLoading(false, "Processing appointment request...");
+}
+
 function resetSlotInfo() {
-  const info = document.getElementById("serviceInfoText");
-  if (!info) return;
-  info.innerHTML = "";
-  info.style.color = "#4b5563";
+  setAvailabilityInfo("", "#4b5563");
 }
 
 function resetForm() {
@@ -707,22 +1249,160 @@ function resetForm() {
 
   monthlyBooked = {};
   dailySlotCache = {};
-  resetSlotInfo();
+  monthlySlotCache = {};
+  dateSlotCache = {};
+  renderTimeGrid([]);
+  ["fullname","email","phone"].forEach(id => setInlineError(id, ""));
   updateWeekendNotice();
+  updateBookingWindowBadge();
   updateSummary();
 
+  setDateInputDisabled(true);
+  setTimeInputDisabled(true);
+  setApplicantFieldsDisabled(true);
+  setAvailabilityInfo("Select a service first to load available dates.");
+
   ["nidModal", "updateModal", "ephilidModal", "trnModal"].forEach(id => closeModal(id));
+}
+
+function renderSlotInfo(data, info) {
+  if (!info) return;
+
+  if (data.status === "error") {
+    info.innerHTML = (data.message || "Unable to check availability.");
+    info.style.color = "#b42318";
+    return;
+  }
+
+  if (data.open === false) {
+    info.innerHTML = `Schedule closed${data.reason ? " — " + data.reason : ""}`;
+    info.style.color = "#b42318";
+    return;
+  }
+
+  const remaining = Number(data.remaining ?? 0);
+  info.innerHTML = `Available slots: <strong>${remaining}</strong>`;
+  info.style.color = remaining <= 0 ? "#b42318" : "#137333";
+}
+
+function applySlotAvailabilityResult(data) {
+  const remaining = Number(data && data.remaining ? data.remaining : 0);
+  renderSlotInfo(data, document.getElementById("serviceInfoText"));
+
+  if (data && data.open !== false && remaining > 0) {
+    setApplicantFieldsDisabled(false);
+  } else {
+    setApplicantFieldsDisabled(true);
+  }
+
+  renderTimeGrid(TIME_OPTIONS.map(time => {
+    const key = `${document.getElementById("service").value}_${document.getElementById("date").value}_${time}`;
+    return { time, ...(dailySlotCache[key] || {}) };
+  }).filter(item => item.open !== undefined || item.status === "error"));
+
+  updateStepState();
+}
+
+function sendConfirmationEmailInBackground(payload) {
+  const email = String(payload.email || "").trim();
+  if (!email) return;
+
+  fetch(EXEC_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
+    body: JSON.stringify({
+      action: "sendConfirmationEmail",
+      refCode: payload.refCode || "",
+      fullname: payload.fullname || "",
+      service: payload.service || "",
+      date: payload.date || "",
+      time: payload.time || "",
+      email: email
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Email background response:", data);
+
+      if (data.status === "quota_exceeded") {
+        console.warn("Booking saved, but email not sent because daily email quota is exhausted.");
+        return;
+      }
+
+      if (data.status !== "success") {
+        console.error("Background email failed:", data.message || data);
+      }
+    })
+    .catch(err => {
+      console.error("Background email fetch error:", err);
+    });
+}
+
+function openSlipWithReference(refCode, fullname, service, date, time) {
+  closeModal("confirmModal");
+
+  dailySlotCache = {};
+  monthlyBooked = {};
+
+  document.getElementById("sRef").textContent = refCode;
+  document.getElementById("sName").textContent = fullname.toUpperCase();
+  document.getElementById("sService").textContent = service;
+  document.getElementById("sDate").textContent = formatAppointmentDate(date);
+  document.getElementById("sTime").textContent = time;
+
+  const qrPayload =
+    "Reference: " + refCode + "\n" +
+    "Name: " + fullname.toUpperCase() + "\n" +
+    "Service: " + service + "\n" +
+    "Date: " + formatAppointmentDate(date) + "\n" +
+    "Time: " + time;
+
+  drawSlipQR(qrPayload);
+  openModal("slipModal");
+
+  const calendar = document.getElementById("date")._flatpickr;
+  if (calendar) {
+    fetchMonthlyData(calendar);
+  }
+}
+
+async function verifyTimedOutBooking(payload, retries = 4, delayMs = 2000) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const res = await postJson({
+        action: "checkRecentBooking",
+        service: payload.service,
+        fullname: payload.fullname,
+        email: payload.email,
+        phone: payload.phone,
+        date: payload.date,
+        time: payload.time
+      });
+
+      const data = await res.json();
+
+      if (data.status === "found" && data.refCode) {
+        return data;
+      }
+    } catch (err) {
+      console.error("verifyTimedOutBooking error:", err);
+    }
+
+    if (attempt < retries - 1) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return null;
 }
 
 /* ================= SETTINGS ================= */
 
 async function loadSystemSettings() {
   try {
-    const res = await fetch(EXEC_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "getSystemSettings" })
-    });
-
+    const res = await postJson({ action: "getSystemSettings" });
     const data = await res.json();
 
     if (data.status === "success" && data.systemSettings) {
@@ -758,26 +1438,22 @@ async function loadSystemSettings() {
 
 function openConfirmModal() {
   const service = document.getElementById("service").value;
-  const fullname = document.getElementById("fullname").value.trim();
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
+  const applicant = validateApplicantFields(true);
+  const fullname = applicant.fullname;
+  const email = applicant.email;
+  const phone = applicant.phone;
 
-  if (!service || !fullname || !date || !time) {
-    showSystemMessage("Missing Fields", "Please complete all required fields.");
+  if (!service || !date || !time || !fullname) {
+    showSystemMessage("Missing Fields", "Please complete all required fields before proceeding.");
+    updateStepState();
     return;
   }
 
-  if (!email && !phone) {
-    showSystemMessage("Contact Required", "Provide at least email OR mobile number.");
-    return;
-  }
-
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (email && !emailPattern.test(email)) {
-    showSystemMessage("Invalid Email", "Please enter a valid email address.");
+  if (!applicant.valid) {
+    showSystemMessage("Check Your Details", "Please review the highlighted applicant information.");
+    updateStepState();
     return;
   }
 
@@ -791,88 +1467,81 @@ function openConfirmModal() {
 }
 
 function confirmSubmit() {
-  const primaryBtn = document.querySelector(".confirm-primary");
-  const secondaryBtn = document.querySelector(".confirm-secondary");
-
-  if (primaryBtn) {
-    primaryBtn.disabled = true;
-    primaryBtn.textContent = "Processing Appointment...";
-  }
-
-  if (secondaryBtn) {
-    secondaryBtn.disabled = true;
-  }
-
+  setConfirmLoading(true, "Submitting appointment request...");
   submitForm();
 }
 
 /* ================= SLOT CHECK ================= */
 
-function renderSlotInfo(data, info) {
-  if (!info) return;
-
-  if (data.status === "error") {
-    info.innerHTML = "⚠ " + (data.message || "Unable to check availability.");
-    info.style.color = "red";
-    return;
-  }
-
-  if (data.open === false) {
-    info.innerHTML = `🔒 Booking closed${data.reason ? " — " + data.reason : ""}`;
-    info.style.color = "red";
-    return;
-  }
-
-  const remaining = Number(data.remaining ?? 0);
-  info.innerHTML = `🟢 Available Slots: <strong>${remaining}</strong>`;
-  info.style.color = remaining <= 0 ? "red" : "green";
-}
-
 function checkSlots() {
   const service = document.getElementById("service").value;
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
-  const info = document.getElementById("serviceInfoText");
 
-  if (!service || !date || !time) {
-    resetSlotInfo();
+  setApplicantFieldsDisabled(true);
+
+  if (!service) {
+    setAvailabilityInfo("Select a service to continue.");
+    return;
+  }
+
+  if (!date) {
+    setAvailabilityInfo("Select a date first.");
+    return;
+  }
+
+  if (!time) {
+    setAvailabilityInfo("Select a time to continue.");
     return;
   }
 
   const cacheKey = `${service}_${date}_${time}`;
+  const dateCacheKey = `${service}_${date}`;
 
   if (dailySlotCache[cacheKey]) {
-    renderSlotInfo(dailySlotCache[cacheKey], info);
+    applySlotAvailabilityResult(dailySlotCache[cacheKey]);
     return;
   }
 
-  info.innerHTML = "⏳ Checking available slots...";
-  info.style.color = "#555";
+  if (dateSlotCache[dateCacheKey]) {
+    const found = dateSlotCache[dateCacheKey].find(item => item.time === time);
+    if (found) {
+      const normalized = {
+        open: found.open,
+        reason: found.reason || "",
+        remaining: Number(found.remaining ?? 0),
+        max: Number(found.max ?? 0)
+      };
+      dailySlotCache[cacheKey] = normalized;
+      applySlotAvailabilityResult(normalized);
+      return;
+    }
+  }
+
+  setAvailabilityInfo("Checking slot availability...", "#475467");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "slots",
-      date,
-      service,
-      time
-    }),
+  postJson({
+    action: "slots",
+    date,
+    service,
+    time
+  }, {
     signal: controller.signal
   })
     .then(res => res.json())
     .then(data => {
       clearTimeout(timeoutId);
       dailySlotCache[cacheKey] = data;
-      renderSlotInfo(data, info);
+      applySlotAvailabilityResult(data);
     })
     .catch(err => {
       clearTimeout(timeoutId);
-      info.innerHTML = "⚠ Unable to check availability.";
-      info.style.color = "red";
       console.error("checkSlots error:", err);
+      setAvailabilityInfo("Unable to check slot availability.", "#b42318");
+      setApplicantFieldsDisabled(true);
     });
 }
 
@@ -882,7 +1551,13 @@ window.closeNidModal = () => closeModal("nidModal");
 window.closeUpdateModal = () => closeModal("updateModal");
 window.closeEphilidModal = () => closeModal("ephilidModal");
 window.closeTrnModal = () => closeModal("trnModal");
-window.closeSystemModal = () => closeModal("systemModal");
+window.closeSystemModal = () => {
+  if (systemMessageAutoTimer) {
+    clearTimeout(systemMessageAutoTimer);
+    systemMessageAutoTimer = null;
+  }
+  closeModal("systemModal");
+};
 
 /* ================= SLIP ACTIONS ================= */
 
@@ -909,17 +1584,20 @@ window.printSlip = function() {
 
   if (qrCanvas) {
     const qrDataUrl = qrCanvas.toDataURL("image/png");
-
     slipHtml = slipHtml.replace(
       /<canvas id="qrCanvas"[^>]*><\/canvas>/i,
-      `<img src="${qrDataUrl}" alt="QR Code" style="width:130px;height:130px;display:block;">`
+      `<img src="${qrDataUrl}" alt="QR Code" style="width:88px;height:88px;display:block;">`
     );
   }
+
+  slipHtml = slipHtml.replace(
+    /<div class="slip-actions compact-actions" data-no-export="true">[\s\S]*?<\/div>/i,
+    ""
+  );
 
   const printStyles = `
     <style>
       * { box-sizing: border-box; }
-
       html, body {
         margin: 0;
         padding: 0;
@@ -927,17 +1605,12 @@ window.printSlip = function() {
         font-family: "Segoe UI", Arial, sans-serif;
         color: #1f2937;
       }
-
-      body {
-        padding: 18px;
-      }
-
+      body { padding: 18px; }
       #printArea {
         width: 100%;
         max-width: 540px;
         margin: 0 auto;
       }
-
       .slip-card {
         width: 100%;
         border-radius: 20px;
@@ -945,7 +1618,6 @@ window.printSlip = function() {
         background: #ffffff;
         border: 1px solid #dbe4ef;
       }
-
       .slip-header {
         display: flex;
         justify-content: center;
@@ -953,13 +1625,11 @@ window.printSlip = function() {
         gap: 10px;
         margin-bottom: 8px;
       }
-
       .slip-logo {
         width: 52px;
         height: 52px;
         object-fit: contain;
       }
-
       .slip-title {
         text-align: center;
         margin: 0 0 4px;
@@ -968,43 +1638,39 @@ window.printSlip = function() {
         font-weight: 800;
         line-height: 1.2;
       }
-
       .slip-subtitle {
+        display: block;
+        width: 100%;
         text-align: center;
-        margin: 0;
+        margin: 0 auto;
         color: #667085;
         font-size: 12px;
         line-height: 1.4;
       }
-
       .slip-divider {
         height: 2px;
         background: #1f5aa8;
         margin: 12px 0;
         border-radius: 999px;
       }
-
       .slip-qr-wrap {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin: 2px 0 14px;
       }
-
       .slip-qr-box {
         background: #ffffff;
         padding: 8px;
         border-radius: 12px;
         border: 1px solid #dbe5f0;
       }
-
       .slip-qr-note {
         margin-top: 6px;
         font-size: 11px;
         color: #667085;
         text-align: center;
       }
-
       .slip-details {
         display: grid;
         gap: 0;
@@ -1013,7 +1679,6 @@ window.printSlip = function() {
         overflow: hidden;
         background: #fcfdff;
       }
-
       .slip-item {
         display: grid;
         grid-template-columns: 135px 1fr;
@@ -1022,11 +1687,7 @@ window.printSlip = function() {
         border-bottom: 1px solid #e5edf6;
         align-items: start;
       }
-
-      .slip-item:last-child {
-        border-bottom: none;
-      }
-
+      .slip-item:last-child { border-bottom: none; }
       .slip-label {
         font-size: 11px;
         font-weight: 700;
@@ -1035,7 +1696,6 @@ window.printSlip = function() {
         letter-spacing: 0.06em;
         padding-top: 2px;
       }
-
       .slip-value {
         font-size: 14px;
         font-weight: 700;
@@ -1044,46 +1704,28 @@ window.printSlip = function() {
         text-align: right;
         word-break: break-word;
       }
-
-      .slip-item-address .slip-value {
-        font-weight: 600;
-      }
-
-      .slip-note {
-        margin: 12px 0 0;
+      .slip-reminder {
+        margin-top: 12px;
         padding: 10px 12px;
         border-radius: 12px;
-        background: #f4f8ff;
-        border: 1px solid #dbe7f5;
-        color: #475467;
+        background: #fff8e8;
+        border: 1px solid #f2d38a;
+        color: #6b4e16;
+      }
+      .slip-reminder-title {
         font-size: 12px;
-        line-height: 1.45;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .slip-reminder-text {
+        margin: 0;
+        font-size: 11px;
+        line-height: 1.4;
         text-align: center;
       }
-
-      .slip-actions {
-        display: none !important;
-      }
-
-      img {
-        max-width: 100%;
-      }
-
-      @media print {
-        @page {
-          size: auto;
-          margin: 10mm;
-        }
-
-        body {
-          padding: 0;
-        }
-
-        #printArea {
-          max-width: 540px;
-          margin: 0 auto;
-        }
-      }
+      .slip-actions { display: none !important; }
+      img { max-width: 100%; }
     </style>
   `;
 
@@ -1095,10 +1737,81 @@ window.printSlip = function() {
         <meta charset="UTF-8">
         <title>Print Appointment Slip</title>
         ${printStyles}
-      </head>
+      
+  <style>
+    .wizard-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+    .wizard-step{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #d0d5dd;border-radius:14px;background:#f8fafc;transition:.2s}
+    .wizard-step.active{border-color:#2b62b7;background:#eef4ff;box-shadow:0 0 0 3px rgba(43,98,183,.08)}
+    .wizard-step.done{border-color:#157347;background:#ecfdf3}
+    .wizard-step .step-number{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:#dbe7ff;color:#1e4f9f;flex:none}
+    .wizard-step.done .step-number{background:#198754;color:#fff}
+    .wizard-step-label{display:flex;flex-direction:column;line-height:1.15}
+    .wizard-step-label small{color:#667085;font-size:12px}
+    .wizard-note{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin-bottom:18px;border-radius:14px;background:linear-gradient(135deg,#eef4ff,#f8fbff);border:1px solid #dbe7ff}
+    .wizard-note strong{color:#1d4f91}
+    .step-section{position:relative}
+    .step-section::before{content:attr(data-step-label);display:inline-block;margin-bottom:10px;padding:5px 10px;border-radius:999px;background:#eff6ff;color:#1d4f91;font-size:12px;font-weight:700;letter-spacing:.02em}
+    .quick-guide{display:none;margin-top:12px;padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #d0d5dd}
+    .quick-guide.show{display:block}
+    .quick-guide h4{margin:0 0 8px;font-size:15px;color:#1d2939}
+    .quick-guide p{margin:0 0 8px;color:#475467}
+    .quick-points{margin:0;padding-left:18px;color:#475467}
+    .quick-guide-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .outline-btn,.ghost-btn{appearance:none;border:none;cursor:pointer;border-radius:10px;padding:10px 14px;font-weight:600}
+    .outline-btn{background:#fff;border:1px solid #2b62b7;color:#2b62b7}
+    .ghost-btn{background:#eef4ff;color:#1d4f91}
+    .time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 6px}
+    .time-chip{border:1px solid #d0d5dd;border-radius:12px;background:#fff;padding:12px;text-align:left;display:flex;flex-direction:column;gap:4px;cursor:pointer;transition:.2s}
+    .time-chip:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(16,24,40,.08)}
+    .time-chip strong{font-size:14px;color:#101828}
+    .time-chip small{font-size:12px;color:#667085}
+    .time-chip.available{border-color:#b7ebc6;background:#f6fffa}
+    .time-chip.full,.time-chip.closed{background:#f9fafb;color:#98a2b3}
+    .time-chip.full strong,.time-chip.closed strong{color:#667085}
+    .time-chip.selected{border-color:#2b62b7;background:#eef4ff;box-shadow:0 0 0 3px rgba(43,98,183,.12)}
+    .time-chip:disabled{cursor:not-allowed;opacity:.85;transform:none;box-shadow:none}
+    .time-chip.loading{align-items:center;justify-content:center;text-align:center;min-height:72px}
+    .inline-error{display:none;margin-top:6px;color:#b42318;font-size:12px}
+    .field-error{border-color:#f04438 !important;box-shadow:0 0 0 3px rgba(240,68,56,.1)}
+    .helper-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .summary-box.enhanced{border:1px solid #d0d5dd;background:#f8fafc}
+    .summary-box.enhanced h4{margin-bottom:12px}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .summary-item{padding:12px;border-radius:12px;background:#fff;border:1px solid #e4e7ec}
+    .summary-item span{display:block;color:#667085;font-size:12px;margin-bottom:4px}
+    .summary-item strong{color:#101828;font-size:14px;word-break:break-word}
+    .summary-progress{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+    .summary-pill{padding:10px 12px;border-radius:999px;background:#fff;border:1px solid #d0d5dd;text-align:center;font-size:12px;font-weight:700;color:#667085}
+    .summary-pill.done{background:#ecfdf3;border-color:#abeFC6;color:#067647}
+    .summary-pill.active{background:#eef4ff;border-color:#b2ccff;color:#1d4f91}
+    .submit-wrap{display:flex;flex-direction:column;gap:10px}
+    .submit-subtext{font-size:12px;color:#667085;text-align:center}
+    .service-link{font-size:12px;color:#2b62b7;font-weight:600;cursor:pointer;text-decoration:underline}
+    .soft-note{font-size:12px;color:#667085}
+    @media (max-width:700px){
+      .wizard-steps,.summary-progress,.summary-grid,.time-grid{grid-template-columns:1fr}
+      .wizard-note{align-items:flex-start}
+    }
+  </style>
+
+</head>
       <body>
         <div id="printArea">${slipHtml}</div>
-      </body>
+      
+  <footer class="official-footer">
+    <div class="official-footer-inner">
+      <div class="official-footer-brand">
+        <strong>Philippine Statistics Authority</strong>
+        <span>National ID Appointment Request</span>
+      </div>
+      <div class="official-footer-meta">
+        <span>PSA Cebu Fixed Registration Center</span>
+        <span>For official scheduling use only</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
     </html>
   `);
   printWindow.document.close();
@@ -1110,71 +1823,75 @@ window.printSlip = function() {
 };
 
 window.downloadSlip = async function() {
-  const slip = document.getElementById("printableSlip");
-  if (!slip) return;
+  const originalSlip = document.getElementById("printableSlip");
+  if (!originalSlip) return;
 
-  const actionBox = slip.querySelector(".slip-actions");
-
-  const originalStyles = {
-    width: slip.style.width,
-    maxWidth: slip.style.maxWidth,
-    margin: slip.style.margin,
-    transform: slip.style.transform,
-    boxShadow: slip.style.boxShadow
-  };
-
-  const originalActionDisplay = actionBox ? actionBox.style.display : "";
+  let tempWrapper = null;
 
   try {
-    if (actionBox) actionBox.style.display = "none";
+    const clone = originalSlip.cloneNode(true);
 
-    slip.style.width = "420px";
-    slip.style.maxWidth = "420px";
-    slip.style.margin = "0 auto";
-    slip.style.transform = "none";
-    slip.style.boxShadow = "none";
+    clone.querySelectorAll('[data-no-export="true"], .slip-actions').forEach(el => el.remove());
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    const originalCanvas = document.getElementById("qrCanvas");
+    const clonedCanvas = clone.querySelector("#qrCanvas");
 
-    const canvas = await html2canvas(slip, {
+    if (originalCanvas && clonedCanvas) {
+      const qrImg = document.createElement("img");
+      qrImg.src = originalCanvas.toDataURL("image/png");
+      qrImg.alt = "QR Code";
+      qrImg.style.width = "88px";
+      qrImg.style.height = "88px";
+      qrImg.style.display = "block";
+      clonedCanvas.replaceWith(qrImg);
+    }
+
+    tempWrapper = document.createElement("div");
+    tempWrapper.style.position = "fixed";
+    tempWrapper.style.left = "-99999px";
+    tempWrapper.style.top = "0";
+    tempWrapper.style.background = "#ffffff";
+    tempWrapper.style.padding = "0";
+    tempWrapper.style.margin = "0";
+    tempWrapper.style.zIndex = "-1";
+
+    clone.style.width = "372px";
+    clone.style.maxWidth = "372px";
+    clone.style.margin = "0 auto";
+    clone.style.boxShadow = "none";
+    clone.style.transform = "none";
+    clone.style.background = "#ffffff";
+
+    tempWrapper.appendChild(clone);
+    document.body.appendChild(tempWrapper);
+
+    await new Promise(resolve => setTimeout(resolve, 180));
+
+    const canvas = await html2canvas(clone, {
       scale: 3,
       useCORS: true,
       backgroundColor: "#ffffff",
       logging: false
     });
 
-    const trimmedCanvas = document.createElement("canvas");
-    const ctx = trimmedCanvas.getContext("2d");
-
-    trimmedCanvas.width = canvas.width;
-    trimmedCanvas.height = canvas.height;
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, trimmedCanvas.width, trimmedCanvas.height);
-    ctx.drawImage(canvas, 0, 0);
-
     const link = document.createElement("a");
     link.download = "National_ID_Appointment_Slip.png";
-    link.href = trimmedCanvas.toDataURL("image/png");
+    link.href = canvas.toDataURL("image/png");
     link.click();
 
   } catch (err) {
     console.error("downloadSlip error:", err);
     showSystemMessage("Download Error", "Unable to generate appointment slip image.");
   } finally {
-    slip.style.width = originalStyles.width;
-    slip.style.maxWidth = originalStyles.maxWidth;
-    slip.style.margin = originalStyles.margin;
-    slip.style.transform = originalStyles.transform;
-    slip.style.boxShadow = originalStyles.boxShadow;
-
-    if (actionBox) actionBox.style.display = originalActionDisplay;
+    if (tempWrapper && tempWrapper.parentNode) {
+      tempWrapper.parentNode.removeChild(tempWrapper);
+    }
   }
 };
 
 /* ================= SUBMIT FORM ================= */
 
-window.submitForm = function() {
+window.submitForm = async function() {
   const btn = document.getElementById("submitBtn");
   const btnText = document.getElementById("btnText");
   const loader = document.getElementById("btnLoader");
@@ -1203,126 +1920,187 @@ window.submitForm = function() {
   loader.style.display = "inline-block";
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 20000);
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
+  try {
+    const res = await postJson({
+      action: "submitAppointment",
       service,
       fullname,
       email,
       phone,
       date,
       time
-    }),
-    signal: controller.signal
-  })
-    .then(res => res.json())
-    .then(r => {
-      clearTimeout(timeoutId);
-
-      btn.disabled = false;
-      btnText.style.display = "inline";
-      loader.style.display = "none";
-      resetConfirmButtons();
-
-      if (r.status === "error") {
-        return showSystemMessage("Notice", r.message || "System error.");
-      }
-
-      if (r.status === "duplicate_name") {
-        return showSystemMessage("Duplicate Appointment", "You already have an appointment on this date.");
-      }
-
-      if (r.status === "duplicate_email") {
-        return showSystemMessage("Duplicate Email", "This email already has an appointment on this date.");
-      }
-
-      if (r.status === "duplicate_phone") {
-        return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment on this date.");
-      }
-
-      if (r.status === "closed_date") {
-        return showSystemMessage("Booking Closed", r.reason || "Booking is not available on the selected date.");
-      }
-
-      if (r.status === "daily_full") {
-        return showSystemMessage("Fully Booked", "This service is fully booked on the selected date and time.");
-      }
-
-      if (r.status === "success") {
-        closeModal("confirmModal");
-
-        dailySlotCache = {};
-        monthlyBooked = {};
-
-        document.getElementById("sRef").textContent = r.refCode;
-        document.getElementById("sName").textContent = fullname.toUpperCase();
-        document.getElementById("sService").textContent = service;
-        document.getElementById("sDate").textContent = formatAppointmentDate(date);
-        document.getElementById("sTime").textContent = time;
-
-        const qrPayload =
-          "Reference: " + r.refCode + "\n" +
-          "Name: " + fullname.toUpperCase() + "\n" +
-          "Service: " + service + "\n" +
-          "Date: " + formatAppointmentDate(date) + "\n" +
-          "Time: " + time;
-
-        drawSlipQR(qrPayload);
-        openModal("slipModal");
-
-        const calendar = document.getElementById("date")._flatpickr;
-        if (calendar) {
-          fetchMonthlyData(calendar);
-        }
-
-        return;
-      }
-
-      showSystemMessage("Notice", r.message || "Unexpected response from server.");
-    })
-    .catch(err => {
-      clearTimeout(timeoutId);
-
-      btn.disabled = false;
-      btnText.style.display = "inline";
-      loader.style.display = "none";
-      resetConfirmButtons();
-
-      console.error("submitForm error:", err);
-
-      if (err.name === "AbortError") {
-        showSystemMessage("Request Timeout", "The server took too long to respond. Please try again.");
-        return;
-      }
-
-      showSystemMessage("System Error", "Unable to connect to server.");
+    }, {
+      signal: controller.signal
     });
+
+    const r = await res.json();
+    clearTimeout(timeoutId);
+
+    btn.disabled = false;
+    btnText.style.display = "inline";
+    loader.style.display = "none";
+    resetConfirmButtons();
+
+    if (r.status === "error") {
+      return showSystemMessage("Notice", r.message || "System error.");
+    }
+
+    if (r.status === "duplicate_name") {
+      return showSystemMessage("Duplicate Appointment", "You already have an appointment on this date.");
+    }
+
+    if (r.status === "duplicate_email") {
+      return showSystemMessage("Duplicate Email", "This email already has an appointment on this date.");
+    }
+
+    if (r.status === "duplicate_phone") {
+      return showSystemMessage("Duplicate Phone", "This mobile number already has an appointment on this date.");
+    }
+
+    if (r.status === "closed_date") {
+      return showSystemMessage("Booking Closed", r.reason || "Booking is not available on the selected date.");
+    }
+
+    if (r.status === "daily_full") {
+      return showSystemMessage("Fully Booked", "This service is fully booked on the selected date and time.");
+    }
+
+    if (r.status === "busy") {
+      return showSystemMessage("Please Try Again", r.message || "The system is currently busy. Please try again in a few seconds.");
+    }
+
+    if (r.status === "success") {
+      openSlipWithReference(r.refCode, fullname, service, date, time);
+
+      if (email) {
+        sendConfirmationEmailInBackground({
+          refCode: r.refCode,
+          fullname: fullname.toUpperCase(),
+          service: service,
+          date: date,
+          time: time,
+          email: email
+        });
+      }
+
+      return;
+    }
+
+    showSystemMessage("Notice", r.message || "Unexpected response from server.");
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+
+    btn.disabled = false;
+    btnText.style.display = "inline";
+    loader.style.display = "none";
+
+    console.error("submitForm error:", err);
+
+    if (err.name === "AbortError") {
+      setConfirmLoading(true, "Request timed out. Checking if your booking was recorded...");
+
+      const verified = await verifyTimedOutBooking({
+        service,
+        fullname,
+        email,
+        phone,
+        date,
+        time
+      });
+
+      resetConfirmButtons();
+
+      if (verified && verified.refCode) {
+        showSystemMessageAuto(
+          "Booking Recorded",
+          "Your appointment was successfully recorded. Opening your appointment slip...",
+          () => {
+            openSlipWithReference(verified.refCode, fullname, service, date, time);
+          },
+          1500
+        );
+        return;
+      }
+
+      showSystemMessage(
+        "Not Yet Recorded",
+        "The request timed out and no booking record was found in the system yet. Please tap Confirm Appointment again after a few seconds."
+      );
+      return;
+    }
+
+    resetConfirmButtons();
+    showSystemMessage("System Error", "Unable to connect to server.");
+  }
 };
 
 /* ================= MONTHLY CALENDAR DATA ================= */
 
-function fetchMonthlyData(instance) {
+function fetchMonthlyData(instance, options = {}) {
   const service = document.getElementById("service").value;
+  const keepOpen = !!options.keepOpen;
+  const wasOpen = !!(instance && instance.isOpen);
 
   if (!service) {
     monthlyBooked = {};
     updateWeekendNotice();
     instance.redraw();
+
+    setDateInputDisabled(true);
+    setTimeInputDisabled(true);
+    setApplicantFieldsDisabled(true);
+    setAvailabilityInfo("Select a service first.");
+    if (instance && instance.calendarContainer) instance.calendarContainer.classList.remove("calendar-loading");
+    setCalendarLoadingHint(false);
     return;
   }
 
   const currentMonth = normalizeMonthString(instance.currentYear, instance.currentMonth);
+  const cacheKey = `${service}__${currentMonth}`;
   const requestId = ++activeCalendarRequestId;
 
-  fetch(EXEC_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "monthlySlots",
-      service: service,
-      month: currentMonth
-    })
+  // Keep the date input active so the calendar popup does not close
+  // while the next month is loading.
+  setTimeInputDisabled(true);
+  setApplicantFieldsDisabled(true);
+  setAvailabilityInfo("Loading calendar...", "#475467");
+  setCalendarLoadingHint(true, "Loading calendar availability...");
+
+  const calendarEl = instance && instance.calendarContainer ? instance.calendarContainer : null;
+  if (calendarEl) calendarEl.classList.add("calendar-loading");
+
+  if (monthlySlotCache[cacheKey]) {
+    const cached = monthlySlotCache[cacheKey];
+
+    monthlyBooked = cached.slots || {};
+    systemSettings = cached.systemSettings || systemSettings;
+    bookingWindowEndDate = cached.bookingWindowEndDate || bookingWindowEndDate;
+
+    updateWeekendNotice();
+    updateBookingWindowBadge();
+    instance.redraw();
+
+    setDateInputDisabled(false);
+    setTimeInputDisabled(!document.getElementById("date").value);
+    setAvailabilityInfo("Select a date to load available time slots.");
+    if (calendarEl) calendarEl.classList.remove("calendar-loading");
+    setCalendarLoadingHint(false);
+    if (keepOpen || wasOpen) {
+      requestAnimationFrame(() => {
+        try { instance.open(); } catch (e) {}
+      });
+    }
+    updateStepState();
+    return;
+  }
+
+  postJson({
+    action: "monthlySlots",
+    service: service,
+    month: currentMonth
   })
     .then(res => res.json())
     .then(data => {
@@ -1332,20 +2110,48 @@ function fetchMonthlyData(instance) {
         throw new Error(data.message || "Unable to load monthly slots.");
       }
 
+      monthlySlotCache[cacheKey] = data;
       monthlyBooked = data.slots || {};
       systemSettings = data.systemSettings || systemSettings;
       bookingWindowEndDate = data.bookingWindowEndDate || bookingWindowEndDate;
 
       updateWeekendNotice();
+      updateBookingWindowBadge();
       instance.redraw();
+
+      setDateInputDisabled(false);
+      setTimeInputDisabled(!document.getElementById("date").value);
+      setAvailabilityInfo("Select a date to load available time slots.");
+      if (calendarEl) calendarEl.classList.remove("calendar-loading");
+      setCalendarLoadingHint(false);
+      if (keepOpen || wasOpen) {
+        requestAnimationFrame(() => {
+          try { instance.open(); } catch (e) {}
+        });
+      }
+      updateStepState();
     })
     .catch(err => {
       if (requestId !== activeCalendarRequestId) return;
 
-      monthlyBooked = {};
-      updateWeekendNotice();
-      instance.redraw();
       console.error("Monthly fetch error:", err);
+      updateWeekendNotice();
+      updateBookingWindowBadge();
+      instance.redraw();
+
+      setDateInputDisabled(false);
+      setTimeInputDisabled(true);
+      setApplicantFieldsDisabled(true);
+      renderTimeGrid([]);
+      setAvailabilityInfo("Unable to load available dates. Please try again.", "#b42318");
+      if (calendarEl) calendarEl.classList.remove("calendar-loading");
+      setCalendarLoadingHint(false);
+      if (keepOpen || wasOpen) {
+        requestAnimationFrame(() => {
+          try { instance.open(); } catch (e) {}
+        });
+      }
+      updateStepState();
     });
 }
 
@@ -1364,15 +2170,27 @@ document.addEventListener("DOMContentLoaded", function() {
       .toUpperCase()
       .replace(/\s+/g, " ")
       .replace(/^\s+/, "");
+    validateApplicantFields(true);
+    updateSummary();
+  });
+
+  document.getElementById("email").addEventListener("input", function() {
+    validateApplicantFields(true);
+    updateSummary();
+  });
+
+  document.getElementById("phone").addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g, "").slice(0, 11);
+    validateApplicantFields(true);
+    updateSummary();
   });
 
   document.getElementById("service").addEventListener("change", updateSummary);
   document.getElementById("date").addEventListener("change", updateSummary);
   document.getElementById("time").addEventListener("change", updateSummary);
 
-  timeSelect.addEventListener("change", checkSlots);
-
   updateSummary();
+  updateBookingWindowBadge();
 
   const calendar = flatpickr("#date", {
     dateFormat: "Y-m-d",
@@ -1387,7 +2205,10 @@ document.addEventListener("DOMContentLoaded", function() {
     },
 
     onMonthChange: function(selectedDates, dateStr, instance) {
-      fetchMonthlyData(instance);
+      const badge = document.getElementById("bookingWindowBadge");
+      if (badge) badge.textContent = "Loading calendar...";
+      setCalendarLoadingHint(true, "Loading next month availability...");
+      fetchMonthlyData(instance, { keepOpen: true });
     },
 
     onDayCreate: function(dObj, dStr, fp, dayElem) {
@@ -1498,8 +2319,19 @@ document.addEventListener("DOMContentLoaded", function() {
       dayElem.setAttribute("data-tooltip", `${remaining} slots left`);
     },
 
-    onChange: function() {
-      checkSlots();
+    onChange: function(selectedDates, dateStr, instance) {
+      document.getElementById("time").value = "";
+      setApplicantFieldsDisabled(true);
+
+      if (dateStr) {
+        setAvailabilityInfo("Loading available time slots...", "#475467");
+        prefetchTimeSlotsForDate();
+      } else {
+        setTimeInputDisabled(true);
+        renderTimeGrid([]);
+        setAvailabilityInfo("Select a date first.");
+      }
+
       updateSummary();
     }
   });
@@ -1508,29 +2340,44 @@ document.addEventListener("DOMContentLoaded", function() {
     monthlyBooked = {};
     dailySlotCache = {};
     resetSlotInfo();
+    renderTimeGrid([]);
+
+    document.getElementById("time").value = "";
+    document.getElementById("fullname").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("phone").value = "";
+    ["fullname","email","phone"].forEach(id => setInlineError(id, ""));
+
     calendar.clear();
     calendar.redraw();
-    fetchMonthlyData(calendar);
-    checkSlots();
     updateSummary();
 
     ["nidModal", "updateModal", "ephilidModal", "trnModal"].forEach(id => {
       closeModal(id);
     });
 
-    const modalMap = {
-      "National ID Registration": "nidModal",
-      "Correction/Updating of Demographic Information": "updateModal",
-      "Request National ID in Paper Format (ePhilID)": "ephilidModal",
-      "Retrieval of TRN / Other Concern": "trnModal"
-    };
-
-    if (modalMap[this.value]) {
-      openModal(modalMap[this.value]);
+    if (!this.value) {
+      setDateInputDisabled(true);
+      setTimeInputDisabled(true);
+      setApplicantFieldsDisabled(true);
+      setAvailabilityInfo("Select a service to continue.");
+      updateStepState();
+      return;
     }
+
+    setDateInputDisabled(true);
+    setTimeInputDisabled(true);
+    setApplicantFieldsDisabled(true);
+    setAvailabilityInfo("⏳ Loading available dates...", "#555");
+
+    fetchMonthlyData(calendar);
   });
 
-  document.getElementById("date").addEventListener("change", checkSlots);
+  timeSelect.addEventListener("change", function() {
+    setApplicantFieldsDisabled(true);
+    updateSummary();
+    checkSlots();
+  });
 });
 
 /* ================= GLOBAL MODAL CLICK ================= */
