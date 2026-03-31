@@ -1584,6 +1584,17 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function normalizeResponse(response) {
+  if (!response || typeof response !== "object") return response;
+
+  const wrapper = response.result || response.data || response.payload || response.body;
+  if (wrapper && typeof wrapper === "object" && !Array.isArray(wrapper)) {
+    return normalizeResponse(wrapper);
+  }
+
+  return response;
+}
+
 function showNotice(message, type = "success", targetId = "notice") {
   const el = document.getElementById(targetId);
   if (!el) return;
@@ -2145,7 +2156,8 @@ async function apiRequest(payload) {
     body: JSON.stringify(finalPayload)
   });
 
-  const data = await res.json();
+  const raw = await res.json();
+  const data = normalizeResponse(raw);
 
   if (isAuthErrorResponse(data)) {
     await forceLogout("Your session has expired. Please log in again.");
