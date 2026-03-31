@@ -198,11 +198,10 @@
 
     function alreadyLoggedIn() {
       const token = sessionStorage.getItem("nid_session_token");
-      const role = sessionStorage.getItem("nid_role");
       const expiresAt = Number(sessionStorage.getItem("nid_session_expires") || 0);
 
-      if (!token || !role || !expiresAt) return false;
-      if (Date.now() >= expiresAt) {
+      if (!token) return false;
+      if (expiresAt && Date.now() >= expiresAt) {
         clearStoredSession();
         return false;
       }
@@ -276,7 +275,7 @@
     }
 
     function isSuccessStatus(value) {
-      return value === "success" || value === true || value === "true" || value === 1 || value === "1";
+      return value === "success" || value === "ok" || value === "authenticated" || value === "authorized" || value === true || value === "true" || value === 1 || value === "1";
     }
 
     async function login() {
@@ -313,16 +312,23 @@
 
         const data = await res.json();
 
-        const success = isSuccessStatus(data.status) || isSuccessStatus(data.result?.status) || isSuccessStatus(data.data?.status);
+        const success = isSuccessStatus(data.status) || isSuccessStatus(data.result?.status) || isSuccessStatus(data.data?.status) || isSuccessStatus(data.statusCode) || isSuccessStatus(data.result?.statusCode) || isSuccessStatus(data.data?.statusCode);
         if (!success) {
           throw new Error(data.message || data.result?.message || data.data?.message || "Login failed.");
         }
 
-        const sessionToken = findNestedValue(data, ["sessionToken", "session_token", "token", "authToken", "sessionId", "session"]);
-        const sessionExpiresAt = findNestedValue(data, ["sessionExpiresAt", "session_expires_at", "expiresAt", "expiry", "expireAt"]);
-        const role = findNestedValue(data, ["role", "userRole", "roleName"]);
-        const name = findNestedValue(data, ["name", "fullname", "displayName", "full_name"]);
-        const usernameResp = findNestedValue(data, ["username", "user", "userName"]);
+        const sessionToken = findNestedValue(data, ["sessionToken", "session_token", "token", "authToken", "auth_token", "sessionId", "session", "accessToken", "access_token"]);
+        const expiresValue = findNestedValue(data, ["sessionExpiresAt", "session_expires_at", "expiresAt", "expiry", "expireAt", "expiresIn", "expires_in", "validUntil", "valid_until", "ttl"]);
+        let sessionExpiresAt = Number(expiresValue || 0);
+        if (sessionExpiresAt && sessionExpiresAt < 1e12) {
+          sessionExpiresAt = sessionExpiresAt * 1000;
+        }
+        if (!sessionExpiresAt) {
+          sessionExpiresAt = Date.now() + 3600 * 1000;
+        }
+        const role = findNestedValue(data, ["role", "userRole", "roleName", "position"]);
+        const name = findNestedValue(data, ["name", "fullname", "displayName", "full_name", "userFullName"]);
+        const usernameResp = findNestedValue(data, ["username", "user", "userName", "account"]);
 
         if (!sessionToken) {
           throw new Error("Login succeeded but no session token was returned.");
@@ -330,10 +336,10 @@
 
         clearStoredSession();
         sessionStorage.setItem("nid_session_token", sessionToken);
-        sessionStorage.setItem("nid_session_expires", String(sessionExpiresAt || 0));
-        sessionStorage.setItem("nid_role", role);
-        sessionStorage.setItem("nid_name", name);
-        sessionStorage.setItem("nid_username", usernameResp);
+        sessionStorage.setItem("nid_session_expires", String(sessionExpiresAt));
+        sessionStorage.setItem("nid_role", role || "");
+        sessionStorage.setItem("nid_name", name || "");
+        sessionStorage.setItem("nid_username", usernameResp || enteredUsername);
 
 
         showNotice("Login successful. Redirecting...", "success");
