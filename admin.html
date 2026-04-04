@@ -1219,6 +1219,10 @@
                 <strong>Dashboard Mode</strong>
                 <span>Live Admin View</span>
               </div>
+              <div class="settings-info-item">
+                <strong>Backend Version</strong>
+                <span id="backendVersionLabel">Loading...</span>
+              </div>
 
               <div class="settings-info-item">
                 <strong>Saturday Booking</strong>
@@ -1538,6 +1542,7 @@ let slotRules = [];
 let availabilityRules = [];
 let users = [];
 let weekendSettings = {
+  apiVersion: "Unknown",
   saturdayOpen: false,
   sundayOpen: false,
   bookingWindowMonths: 1
@@ -2053,17 +2058,19 @@ function renderWeekendSettings() {
   const sundayToggle = document.getElementById("sundayBookingToggle");
   const bookingWindowSelect = document.getElementById("bookingWindowMonths");
 
+  const backendVersionLabel = document.getElementById("backendVersionLabel");
   const saturdayLabel = document.getElementById("saturdayBookingLabel");
   const sundayLabel = document.getElementById("sundayBookingLabel");
   const bookingWindowLabel = document.getElementById("bookingWindowLabel");
 
   if (!saturdayToggle || !sundayToggle || !bookingWindowSelect) return;
-  if (!saturdayLabel || !sundayLabel || !bookingWindowLabel) return;
+  if (!backendVersionLabel || !saturdayLabel || !sundayLabel || !bookingWindowLabel) return;
 
   saturdayToggle.value = weekendSettings.saturdayOpen ? "true" : "false";
   sundayToggle.value = weekendSettings.sundayOpen ? "true" : "false";
   bookingWindowSelect.value = String(weekendSettings.bookingWindowMonths || 1);
 
+  backendVersionLabel.textContent = weekendSettings.apiVersion || "Unknown";
   saturdayLabel.textContent = weekendSettings.saturdayOpen ? "Enabled" : "Disabled";
   sundayLabel.textContent = weekendSettings.sundayOpen ? "Enabled" : "Disabled";
 
@@ -2198,6 +2205,7 @@ async function apiRequest(payload) {
 
 function defaultWeekendSettings() {
   return {
+    apiVersion: "Unknown",
     saturdayOpen: false,
     sundayOpen: false,
     bookingWindowMonths: 1
