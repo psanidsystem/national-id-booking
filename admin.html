@@ -2075,6 +2075,14 @@ function renderWeekendSettings() {
     `Current + ${months - 1} months`;
 }
 
+function formatStatusBreakdown(counts = {}) {
+  return Object.entries(counts)
+    .filter(([, count]) => Number(count || 0) > 0)
+    .sort((a, b) => String(a[0]).localeCompare(String(b[0])))
+    .map(([status, count]) => `${status}: ${count}`)
+    .join(", ");
+}
+
 function renderAll() {
   renderMetrics();
   renderRecentBookings(filterQuickSearch());
@@ -2386,8 +2394,15 @@ async function archivePastBookings() {
 
     if (Number(result.archivedCount || 0) > 0) {
       showNotice(`Archived ${result.archivedCount} booking${result.archivedCount !== 1 ? "s" : ""} to ${result.archiveSheet || "Appointments Archive"}.`);
+    } else if (Number(result.pastRowsFound || 0) > 0) {
+      const statusSummary = formatStatusBreakdown(result.skippedStatusCounts || {});
+      showNotice(
+        `Found ${result.pastRowsFound} past booking${result.pastRowsFound !== 1 ? "s" : ""}, but none were archived because they are still active or unfinished.` +
+        (statusSummary ? ` Statuses: ${statusSummary}.` : ""),
+        "error"
+      );
     } else {
-      showNotice(`No finalized past bookings found before ${formatDate(beforeDate)}.`);
+      showNotice(`No past bookings found before ${formatDate(beforeDate)}.`);
     }
   } catch (err) {
     showNotice(err.message || "Unable to archive past bookings.", "error");
