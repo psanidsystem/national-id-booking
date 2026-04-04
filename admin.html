@@ -36,135 +36,256 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 230px 1fr;
+      grid-template-columns: 292px 1fr;
       min-height: 100vh;
     }
 
     .sidebar {
       background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 34%),
-        linear-gradient(180deg, #143763 0%, #173f77 38%, #1f5ca7 100%);
+        radial-gradient(circle at top left, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 34%),
+        radial-gradient(circle at bottom right, rgba(85, 165, 255, 0.16) 0%, rgba(85, 165, 255, 0) 36%),
+        linear-gradient(180deg, #0d2b51 0%, #113868 38%, #1b579f 100%);
       color: #fff;
-      padding: 18px 14px;
+      padding: 24px 18px 20px;
       border-right: 1px solid rgba(255,255,255,0.08);
       box-shadow: inset -1px 0 0 rgba(255,255,255,0.04);
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before,
+    .sidebar::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      border-radius: 999px;
+      filter: blur(8px);
+    }
+
+    .sidebar::before {
+      width: 220px;
+      height: 220px;
+      top: -92px;
+      right: -94px;
+      background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 72%);
+    }
+
+    .sidebar::after {
+      width: 180px;
+      height: 180px;
+      bottom: 56px;
+      left: -88px;
+      background: radial-gradient(circle, rgba(112, 197, 255, 0.16) 0%, rgba(112, 197, 255, 0) 72%);
     }
 
     .sidebar-top {
       display: grid;
-      gap: 18px;
+      gap: 22px;
       align-content: start;
       flex: 1;
+      position: relative;
+      z-index: 1;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 0;
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
-      box-shadow: 0 20px 34px rgba(8, 26, 58, 0.18);
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 28px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.17) 0%, rgba(255,255,255,0.07) 100%);
+      box-shadow: 0 24px 40px rgba(8, 26, 58, 0.22);
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 48%);
+      pointer-events: none;
+    }
+
+    .brand > div {
+      min-width: 0;
     }
 
     .brand img {
-      width: 58px;
-      height: 58px;
+      width: 62px;
+      height: 62px;
       object-fit: contain;
-      background: rgba(255,255,255,0.18);
-      border-radius: 18px;
-      padding: 6px;
-      box-shadow: 0 12px 24px rgba(5, 15, 35, 0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(234,242,255,0.96) 100%);
+      border-radius: 20px;
+      padding: 7px;
+      box-shadow:
+        0 14px 28px rgba(5, 15, 35, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+      position: relative;
+      z-index: 1;
     }
 
     .brand h1 {
-      font-size: 20px;
-      line-height: 1.05;
+      font-size: 24px;
+      line-height: 1;
       margin: 0;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
     }
 
     .brand p {
-      margin: 5px 0 0;
+      margin: 7px 0 0;
       font-size: 12px;
-      line-height: 1.35;
-      opacity: 0.9;
+      line-height: 1.45;
+      color: rgba(232, 240, 255, 0.9);
+      position: relative;
+      z-index: 1;
     }
 
     .sidebar-user-card {
-      padding: 16px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.08) 100%);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 20px 34px rgba(8, 26, 58, 0.16);
+      padding: 18px;
+      border-radius: 28px;
+      background: linear-gradient(160deg, rgba(8, 24, 48, 0.4) 0%, rgba(255,255,255,0.09) 100%);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 24px 38px rgba(8, 26, 58, 0.18);
+      backdrop-filter: blur(16px);
       display: grid;
-      gap: 12px;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-user-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 18px;
+      right: 18px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .sidebar-user-card::after {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      top: -70px;
+      right: -40px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(116, 201, 255, 0.14) 0%, rgba(116, 201, 255, 0) 70%);
+      pointer-events: none;
     }
 
     .sidebar-user-top {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 14px;
       min-width: 0;
+      position: relative;
+      z-index: 1;
     }
 
     .sidebar-user-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255,255,255,0.18);
+      background: linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(220, 235, 255, 0.12) 100%);
       color: #fff;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 800;
       letter-spacing: 0.08em;
       flex-shrink: 0;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 16px 28px rgba(7, 20, 42, 0.2);
     }
 
     .sidebar-user-copy {
       min-width: 0;
+      display: grid;
+      gap: 10px;
     }
 
     .sidebar-user-kicker {
-      font-size: 11px;
+      font-size: 10.5px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.72);
+      letter-spacing: 0.14em;
+      color: rgba(229, 238, 255, 0.68);
       font-weight: 700;
     }
 
     .sidebar-user-name {
-      margin: 5px 0 0;
-      font-size: 18px;
-      line-height: 1.2;
-      font-weight: 700;
+      margin: 0;
+      display: grid;
+      gap: 4px;
+      line-height: 1.05;
       color: #fff;
-      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .sidebar-user-name-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(235, 242, 255, 0.76);
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-user-name-value {
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #fff;
+      text-wrap: balance;
     }
 
     .sidebar-user-role {
-      margin: 4px 0 0;
-      font-size: 13px;
-      line-height: 1.45;
-      color: rgba(255,255,255,0.86);
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: fit-content;
+      max-width: 100%;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 700;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      color: rgba(246, 249, 255, 0.94);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     }
 
     .sidebar-user-status {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      width: fit-content;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(8, 24, 48, 0.3);
+      border: 1px solid rgba(255,255,255,0.08);
       font-size: 12px;
-      color: rgba(255,255,255,0.82);
-      font-weight: 600;
+      color: rgba(240, 246, 255, 0.9);
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
     }
 
     .sidebar-user-status::before {
@@ -179,74 +300,120 @@
 
     .nav-group {
       display: grid;
-      gap: 10px;
+      gap: 12px;
       margin-top: 0;
-      padding: 10px;
-      border-radius: 22px;
-      background: rgba(8, 25, 52, 0.18);
+      padding: 14px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(8, 24, 48, 0.3) 0%, rgba(255,255,255,0.07) 100%);
       border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 34px rgba(8, 26, 58, 0.12);
+    }
+
+    .sidebar-section-label {
+      padding: 0 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(230, 239, 255, 0.66);
     }
 
     .nav-btn {
       border: none;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.06);
       color: #fff;
       text-align: left;
-      padding: 14px 16px;
-      border-radius: 16px;
+      padding: 12px 14px;
+      border-radius: 20px;
       cursor: pointer;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       transition: all 0.2s ease;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 10px 18px rgba(7, 20, 42, 0.08);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-btn::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(45deg);
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
     .nav-btn:hover {
-      background: rgba(255,255,255,0.16);
-      transform: translateX(2px);
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 16px 24px rgba(7, 20, 42, 0.12);
     }
 
     .nav-btn.active {
-      background: #ffffff;
-      color: #18427d;
+      background: linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%);
+      color: #12396e;
       box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.15),
-        inset 4px 0 0 #dbeafe,
-        0 16px 28px rgba(8, 26, 58, 0.18);
+        inset 0 0 0 1px rgba(255,255,255,0.4),
+        0 20px 30px rgba(8, 26, 58, 0.2);
+    }
+
+    .nav-btn:hover::after,
+    .nav-btn.active::after {
+      opacity: 0.55;
+      transform: rotate(45deg) translate(1px, -1px);
     }
 
     .nav-btn.active .nav-icon {
       opacity: 1;
+      background: linear-gradient(180deg, #e8f1ff 0%, #d7e8ff 100%);
+      color: #18427d;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+
+    .nav-btn > span:last-child {
+      flex: 1;
     }
 
     .sidebar-footer {
       display: grid;
-      gap: 10px;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     .sidebar-logout-btn {
       width: 100%;
       border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.08) 100%);
+      background: linear-gradient(180deg, rgba(8, 24, 48, 0.28) 0%, rgba(255,255,255,0.08) 100%);
       color: #fff;
-      border-radius: 18px;
-      padding: 14px 16px;
+      border-radius: 22px;
+      padding: 14px 15px;
       cursor: pointer;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       justify-content: flex-start;
-      box-shadow: 0 18px 30px rgba(8, 26, 58, 0.14);
+      box-shadow: 0 18px 30px rgba(8, 26, 58, 0.16);
       transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      backdrop-filter: blur(14px);
     }
 
     .sidebar-logout-btn:hover {
-      background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.12) 100%);
+      background: linear-gradient(180deg, rgba(8, 24, 48, 0.38) 0%, rgba(255,255,255,0.12) 100%);
       transform: translateY(-1px);
       box-shadow: 0 22px 34px rgba(8, 26, 58, 0.18);
     }
@@ -267,11 +434,27 @@
       color: rgba(255,255,255,0.76);
     }
 
+    .sidebar-footer-note {
+      padding: 0 6px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(231, 240, 255, 0.68);
+    }
+
     .nav-icon {
-      width: 20px;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      font-size: 15px;
+      font-size: 16px;
       opacity: 0.95;
+      background: rgba(255,255,255,0.08);
+      color: inherit;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     }
 
     .content {
@@ -983,6 +1166,7 @@
 
       .sidebar {
         padding-bottom: 14px;
+        min-height: auto;
       }
 
       .sidebar-top,
@@ -1015,7 +1199,7 @@
       }
 
       .brand h1 {
-        font-size: 17px;
+        font-size: 20px;
       }
 
       .nav-btn {
@@ -1203,8 +1387,11 @@
           <div class="sidebar-user-top">
             <div class="sidebar-user-avatar" id="sidebarUserAvatar">PS</div>
             <div class="sidebar-user-copy">
-              <div class="sidebar-user-kicker">Personnel Session</div>
-              <div class="sidebar-user-name" id="sidebarUserGreeting">Hello, User</div>
+              <div class="sidebar-user-kicker">Signed In Personnel</div>
+              <div class="sidebar-user-name">
+                <span class="sidebar-user-name-label">Hello,</span>
+                <span class="sidebar-user-name-value" id="sidebarUserGreeting">User</span>
+              </div>
               <div class="sidebar-user-role" id="sidebarUserRole">Registration Kit Operator</div>
             </div>
           </div>
@@ -1212,6 +1399,7 @@
         </div>
 
         <div class="nav-group">
+          <div class="sidebar-section-label">Workspace</div>
           <button class="nav-btn active" data-section="dashboard">
             <span class="nav-icon">📊</span>
             <span>Dashboard</span>
@@ -1252,6 +1440,7 @@
             <span>End this session</span>
           </span>
         </button>
+        <div class="sidebar-footer-note">Secure personnel workspace for live appointment handling and service updates.</div>
       </div>
     </aside>
 
@@ -2687,7 +2876,7 @@ function renderSidebarProfile() {
   const avatarEl = document.getElementById("sidebarUserAvatar");
 
   const name = getSidebarDisplayName();
-  if (greetingEl) greetingEl.textContent = `Hello, ${name}`;
+  if (greetingEl) greetingEl.textContent = name;
   if (roleEl) roleEl.textContent = getSidebarRoleLabel();
   if (avatarEl) avatarEl.textContent = getNameInitials(name);
 }
