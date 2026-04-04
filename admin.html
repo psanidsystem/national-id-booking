@@ -1273,15 +1273,15 @@
             <div class="empty-state" style="margin-bottom:16px;">
               <div class="empty-icon">🗂️</div>
               <div>
-                <strong>Archive Past Finalized Bookings</strong>
-                <p>Move old completed records into the <code>Appointments Archive</code> sheet before removing them from the live appointments list.</p>
+                <strong>Archive Past Bookings</strong>
+                <p>Move all bookings before the selected date into the <code>Appointments Archive</code> sheet before removing them from the live appointments list.</p>
               </div>
             </div>
 
             <div class="field" style="margin-bottom:12px;">
               <label for="archiveBeforeDate">Archive records before</label>
               <input type="date" id="archiveBeforeDate" />
-              <div class="hint-text">Only finalized statuses are moved: Completed, Successful, Cancelled, No Show, and Not Successful.</div>
+              <div class="hint-text">All bookings dated before the selected date are moved, regardless of status.</div>
             </div>
 
             <div class="row-actions" style="margin-bottom:16px;">
@@ -1624,6 +1624,7 @@ function showNotice(message, type = "success", targetId = "notice") {
 
   el.className = `notice show ${type}`;
   el.textContent = message;
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
   setTimeout(() => {
     el.className = "notice";
@@ -2382,7 +2383,7 @@ async function archivePastBookings() {
   }
 
   const confirmed = confirm(
-    `Archive finalized bookings dated before ${formatDate(beforeDate)}?\n\n` +
+    `Archive all bookings dated before ${formatDate(beforeDate)}?\n\n` +
     `The records will be moved to the "Appointments Archive" sheet and removed from the live Appointments sheet.`
   );
 
@@ -2402,13 +2403,6 @@ async function archivePastBookings() {
 
     if (Number(result.archivedCount || 0) > 0) {
       showNotice(`Archived ${result.archivedCount} booking${result.archivedCount !== 1 ? "s" : ""} to ${result.archiveSheet || "Appointments Archive"}.`);
-    } else if (Number(result.pastRowsFound || 0) > 0) {
-      const statusSummary = formatStatusBreakdown(result.skippedStatusCounts || {});
-      showNotice(
-        `Found ${result.pastRowsFound} past booking${result.pastRowsFound !== 1 ? "s" : ""}, but none were archived because they are still active or unfinished.` +
-        (statusSummary ? ` Statuses: ${statusSummary}.` : ""),
-        "error"
-      );
     } else {
       showNotice(`No past bookings found before ${formatDate(beforeDate)}.`);
     }
