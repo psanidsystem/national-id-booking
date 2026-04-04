@@ -2373,7 +2373,7 @@ async function loadAdminData(options = {}) {
 
   try {
     const data = await apiRequest({
-      action: userRole === "personnel" ? "adminListBookings" : "adminList"
+      action: "adminList"
     });
 
     if (data.status === "error") {
