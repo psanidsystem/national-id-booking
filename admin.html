@@ -1266,6 +1266,24 @@
               <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Weekend Setting</button>
             </div>
 
+            <div class="empty-state" style="margin-bottom:16px;">
+              <div class="empty-icon">🗂️</div>
+              <div>
+                <strong>Archive Past Finalized Bookings</strong>
+                <p>Move old completed records into the <code>Appointments Archive</code> sheet before removing them from the live appointments list.</p>
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom:12px;">
+              <label for="archiveBeforeDate">Archive records before</label>
+              <input type="date" id="archiveBeforeDate" />
+              <div class="hint-text">Only finalized statuses are moved: Completed, Successful, Cancelled, No Show, and Not Successful.</div>
+            </div>
+
+            <div class="row-actions" style="margin-bottom:16px;">
+              <button class="btn btn-secondary" id="archivePastBookingsBtn">Archive Past Records</button>
+            </div>
+
             <div class="settings-actions">
               <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
             </div>
@@ -2333,6 +2351,49 @@ async function saveWeekendSetting() {
   }
 }
 
+async function archivePastBookings() {
+  if (!isAdmin()) {
+    showNotice("Only admin can archive bookings.", "error");
+    return;
+  }
+
+  const archiveBeforeDateInput = document.getElementById("archiveBeforeDate");
+  const beforeDate = archiveBeforeDateInput?.value || "";
+
+  if (!beforeDate) {
+    showNotice("Please choose an archive cutoff date.", "error");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Archive finalized bookings dated before ${formatDate(beforeDate)}?\n\n` +
+    `The records will be moved to the "Appointments Archive" sheet and removed from the live Appointments sheet.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const result = await apiRequest({
+      action: "adminArchivePastBookings",
+      beforeDate
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to archive past bookings.");
+    }
+
+    await loadAdminData({ silent: true });
+
+    if (Number(result.archivedCount || 0) > 0) {
+      showNotice(`Archived ${result.archivedCount} booking${result.archivedCount !== 1 ? "s" : ""} to ${result.archiveSheet || "Appointments Archive"}.`);
+    } else {
+      showNotice(`No finalized past bookings found before ${formatDate(beforeDate)}.`);
+    }
+  } catch (err) {
+    showNotice(err.message || "Unable to archive past bookings.", "error");
+  }
+}
+
 
 async function saveAvailability() {
   if (!isAdmin()) {
@@ -2839,6 +2900,11 @@ document.addEventListener("DOMContentLoaded", () => {
     dashboardDateInput.value = new Date().toISOString().slice(0, 10);
   }
 
+  const archiveBeforeDateInput = document.getElementById("archiveBeforeDate");
+  if (archiveBeforeDateInput) {
+    archiveBeforeDateInput.value = new Date().toISOString().slice(0, 10);
+  }
+
   fillServiceOptions();
   renderAll();
 
@@ -2889,6 +2955,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
   document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
   document.getElementById("saveWeekendSettingBtn")?.addEventListener("click", saveWeekendSetting);
+  document.getElementById("archivePastBookingsBtn")?.addEventListener("click", archivePastBookings);
   document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
   document.getElementById("quickSearch")?.addEventListener("input", () => {
