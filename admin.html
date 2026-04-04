@@ -2469,6 +2469,7 @@ function defaultWeekendSettings() {
 
 function setAdminState(data) {
   bookings = Array.isArray(data?.bookings) ? data.bookings : [];
+  sortBookingsLocal();
   slotRules = Array.isArray(data?.slotRules) ? data.slotRules : [];
   availabilityRules = Array.isArray(data?.availabilityRules) ? data.availabilityRules : [];
   users = Array.isArray(data?.users) ? data.users : [];
@@ -2489,13 +2490,97 @@ function rerenderState() {
   renderAll();
 }
 
+function bookingDisplayGroup(status) {
+  return isTerminalBookingStatus(status) ? 1 : 0;
+}
+
+function bookingStatusPriority(status) {
+  const normalized = String(status || "").trim();
+
+  if (normalized === "Arrived") return 0;
+  if (normalized === "Pending" || normalized === "Confirmed") return 1;
+  if (normalized === "Assisted") return 2;
+  if (normalized === "Completed") return 3;
+  if (normalized === "Not Successful") return 4;
+  if (normalized === "No Show") return 5;
+  if (normalized === "Cancelled") return 6;
+  return 7;
+}
+
+function parseTimeToMinutes(timeValue) {
+  if (!timeValue) return NaN;
+
+  const str = String(timeValue).trim();
+  const meridianMatch = str.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+  if (meridianMatch) {
+    let hour = parseInt(meridianMatch[1], 10);
+    const minute = parseInt(meridianMatch[2], 10);
+    const meridian = meridianMatch[3].toUpperCase();
+
+    if (meridian === "AM" && hour === 12) hour = 0;
+    if (meridian === "PM" && hour !== 12) hour += 12;
+    return (hour * 60) + minute;
+  }
+
+  const twentyFourHourMatch = str.match(/^(\d{1,2}):(\d{2})$/);
+  if (twentyFourHourMatch) {
+    const hour = parseInt(twentyFourHourMatch[1], 10);
+    const minute = parseInt(twentyFourHourMatch[2], 10);
+    return (hour * 60) + minute;
+  }
+
+  return NaN;
+}
+
+function bookingScheduleValue(item) {
+  const dateStr = String(item?.date || "").trim();
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return Number.MAX_SAFE_INTEGER;
+
+  const year = parseInt(parts[0], 10);
+  const monthIndex = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const minutes = parseTimeToMinutes(item?.time);
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(monthIndex) ||
+    !Number.isInteger(day) ||
+    monthIndex < 0 ||
+    monthIndex > 11
+  ) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const hasValidTime = Number.isFinite(minutes);
+  const hours = hasValidTime ? Math.floor(minutes / 60) : 23;
+  const mins = hasValidTime ? minutes % 60 : 59;
+  return new Date(year, monthIndex, day, hours, mins).getTime();
+}
+
 function bookingSortValue(item) {
   const raw = item?.timestamp ? new Date(item.timestamp).getTime() : NaN;
   return Number.isFinite(raw) ? raw : 0;
 }
 
+function compareBookingsForDisplay(a, b) {
+  const displayGroupDiff = bookingDisplayGroup(a?.status) - bookingDisplayGroup(b?.status);
+  if (displayGroupDiff !== 0) return displayGroupDiff;
+
+  const scheduleDiff = bookingScheduleValue(a) - bookingScheduleValue(b);
+  if (scheduleDiff !== 0) return scheduleDiff;
+
+  const statusDiff = bookingStatusPriority(a?.status) - bookingStatusPriority(b?.status);
+  if (statusDiff !== 0) return statusDiff;
+
+  const timestampDiff = bookingSortValue(a) - bookingSortValue(b);
+  if (timestampDiff !== 0) return timestampDiff;
+
+  return String(a?.refCode || "").localeCompare(String(b?.refCode || ""));
+}
+
 function sortBookingsLocal() {
-  bookings.sort((a, b) => bookingSortValue(b) - bookingSortValue(a));
+  bookings.sort(compareBookingsForDisplay);
 }
 
 function upsertBookingLocal(item, originalRefCode = "") {
