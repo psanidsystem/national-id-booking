@@ -214,6 +214,7 @@
       sessionStorage.removeItem("nid_session_expires");
       sessionStorage.removeItem("nid_role");
       sessionStorage.removeItem("nid_name");
+      sessionStorage.removeItem("nid_title");
       sessionStorage.removeItem("nid_username");
     }
 
@@ -326,8 +327,9 @@
         if (!sessionExpiresAt) {
           sessionExpiresAt = Date.now() + 3600 * 1000;
         }
-        const role = findNestedValue(data, ["role", "userRole", "roleName", "position"]);
+        const role = findNestedValue(data, ["role", "userRole", "roleName"]);
         const name = findNestedValue(data, ["name", "fullname", "displayName", "full_name", "userFullName"]);
+        const title = findNestedValue(data, ["title", "designation", "jobTitle", "job_title", "position"]);
         const usernameResp = findNestedValue(data, ["username", "user", "userName", "account"]);
 
         if (!sessionToken) {
@@ -339,6 +341,7 @@
         sessionStorage.setItem("nid_session_expires", String(sessionExpiresAt));
         sessionStorage.setItem("nid_role", role || "");
         sessionStorage.setItem("nid_name", name || "");
+        sessionStorage.setItem("nid_title", title || "");
         sessionStorage.setItem("nid_username", usernameResp || enteredUsername);
 
 
