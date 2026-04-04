@@ -2089,13 +2089,23 @@ function renderRecentBookings(list = bookings) {
   }
 }
 
+function actionButtonHtml(label, className, dataAttrs = {}) {
+  const attrs = Object.entries(dataAttrs)
+    .map(([key, value]) => `${key}="${escapeHtml(value)}"`)
+    .join(" ");
+
+  return `<button class="${className}" type="button" ${attrs}>${escapeHtml(label)}</button>`;
+}
+
 function getPersonnelActionButtons(item) {
-  const safeRef = JSON.stringify(item.refCode);
   const label = isTerminalBookingStatus(item.status) ? "View" : "Process";
   const buttonClass = isTerminalBookingStatus(item.status) ? "mini-btn mini-edit" : "mini-btn mini-process";
   return `
     <div class="row-actions">
-      <button class="${buttonClass}" onclick="openPersonnelProcessModal(${safeRef})">${label}</button>
+      ${actionButtonHtml(label, buttonClass, {
+        "data-row-action": "open-process",
+        "data-ref-code": item.refCode
+      })}
     </div>
   `;
 }
@@ -2108,13 +2118,17 @@ function renderBookingsTable() {
   tbody.innerHTML = "";
 
   filtered.forEach(item => {
-    const safeRef = JSON.stringify(item.refCode);
-
     const actionHtml = canEditBookings()
       ? `
         <div class="row-actions">
-          <button class="mini-btn mini-edit" onclick="editBooking(${safeRef})">Edit</button>
-          <button class="mini-btn mini-delete" onclick="deleteBooking(${safeRef})">Delete</button>
+          ${actionButtonHtml("Edit", "mini-btn mini-edit", {
+            "data-row-action": "edit-booking",
+            "data-ref-code": item.refCode
+          })}
+          ${actionButtonHtml("Delete", "mini-btn mini-delete", {
+            "data-row-action": "delete-booking",
+            "data-ref-code": item.refCode
+          })}
         </div>
       `
       : getPersonnelActionButtons(item);
@@ -2190,8 +2204,14 @@ function renderSlotLists() {
         <td>${escapeHtml(item.available)}</td>
         <td>
           <div class="row-actions">
-            <button class="mini-btn mini-slot" onclick="editSlotRule(${JSON.stringify(key)})">Edit</button>
-            <button class="mini-btn mini-delete" onclick="deleteSlotRule(${JSON.stringify(key)})">Delete</button>
+            ${actionButtonHtml("Edit", "mini-btn mini-slot", {
+              "data-row-action": "edit-slot-rule",
+              "data-slot-key": key
+            })}
+            ${actionButtonHtml("Delete", "mini-btn mini-delete", {
+              "data-row-action": "delete-slot-rule",
+              "data-slot-key": key
+            })}
           </div>
         </td>
       `;
@@ -2237,7 +2257,10 @@ function renderAvailabilityTable() {
       <td>${escapeHtml(rule.trn ?? "—")}</td>
       <td>
         <div class="row-actions">
-          <button class="mini-btn mini-delete" onclick="deleteAvailability(${JSON.stringify(rule.date)})">Delete</button>
+          ${actionButtonHtml("Delete", "mini-btn mini-delete", {
+            "data-row-action": "delete-availability",
+            "data-date": rule.date
+          })}
         </div>
       </td>
     `;
@@ -2264,8 +2287,14 @@ function renderUsersTable() {
       <td>${escapeHtml(user.status || "—")}</td>
       <td>
         <div class="row-actions">
-          <button class="mini-btn mini-edit" onclick="editUser(${JSON.stringify(user.username)})">Edit</button>
-          <button class="mini-btn mini-delete" onclick="deleteUser(${JSON.stringify(user.username)})">Delete</button>
+          ${actionButtonHtml("Edit", "mini-btn mini-edit", {
+            "data-row-action": "edit-user",
+            "data-username": user.username
+          })}
+          ${actionButtonHtml("Delete", "mini-btn mini-delete", {
+            "data-row-action": "delete-user",
+            "data-username": user.username
+          })}
         </div>
       </td>
     `;
@@ -3073,7 +3102,9 @@ function renderPersonnelProcessModal() {
   }
 
   document.getElementById("personnelProcessActions").innerHTML = config.actions.map(action => `
-    <button class="${action.className}" type="button" onclick="runPersonnelProcessAction('${action.id}')">${action.label}</button>
+    ${actionButtonHtml(action.label, action.className, {
+      "data-process-action": action.id
+    })}
   `).join("");
 }
 
@@ -3253,6 +3284,58 @@ window.runPersonnelProcessAction = async function(actionId) {
     });
   }
 };
+
+function handleDelegatedActionClick(event) {
+  const rowActionButton = event.target.closest("button[data-row-action]");
+  if (rowActionButton) {
+    const { rowAction, refCode, slotKey, date, username } = rowActionButton.dataset;
+
+    if (rowAction === "open-process") {
+      window.openPersonnelProcessModal(refCode);
+      return;
+    }
+
+    if (rowAction === "edit-booking") {
+      window.editBooking(refCode);
+      return;
+    }
+
+    if (rowAction === "delete-booking") {
+      window.deleteBooking(refCode);
+      return;
+    }
+
+    if (rowAction === "edit-slot-rule") {
+      window.editSlotRule(slotKey);
+      return;
+    }
+
+    if (rowAction === "delete-slot-rule") {
+      window.deleteSlotRule(slotKey);
+      return;
+    }
+
+    if (rowAction === "delete-availability") {
+      window.deleteAvailability(date);
+      return;
+    }
+
+    if (rowAction === "edit-user") {
+      window.editUser(username);
+      return;
+    }
+
+    if (rowAction === "delete-user") {
+      window.deleteUser(username);
+      return;
+    }
+  }
+
+  const processActionButton = event.target.closest("button[data-process-action]");
+  if (processActionButton) {
+    window.runPersonnelProcessAction(processActionButton.dataset.processAction);
+  }
+}
 
 window.editBooking = function(refCode) {
   const item = bookings.find(b => b.refCode === refCode);
@@ -3459,6 +3542,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(() => {
       // forceLogout already redirects on auth error
     });
+
+  document.addEventListener("click", handleDelegatedActionClick);
 
   document.querySelectorAll(".nav-btn").forEach(btn => {
     btn.addEventListener("click", () => switchSection(btn.dataset.section));
