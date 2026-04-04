@@ -1225,6 +1225,11 @@
               </div>
 
               <div class="settings-info-item">
+                <strong>Archived Records</strong>
+                <span id="archiveCountLabel">Loading...</span>
+              </div>
+
+              <div class="settings-info-item">
                 <strong>Saturday Booking</strong>
                 <span id="saturdayBookingLabel">Loading...</span>
               </div>
@@ -1528,6 +1533,50 @@
     </div>
   </div>
 
+  <div class="modal" id="archiveConfirmModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Confirm Archive</h3>
+        <button class="btn btn-secondary" data-close="archiveConfirmModal">Close</button>
+      </div>
+
+      <p class="settings-text" style="margin-bottom:16px;">
+        Review the archive summary below before moving old bookings out of the live Appointments sheet.
+      </p>
+
+      <div class="settings-info-list" style="margin-bottom:16px;">
+        <div class="settings-info-item">
+          <strong>Cutoff Date</strong>
+          <span id="archiveConfirmDate">—</span>
+        </div>
+
+        <div class="settings-info-item">
+          <strong>Records To Archive</strong>
+          <span id="archiveConfirmPreviewCount">0</span>
+        </div>
+
+        <div class="settings-info-item">
+          <strong>Current Archive Count</strong>
+          <span id="archiveConfirmCurrentCount">0</span>
+        </div>
+
+        <div class="settings-info-item">
+          <strong>Archive Count After Move</strong>
+          <span id="archiveConfirmAfterCount">0</span>
+        </div>
+      </div>
+
+      <div class="hint-text">
+        This will move the matching records into <code>Appointments Archive</code> and remove them from the live <code>Appointments</code> sheet.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" data-close="archiveConfirmModal">Cancel</button>
+        <button class="btn btn-primary" id="confirmArchiveBtn">Archive Now</button>
+      </div>
+    </div>
+  </div>
+
   <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 
@@ -1541,11 +1590,19 @@ let bookings = [];
 let slotRules = [];
 let availabilityRules = [];
 let users = [];
+let archiveRecordCount = 0;
 let weekendSettings = {
   apiVersion: "Unknown",
   saturdayOpen: false,
   sundayOpen: false,
   bookingWindowMonths: 1
+};
+let archivePreviewState = {
+  beforeDate: "",
+  previewCount: 0,
+  archiveCount: 0,
+  archiveCountAfter: 0,
+  archiveSheet: "Appointments Archive"
 };
 
 let editingBookingRef = null;
@@ -2060,18 +2117,20 @@ function renderWeekendSettings() {
   const bookingWindowSelect = document.getElementById("bookingWindowMonths");
 
   const backendVersionLabel = document.getElementById("backendVersionLabel");
+  const archiveCountLabel = document.getElementById("archiveCountLabel");
   const saturdayLabel = document.getElementById("saturdayBookingLabel");
   const sundayLabel = document.getElementById("sundayBookingLabel");
   const bookingWindowLabel = document.getElementById("bookingWindowLabel");
 
   if (!saturdayToggle || !sundayToggle || !bookingWindowSelect) return;
-  if (!backendVersionLabel || !saturdayLabel || !sundayLabel || !bookingWindowLabel) return;
+  if (!backendVersionLabel || !archiveCountLabel || !saturdayLabel || !sundayLabel || !bookingWindowLabel) return;
 
   saturdayToggle.value = weekendSettings.saturdayOpen ? "true" : "false";
   sundayToggle.value = weekendSettings.sundayOpen ? "true" : "false";
   bookingWindowSelect.value = String(weekendSettings.bookingWindowMonths || 1);
 
   backendVersionLabel.textContent = weekendSettings.apiVersion || "Unknown";
+  archiveCountLabel.textContent = `${Number(archiveRecordCount || 0)} record${Number(archiveRecordCount || 0) === 1 ? "" : "s"}`;
   saturdayLabel.textContent = weekendSettings.saturdayOpen ? "Enabled" : "Disabled";
   sundayLabel.textContent = weekendSettings.sundayOpen ? "Enabled" : "Disabled";
 
@@ -2218,6 +2277,7 @@ function setAdminState(data) {
   slotRules = Array.isArray(data?.slotRules) ? data.slotRules : [];
   availabilityRules = Array.isArray(data?.availabilityRules) ? data.availabilityRules : [];
   users = Array.isArray(data?.users) ? data.users : [];
+  archiveRecordCount = Number(data?.archiveRecordCount || 0);
   weekendSettings = data?.systemSettings || defaultWeekendSettings();
 }
 
@@ -2226,6 +2286,7 @@ function resetAdminState() {
   slotRules = [];
   availabilityRules = [];
   users = [];
+  archiveRecordCount = 0;
   weekendSettings = defaultWeekendSettings();
 }
 
@@ -2382,30 +2443,79 @@ async function archivePastBookings() {
     return;
   }
 
-  const confirmed = confirm(
-    `Archive all bookings dated before ${formatDate(beforeDate)}?\n\n` +
-    `The records will be moved to the "Appointments Archive" sheet and removed from the live Appointments sheet.`
-  );
+  try {
+    const preview = await apiRequest({
+      action: "adminPreviewArchivePastBookings",
+      beforeDate
+    });
 
-  if (!confirmed) return;
+    if (preview.status === "error") {
+      throw new Error(preview.message || "Unable to prepare archive preview.");
+    }
+
+    if (Number(preview.previewCount || 0) <= 0) {
+      archiveRecordCount = Number(preview.archiveCount || archiveRecordCount || 0);
+      renderWeekendSettings();
+      showNotice(
+        `No past bookings found before ${formatDate(beforeDate)}. ${preview.archiveSheet || "Appointments Archive"} currently contains ${Number(preview.archiveCount || 0)} record${Number(preview.archiveCount || 0) === 1 ? "" : "s"}.`
+      );
+      return;
+    }
+
+    archivePreviewState = {
+      beforeDate: preview.beforeDate || beforeDate,
+      previewCount: Number(preview.previewCount || 0),
+      archiveCount: Number(preview.archiveCount || 0),
+      archiveCountAfter: Number(preview.archiveCountAfter || 0),
+      archiveSheet: preview.archiveSheet || "Appointments Archive"
+    };
+
+    document.getElementById("archiveConfirmDate").textContent = formatDate(archivePreviewState.beforeDate);
+    document.getElementById("archiveConfirmPreviewCount").textContent = `${archivePreviewState.previewCount} record${archivePreviewState.previewCount === 1 ? "" : "s"}`;
+    document.getElementById("archiveConfirmCurrentCount").textContent = `${archivePreviewState.archiveCount} record${archivePreviewState.archiveCount === 1 ? "" : "s"}`;
+    document.getElementById("archiveConfirmAfterCount").textContent = `${archivePreviewState.archiveCountAfter} record${archivePreviewState.archiveCountAfter === 1 ? "" : "s"}`;
+    openModal("archiveConfirmModal");
+  } catch (err) {
+    showNotice(err.message || "Unable to archive past bookings.", "error");
+  }
+}
+
+async function confirmArchivePastBookings() {
+  if (!archivePreviewState.beforeDate) {
+    showNotice("Please choose an archive cutoff date first.", "error");
+    return;
+  }
 
   try {
     const result = await apiRequest({
       action: "adminArchivePastBookings",
-      beforeDate
+      beforeDate: archivePreviewState.beforeDate
     });
 
     if (result.status === "error") {
       throw new Error(result.message || "Unable to archive past bookings.");
     }
 
+    closeModal("archiveConfirmModal");
     await loadAdminData({ silent: true });
 
-    if (Number(result.archivedCount || 0) > 0) {
-      showNotice(`Archived ${result.archivedCount} booking${result.archivedCount !== 1 ? "s" : ""} to ${result.archiveSheet || "Appointments Archive"}.`);
-    } else {
-      showNotice(`No past bookings found before ${formatDate(beforeDate)}.`);
-    }
+    const archivedCount = Number(result.archivedCount || 0);
+    const archiveAfter = Number(result.archiveCountAfter || archiveRecordCount || 0);
+    archiveRecordCount = archiveAfter;
+    renderWeekendSettings();
+
+    showNotice(
+      `Archived ${archivedCount} booking${archivedCount === 1 ? "" : "s"} dated before ${formatDate(archivePreviewState.beforeDate)}. ` +
+      `${result.archiveSheet || archivePreviewState.archiveSheet || "Appointments Archive"} now contains ${archiveAfter} record${archiveAfter === 1 ? "" : "s"}.`
+    );
+
+    archivePreviewState = {
+      beforeDate: "",
+      previewCount: 0,
+      archiveCount: archiveAfter,
+      archiveCountAfter: archiveAfter,
+      archiveSheet: result.archiveSheet || "Appointments Archive"
+    };
   } catch (err) {
     showNotice(err.message || "Unable to archive past bookings.", "error");
   }
@@ -2973,6 +3083,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
   document.getElementById("saveWeekendSettingBtn")?.addEventListener("click", saveWeekendSetting);
   document.getElementById("archivePastBookingsBtn")?.addEventListener("click", archivePastBookings);
+  document.getElementById("confirmArchiveBtn")?.addEventListener("click", confirmArchivePastBookings);
   document.getElementById("logoutBtn")?.addEventListener("click", logout);
 
   document.getElementById("quickSearch")?.addEventListener("input", () => {
