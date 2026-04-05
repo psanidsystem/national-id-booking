@@ -1626,6 +1626,7 @@
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Record</th>
+                  <th>Assisted By</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -2436,6 +2437,7 @@ function applyBookingFilters() {
       item.email,
       item.phone,
       item.time,
+      item.assistedBy,
       bookingRecordLabel(item.sourceSheet)
     ].join(" ").toLowerCase();
 
@@ -2456,7 +2458,8 @@ function filterQuickSearch() {
       item.fullname,
       item.email,
       item.phone,
-      item.time
+      item.time,
+      item.assistedBy
     ].join(" ").toLowerCase();
 
     return haystack.includes(q);
@@ -2596,6 +2599,7 @@ function renderBookingsTable() {
       <td>${escapeHtml(item.email || "—")}</td>
       <td>${escapeHtml(item.phone || "—")}</td>
       <td><span class="${bookingRecordBadgeClass(item.sourceSheet)}">${escapeHtml(bookingRecordLabel(item.sourceSheet))}</span></td>
+      <td>${escapeHtml(item.assistedBy || "—")}</td>
       <td>
         <div class="status-cell">
           <span class="${badgeClass(item.status)}">${escapeHtml(item.status)}</span>
@@ -2608,7 +2612,7 @@ function renderBookingsTable() {
   });
 
   if (!tbody.innerHTML) {
-    tbody.innerHTML = `<tr><td colspan="10">No bookings match the current filters.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11">No bookings match the current filters.</td></tr>`;
   }
 }
 
@@ -3415,6 +3419,7 @@ async function saveBooking() {
       time: payload.time,
       status: payload.status,
       userType: previous?.userType || "ADMIN",
+      assistedBy: result.assistedBy || previous?.assistedBy || "",
       outcomeReason: previous?.outcomeReason || "",
       sourceSheet: result.sourceSheet || payload.sourceSheet || previous?.sourceSheet || LIVE_BOOKING_SOURCE
     };
@@ -3789,6 +3794,7 @@ async function savePersonnelOutcomeRequest(refCode, outcome, reason = "", option
       ...item,
       status: nextStatus,
       outcome,
+      assistedBy: result.assistedBy || item.assistedBy || "",
       outcomeReason: reason
     }, item.refCode, result.sourceSheet || item.sourceSheet);
 
@@ -3837,6 +3843,7 @@ async function updateBookingStatusRequest(refCode, newStatus, options = {}) {
 
     upsertBookingLocal({
       ...item,
+      assistedBy: result.assistedBy || item.assistedBy || "",
       status: newStatus
     }, item.refCode, result.sourceSheet || item.sourceSheet);
 
