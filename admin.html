@@ -1427,6 +1427,77 @@
       line-height: 1.7;
     }
 
+    .slot-board-page {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .slot-board-page-main,
+    .slot-board-page-side {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .slot-board-hero {
+      padding: 28px;
+      border-radius: 26px;
+      border: 1px solid #d8e7fb;
+      background:
+        radial-gradient(circle at top right, rgba(94, 173, 255, 0.22) 0%, rgba(94, 173, 255, 0) 24%),
+        radial-gradient(circle at bottom left, rgba(244, 193, 67, 0.16) 0%, rgba(244, 193, 67, 0) 28%),
+        linear-gradient(135deg, #fefefe 0%, #f2f8ff 58%, #edf5ff 100%);
+      box-shadow: 0 20px 42px rgba(30, 90, 168, 0.1);
+    }
+
+    .slot-board-hero h3 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: #103e7d;
+    }
+
+    .slot-board-hero p {
+      margin: 0;
+      max-width: 760px;
+      color: #4f647f;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .slot-board-side-card {
+      border-radius: 22px;
+    }
+
+    .slot-board-side-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .slot-board-side-item {
+      padding: 14px 15px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .slot-board-side-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #103e7d;
+      font-size: 14px;
+    }
+
+    .slot-board-side-item p {
+      margin: 0;
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     .settings-grid {
       display: grid;
       grid-template-columns: 1.3fr 1fr;
@@ -1580,6 +1651,10 @@
         grid-template-columns: 1fr;
       }
 
+      .slot-board-page {
+        grid-template-columns: 1fr;
+      }
+
       .slot-board-summary {
         grid-template-columns: 1fr 1fr;
       }
@@ -1625,6 +1700,14 @@
       .slot-board-summary,
       .slot-board-time-grid {
         grid-template-columns: 1fr;
+      }
+
+      .slot-board-hero {
+        padding: 22px 20px;
+      }
+
+      .slot-board-hero h3 {
+        font-size: 25px;
       }
 
       .slot-board-date-top,
@@ -1681,6 +1764,7 @@
         text-align: left;
       }
       #dashboardSection,
+#slotBoardSection,
 #bookingsSection,
 #slotsSection,
 #availabilitySection,
@@ -1690,6 +1774,7 @@
 }
 
 #bookingsSection .card,
+#slotBoardSection .card,
 #slotsSection .card,
 #availabilitySection .card,
 #usersSection .card,
@@ -1873,6 +1958,11 @@
             <span>Bookings</span>
           </button>
 
+          <button class="nav-btn" data-section="liveSlots">
+            <span class="nav-icon">📡</span>
+            <span>Live Slots</span>
+          </button>
+
           <button class="nav-btn" data-section="slots">
             <span class="nav-icon">🗓️</span>
             <span>Slot Management</span>
@@ -2011,6 +2101,96 @@
         </div>
       </section>
 
+      <section id="slotBoardSection" class="hidden">
+        <div class="slot-board-page">
+          <div class="slot-board-page-main">
+            <div class="slot-board-hero">
+              <div class="slot-board-kicker">Realtime Availability</div>
+              <h3>Live Schedule Board</h3>
+              <p>Use this dedicated workspace to review open appointment dates, remaining daily capacity, and live per-time-slot availability without crowding the bookings table.</p>
+            </div>
+
+            <div class="slot-board-card">
+              <div class="slot-board-header">
+                <div class="slot-board-copy">
+                  <div class="slot-board-kicker">Open Schedules</div>
+                  <h3>Remaining Slots by Date</h3>
+                  <p>Select a date card to inspect service-level capacity in real time. The Bookings workspace is also synced to the selected date for faster client lookup.</p>
+                </div>
+
+                <div class="slot-board-controls">
+                  <div class="field">
+                    <label for="slotBoardMonth">Month</label>
+                    <select id="slotBoardMonth"></select>
+                  </div>
+                  <div class="field">
+                    <label for="slotBoardService">Service View</label>
+                    <select id="slotBoardService"></select>
+                  </div>
+                  <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-secondary slot-board-refresh" id="slotBoardRefreshBtn" type="button">Refresh Availability</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slot-board-summary" id="slotBoardSummary"></div>
+
+              <div class="slot-board-layout">
+                <div id="slotBoardGrid" class="slot-board-grid"></div>
+                <div id="slotBoardDetail" class="slot-board-detail-card"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slot-board-page-side">
+            <div class="card slot-board-side-card">
+              <div class="panel-title">
+                <h3>Focus Snapshot</h3>
+              </div>
+              <div class="settings-info-list">
+                <div class="settings-info-item">
+                  <strong>Month</strong>
+                  <span id="slotBoardFocusMonth">—</span>
+                </div>
+                <div class="settings-info-item">
+                  <strong>Service View</strong>
+                  <span id="slotBoardFocusService">All services</span>
+                </div>
+                <div class="settings-info-item">
+                  <strong>Selected Date</strong>
+                  <span id="slotBoardFocusDate">Choose a date</span>
+                </div>
+                <div class="settings-info-item">
+                  <strong>Remaining Capacity</strong>
+                  <span id="slotBoardFocusRemaining">—</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card slot-board-side-card">
+              <div class="panel-title">
+                <h3>How To Use</h3>
+              </div>
+              <div class="slot-board-side-list">
+                <div class="slot-board-side-item">
+                  <strong>Check open dates first</strong>
+                  <p>Each date card summarizes the remaining daily capacity still available for service across the selected month.</p>
+                </div>
+                <div class="slot-board-side-item">
+                  <strong>Inspect time-slot detail</strong>
+                  <p>Select a date to reveal the live per-time-slot breakdown on the right side of the board.</p>
+                </div>
+                <div class="slot-board-side-item">
+                  <strong>Continue to Bookings</strong>
+                  <p>When you click a date card, the Bookings page filter is prepared with that date so staff can continue assisting clients quickly.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="bookingsSection" class="hidden">
         <div class="card">
           <div class="panel-title">
@@ -2018,39 +2198,7 @@
           </div>
 
           <div id="personnelHelpBanner" class="personnel-help-banner hidden">
-            Use the <strong>Process</strong> button to check in the client, start the service, and record the final result in one guided flow. Switch <strong>Record Scope</strong> to search archived schedules when needed.
-          </div>
-
-          <div class="slot-board-card">
-            <div class="slot-board-header">
-              <div class="slot-board-copy">
-                <div class="slot-board-kicker">Realtime Availability</div>
-                <h3>Open Schedules and Remaining Slots</h3>
-                <p>Review live slot availability across all open schedules, then click any date card to sync the booking list below with that schedule.</p>
-              </div>
-
-              <div class="slot-board-controls">
-                <div class="field">
-                  <label for="slotBoardMonth">Month</label>
-                  <select id="slotBoardMonth"></select>
-                </div>
-                <div class="field">
-                  <label for="slotBoardService">Service View</label>
-                  <select id="slotBoardService"></select>
-                </div>
-                <div class="field">
-                  <label>&nbsp;</label>
-                  <button class="btn btn-secondary slot-board-refresh" id="slotBoardRefreshBtn" type="button">Refresh Availability</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="slot-board-summary" id="slotBoardSummary"></div>
-
-            <div class="slot-board-layout">
-              <div id="slotBoardGrid" class="slot-board-grid"></div>
-              <div id="slotBoardDetail" class="slot-board-detail-card"></div>
-            </div>
+            Use the <strong>Process</strong> button to check in the client, start the service, and record the final result in one guided flow. Open <strong>Live Slots</strong> in the sidebar to review open schedules first, and switch <strong>Record Scope</strong> to search archived schedules when needed.
           </div>
 
           <div class="filters">
@@ -2675,12 +2823,13 @@ const personnelServiceGuides = {
 };
 
 const sectionMap = {
-  dashboard: ["dashboardSection", "Dashboard Overview"],
-  bookings: ["bookingsSection", "Booking Management"],
-  slots: ["slotsSection", "Slot Management"],
-  availability: ["availabilitySection", "Availability Management"],
-  users: ["usersSection", "User Management"],
-  settings: ["settingsSection", "System Settings"]
+  dashboard: ["dashboardSection", "Dashboard Overview", "Review appointments, update records, and manage available slots."],
+  liveSlots: ["slotBoardSection", "Live Slot Availability", "Track open schedules and remaining capacity in a dedicated realtime workspace."],
+  bookings: ["bookingsSection", "Booking Management", "Check in clients, guide the service flow, and record the final result from one process modal."],
+  slots: ["slotsSection", "Slot Management", "Adjust custom daily slot capacity for specific services and appointment dates."],
+  availability: ["availabilitySection", "Availability Management", "Open, close, or override booking availability for selected service dates."],
+  users: ["usersSection", "User Management", "Maintain personnel accounts, access levels, and account status."],
+  settings: ["settingsSection", "System Settings", "Control weekend booking rules, booking window, and archive behavior."]
 };
 
 function clearStoredSession() {
@@ -2889,8 +3038,13 @@ function switchSection(section) {
     if (el) el.classList.add("hidden");
   });
 
-  document.getElementById(sectionMap[section][0]).classList.remove("hidden");
-  document.getElementById("sectionTitle").textContent = sectionMap[section][1];
+  const [sectionId, sectionTitle, sectionDescription] = sectionMap[section];
+  document.getElementById(sectionId).classList.remove("hidden");
+  document.getElementById("sectionTitle").textContent = sectionTitle;
+  const sectionDescEl = document.querySelector(".title-wrap p");
+  if (sectionDescEl) {
+    sectionDescEl.textContent = sectionDescription;
+  }
 
   document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelector(`.nav-btn[data-section="${section}"]`)?.classList.add("active");
@@ -3391,14 +3545,26 @@ function renderSlotBoard() {
   const summaryEl = document.getElementById("slotBoardSummary");
   const gridEl = document.getElementById("slotBoardGrid");
   const detailEl = document.getElementById("slotBoardDetail");
+  const focusMonthEl = document.getElementById("slotBoardFocusMonth");
+  const focusServiceEl = document.getElementById("slotBoardFocusService");
+  const focusDateEl = document.getElementById("slotBoardFocusDate");
+  const focusRemainingEl = document.getElementById("slotBoardFocusRemaining");
 
   if (!summaryEl || !gridEl || !detailEl) return;
 
   const monthLabel = formatMonthLabel(slotBoardState.month || getTodayIso().slice(0, 7));
-  const activeServices = getSlotBoardSelectedServices();
   const serviceViewLabel = slotBoardState.service || "All services";
   const monthlyDates = Array.isArray(slotBoardState.monthlyDates) ? slotBoardState.monthlyDates : [];
   const selectedEntry = monthlyDates.find(item => item.date === slotBoardState.selectedDate) || null;
+
+  if (focusMonthEl) focusMonthEl.textContent = monthLabel;
+  if (focusServiceEl) focusServiceEl.textContent = serviceViewLabel;
+  if (focusDateEl) focusDateEl.textContent = selectedEntry ? formatDate(selectedEntry.date) : "Choose a date";
+  if (focusRemainingEl) {
+    focusRemainingEl.textContent = selectedEntry
+      ? `${selectedEntry.totalRemaining} slot${selectedEntry.totalRemaining === 1 ? "" : "s"}`
+      : "Waiting for selection";
+  }
 
   if (slotBoardState.loading && !monthlyDates.length) {
     summaryEl.innerHTML = `
@@ -3531,7 +3697,7 @@ function renderSlotBoard() {
     <div class="slot-board-detail-head">
       <div>
         <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
-        <p>Live capacity by service and appointment time. The booking list below is synced to this date for faster client lookup.</p>
+        <p>Live capacity by service and appointment time. The Bookings workspace is synced to this date for faster client lookup.</p>
       </div>
       <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
     </div>
