@@ -1002,6 +1002,431 @@
       line-height: 1.5;
     }
 
+    .slot-board-card {
+      margin-bottom: 18px;
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid #d8e7fb;
+      background:
+        radial-gradient(circle at top right, rgba(94, 173, 255, 0.18) 0%, rgba(94, 173, 255, 0) 28%),
+        linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
+      box-shadow: 0 18px 36px rgba(30, 90, 168, 0.08);
+    }
+
+    .slot-board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .slot-board-copy {
+      max-width: 760px;
+    }
+
+    .slot-board-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(30, 90, 168, 0.1);
+      color: #1e5aa8;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .slot-board-copy h3 {
+      margin: 0 0 6px;
+      color: #103e7d;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .slot-board-copy p {
+      margin: 0;
+      color: #53657d;
+      line-height: 1.65;
+      font-size: 14px;
+      max-width: 680px;
+    }
+
+    .slot-board-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 12px;
+      width: min(100%, 700px);
+      align-items: end;
+    }
+
+    .slot-board-refresh {
+      width: 100%;
+      min-height: 48px;
+    }
+
+    .slot-board-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .slot-board-stat {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(216, 227, 240, 0.95);
+      background: rgba(255,255,255,0.92);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .slot-board-stat-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6b7c94;
+      margin-bottom: 10px;
+    }
+
+    .slot-board-stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      color: #103e7d;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .slot-board-stat-meta {
+      color: #5d6e84;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .slot-board-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .slot-board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .slot-board-date-btn {
+      width: 100%;
+      border: 1px solid #d8e3f0;
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,0.94);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .slot-board-date-btn:hover {
+      transform: translateY(-2px);
+      border-color: #b8cfee;
+      box-shadow: 0 16px 28px rgba(30, 90, 168, 0.1);
+    }
+
+    .slot-board-date-btn.is-selected {
+      border-color: #1e5aa8;
+      background: linear-gradient(180deg, #eef5ff 0%, #ffffff 100%);
+      box-shadow: 0 18px 34px rgba(30, 90, 168, 0.16);
+    }
+
+    .slot-board-date-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .slot-board-date-label strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: #103e7d;
+      margin-bottom: 6px;
+    }
+
+    .slot-board-date-label span {
+      display: block;
+      font-size: 12px;
+      color: #65758d;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .slot-board-date-summary {
+      text-align: right;
+    }
+
+    .slot-board-date-summary strong {
+      display: block;
+      font-size: 18px;
+      color: #103e7d;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .slot-board-date-summary span {
+      display: block;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.4;
+    }
+
+    .slot-board-service-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .slot-board-service-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 9px 11px;
+      border-radius: 14px;
+      background: #f7fbff;
+      color: #234466;
+      font-size: 12px;
+      border: 1px solid rgba(216, 227, 240, 0.88);
+    }
+
+    .slot-board-service-row strong {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .slot-board-service-row span {
+      flex-shrink: 0;
+      font-weight: 800;
+      color: #1e5aa8;
+    }
+
+    .slot-board-service-row.is-low {
+      background: #fff9eb;
+      color: #8a4b04;
+      border-color: #f8ddb1;
+    }
+
+    .slot-board-service-row.is-low span {
+      color: #b45309;
+    }
+
+    .slot-board-service-row.is-full {
+      background: #fff3ec;
+      color: #9a3412;
+      border-color: #fed7c3;
+    }
+
+    .slot-board-service-row.is-full span {
+      color: #c2410c;
+    }
+
+    .slot-board-service-row.is-closed {
+      background: #f8fafc;
+      color: #64748b;
+      border-color: #e2e8f0;
+    }
+
+    .slot-board-service-row.is-closed span {
+      color: #64748b;
+    }
+
+    .slot-board-service-overflow {
+      margin-top: 10px;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .slot-board-detail-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #d8e3f0;
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .slot-board-detail-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .slot-board-detail-head h4 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      color: #111827;
+    }
+
+    .slot-board-detail-head p {
+      margin: 0;
+      font-size: 13px;
+      color: #667085;
+      line-height: 1.5;
+      max-width: 360px;
+    }
+
+    .slot-board-detail-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef5ff;
+      color: #1e5aa8;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .slot-board-detail-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .slot-board-service-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid #dce7f5;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+    }
+
+    .slot-board-service-card.is-closed {
+      background: linear-gradient(180deg, #fbfcfd 0%, #f5f7fa 100%);
+    }
+
+    .slot-board-service-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .slot-board-service-card-head h5 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      color: #111827;
+    }
+
+    .slot-board-service-card-head p {
+      margin: 0;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .slot-board-service-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef5ff;
+      color: #1e5aa8;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .slot-board-service-card.is-closed .slot-board-service-pill {
+      background: #eef2f7;
+      color: #64748b;
+    }
+
+    .slot-board-time-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .slot-board-time-chip {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid #d8e3f0;
+      background: #ffffff;
+      display: grid;
+      gap: 4px;
+    }
+
+    .slot-board-time-chip strong {
+      font-size: 13px;
+      color: #111827;
+    }
+
+    .slot-board-time-chip span {
+      font-size: 12px;
+      color: #1e5aa8;
+      font-weight: 700;
+    }
+
+    .slot-board-time-chip small {
+      font-size: 11px;
+      color: #667085;
+      line-height: 1.45;
+    }
+
+    .slot-board-time-chip.is-low {
+      background: #fffaf0;
+      border-color: #f8ddb1;
+    }
+
+    .slot-board-time-chip.is-low span {
+      color: #b45309;
+    }
+
+    .slot-board-time-chip.is-full {
+      background: #fff4f4;
+      border-color: #fecaca;
+    }
+
+    .slot-board-time-chip.is-full span {
+      color: #b91c1c;
+    }
+
+    .slot-board-time-chip.is-closed {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    .slot-board-time-chip.is-closed span {
+      color: #64748b;
+    }
+
+    .slot-board-empty {
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px dashed #c9d6e7;
+      background: rgba(255,255,255,0.9);
+      color: #5f6f85;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
     .settings-grid {
       display: grid;
       grid-template-columns: 1.3fr 1fr;
@@ -1155,6 +1580,14 @@
         grid-template-columns: 1fr;
       }
 
+      .slot-board-summary {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .slot-board-layout {
+        grid-template-columns: 1fr;
+      }
+
       .personnel-process-grid,
       .personnel-process-steps {
         grid-template-columns: 1fr;
@@ -1186,6 +1619,21 @@
 
       .content {
         padding: 18px;
+      }
+
+      .slot-board-controls,
+      .slot-board-summary,
+      .slot-board-time-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .slot-board-date-top,
+      .slot-board-service-card-head {
+        flex-direction: column;
+      }
+
+      .slot-board-date-summary {
+        text-align: left;
       }
 
       .actions {
@@ -1571,6 +2019,38 @@
 
           <div id="personnelHelpBanner" class="personnel-help-banner hidden">
             Use the <strong>Process</strong> button to check in the client, start the service, and record the final result in one guided flow. Switch <strong>Record Scope</strong> to search archived schedules when needed.
+          </div>
+
+          <div class="slot-board-card">
+            <div class="slot-board-header">
+              <div class="slot-board-copy">
+                <div class="slot-board-kicker">Realtime Availability</div>
+                <h3>Open Schedules and Remaining Slots</h3>
+                <p>Review live slot availability across all open schedules, then click any date card to sync the booking list below with that schedule.</p>
+              </div>
+
+              <div class="slot-board-controls">
+                <div class="field">
+                  <label for="slotBoardMonth">Month</label>
+                  <select id="slotBoardMonth"></select>
+                </div>
+                <div class="field">
+                  <label for="slotBoardService">Service View</label>
+                  <select id="slotBoardService"></select>
+                </div>
+                <div class="field">
+                  <label>&nbsp;</label>
+                  <button class="btn btn-secondary slot-board-refresh" id="slotBoardRefreshBtn" type="button">Refresh Availability</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="slot-board-summary" id="slotBoardSummary"></div>
+
+            <div class="slot-board-layout">
+              <div id="slotBoardGrid" class="slot-board-grid"></div>
+              <div id="slotBoardDetail" class="slot-board-detail-card"></div>
+            </div>
           </div>
 
           <div class="filters">
@@ -2116,6 +2596,15 @@ let archivePreviewState = {
   archiveCountAfter: 0,
   archiveSheet: "Appointments Archive"
 };
+let slotBoardState = {
+  month: "",
+  service: "",
+  selectedDate: "",
+  monthlyDates: [],
+  detailServices: [],
+  loading: false,
+  detailLoading: false
+};
 let activePersonnelProcessRef = "";
 let activePersonnelProcessSource = "";
 
@@ -2302,6 +2791,45 @@ function formatTime(timeValue) {
   return str;
 }
 
+function getTodayIso() {
+  const now = new Date();
+  const localTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+  return localTime.toISOString().slice(0, 10);
+}
+
+function getMonthValueFromDate(dateStr) {
+  return String(dateStr || "").slice(0, 7);
+}
+
+function formatMonthLabel(monthValue) {
+  if (!/^\d{4}-\d{2}$/.test(String(monthValue || ""))) return monthValue || "—";
+
+  const [year, month] = String(monthValue).split("-").map(Number);
+  const monthDate = new Date(year, month - 1, 1);
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric"
+  }).format(monthDate);
+}
+
+function formatWeekdayLabel(dateStr) {
+  const parsed = new Date(`${dateStr}T00:00:00`);
+  if (isNaN(parsed.getTime())) return "";
+
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short"
+  }).format(parsed);
+}
+
+function formatCompactServiceName(service) {
+  if (service === "National ID Registration") return "Registration";
+  if (service === "Correction/Updating of Demographic Information") return "Correction";
+  if (service === "Request National ID in Paper Format (ePhilID)") return "ePhilID";
+  if (service === "Retrieval of TRN / Other Concern") return "TRN / Concern";
+  return service;
+}
+
 function badgeClass(status) {
   if (status === "Cancelled" || status === "No Show" || status === "Not Successful") return "badge badge-cancelled";
   if (status === "Pending" || status === "Arrived" || status === "Assisted") return "badge badge-pending";
@@ -2335,13 +2863,13 @@ function getPersonnelServiceGuide(service) {
 }
 
 function fillServiceOptions() {
-  const ids = ["quickService", "filterService", "bookingService", "slotService"];
+  const ids = ["quickService", "filterService", "bookingService", "slotService", "slotBoardService"];
 
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
 
-    const includeAll = id === "filterService";
+    const includeAll = id === "filterService" || id === "slotBoardService";
     el.innerHTML = includeAll ? `<option value="">All services</option>` : "";
 
     services.forEach(service => {
@@ -2797,6 +3325,428 @@ function renderWeekendSettings() {
     `Current + ${months - 1} months`;
 }
 
+function isLowAvailability(remaining, max) {
+  const cleanRemaining = Number(remaining || 0);
+  const cleanMax = Math.max(0, Number(max || 0));
+  if (cleanRemaining <= 0) return false;
+  return cleanRemaining <= Math.max(2, Math.ceil(cleanMax * 0.2));
+}
+
+function getSlotBoardMonths() {
+  const today = new Date();
+  const count = Math.max(1, Number(weekendSettings.bookingWindowMonths || 1));
+  const result = [];
+
+  for (let i = 0; i < count; i++) {
+    const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+    result.push(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`);
+  }
+
+  return result;
+}
+
+function syncSlotBoardControls() {
+  const monthSelect = document.getElementById("slotBoardMonth");
+  const serviceSelect = document.getElementById("slotBoardService");
+  const availableMonths = getSlotBoardMonths();
+  const defaultMonth = getTodayIso().slice(0, 7);
+
+  if (monthSelect) {
+    const nextMonth = availableMonths.includes(slotBoardState.month)
+      ? slotBoardState.month
+      : (availableMonths.includes(defaultMonth) ? defaultMonth : (availableMonths[0] || defaultMonth));
+
+    monthSelect.innerHTML = availableMonths.map(monthValue => `
+      <option value="${escapeHtml(monthValue)}">${escapeHtml(formatMonthLabel(monthValue))}</option>
+    `).join("");
+    monthSelect.value = nextMonth;
+    slotBoardState.month = nextMonth;
+  }
+
+  if (serviceSelect) {
+    const nextService = services.includes(slotBoardState.service) ? slotBoardState.service : "";
+    serviceSelect.value = nextService;
+    slotBoardState.service = nextService;
+  }
+}
+
+function getSlotBoardSelectedServices() {
+  return slotBoardState.service ? [slotBoardState.service] : services.slice();
+}
+
+function getSlotBoardEntryClass(entry) {
+  if (!entry.open) return "is-closed";
+  if (Number(entry.remaining || 0) <= 0) return "is-full";
+  if (isLowAvailability(entry.remaining, entry.max)) return "is-low";
+  return "";
+}
+
+function getSlotBoardEntryLabel(entry) {
+  if (!entry.open) return "Closed";
+  if (Number(entry.remaining || 0) <= 0) return "Full";
+  return `${Number(entry.remaining || 0)} left`;
+}
+
+function renderSlotBoard() {
+  const summaryEl = document.getElementById("slotBoardSummary");
+  const gridEl = document.getElementById("slotBoardGrid");
+  const detailEl = document.getElementById("slotBoardDetail");
+
+  if (!summaryEl || !gridEl || !detailEl) return;
+
+  const monthLabel = formatMonthLabel(slotBoardState.month || getTodayIso().slice(0, 7));
+  const activeServices = getSlotBoardSelectedServices();
+  const serviceViewLabel = slotBoardState.service || "All services";
+  const monthlyDates = Array.isArray(slotBoardState.monthlyDates) ? slotBoardState.monthlyDates : [];
+  const selectedEntry = monthlyDates.find(item => item.date === slotBoardState.selectedDate) || null;
+
+  if (slotBoardState.loading && !monthlyDates.length) {
+    summaryEl.innerHTML = `
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Open Schedule Dates</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Loading ${escapeHtml(monthLabel)}.</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Remaining Slots</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Checking live capacity.</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Nearly Full Services</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Preparing availability alerts.</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Selected Date</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Loading schedule detail.</div></div>
+    `;
+
+    gridEl.innerHTML = `<div class="slot-board-empty">Loading live availability for ${escapeHtml(monthLabel)}.</div>`;
+    detailEl.innerHTML = `
+      <div class="slot-board-detail-head">
+        <div>
+          <h4>Schedule Detail</h4>
+          <p>Fetching realtime slot availability.</p>
+        </div>
+        <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+      </div>
+      <div class="slot-board-empty">Please wait while the schedule board refreshes.</div>
+    `;
+    return;
+  }
+
+  const totalRemaining = monthlyDates.reduce((sum, item) => {
+    return sum + item.services
+      .filter(serviceEntry => serviceEntry.open)
+      .reduce((entrySum, serviceEntry) => entrySum + Number(serviceEntry.remaining || 0), 0);
+  }, 0);
+  const nearlyFullCount = monthlyDates.reduce((sum, item) => {
+    return sum + item.services.filter(serviceEntry => serviceEntry.open && isLowAvailability(serviceEntry.remaining, serviceEntry.max)).length;
+  }, 0);
+
+  summaryEl.innerHTML = `
+    <div class="slot-board-stat">
+      <div class="slot-board-stat-label">Open Schedule Dates</div>
+      <div class="slot-board-stat-value">${monthlyDates.length}</div>
+      <div class="slot-board-stat-meta">${escapeHtml(monthLabel)} filtered by ${escapeHtml(serviceViewLabel.toLowerCase())}.</div>
+    </div>
+    <div class="slot-board-stat">
+      <div class="slot-board-stat-label">Remaining Slots</div>
+      <div class="slot-board-stat-value">${totalRemaining}</div>
+      <div class="slot-board-stat-meta">Live capacity still available for booking and assistance.</div>
+    </div>
+    <div class="slot-board-stat">
+      <div class="slot-board-stat-label">Nearly Full Services</div>
+      <div class="slot-board-stat-value">${nearlyFullCount}</div>
+      <div class="slot-board-stat-meta">Service schedules with low remaining capacity.</div>
+    </div>
+    <div class="slot-board-stat">
+      <div class="slot-board-stat-label">Selected Date</div>
+      <div class="slot-board-stat-value">${selectedEntry ? escapeHtml(String(new Date(`${selectedEntry.date}T00:00:00`).getDate())) : "0"}</div>
+      <div class="slot-board-stat-meta">${selectedEntry ? escapeHtml(formatDate(selectedEntry.date)) : "Choose a date card below."}</div>
+    </div>
+  `;
+
+  if (!monthlyDates.length) {
+    gridEl.innerHTML = `<div class="slot-board-empty">No open schedules are available for ${escapeHtml(monthLabel)} in the current service view. Try another month or broaden the service filter.</div>`;
+    detailEl.innerHTML = `
+      <div class="slot-board-detail-head">
+        <div>
+          <h4>No Schedule Selected</h4>
+          <p>Open schedule detail will appear here once an available date is found.</p>
+        </div>
+        <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+      </div>
+      <div class="slot-board-empty">This month currently has no open schedules in the selected view.</div>
+    `;
+    return;
+  }
+
+  gridEl.innerHTML = monthlyDates.map(item => {
+    const visibleServices = item.services.slice(0, slotBoardState.service ? 1 : 3);
+    const overflowCount = Math.max(0, item.services.length - visibleServices.length);
+    const selectedClass = item.date === slotBoardState.selectedDate ? "is-selected" : "";
+
+    return `
+      <button class="slot-board-date-btn ${selectedClass}" type="button" data-slot-board-date="${escapeHtml(item.date)}">
+        <div class="slot-board-date-top">
+          <div class="slot-board-date-label">
+            <strong>${escapeHtml(String(new Date(`${item.date}T00:00:00`).getDate()))}</strong>
+            <span>${escapeHtml(formatWeekdayLabel(item.date))}</span>
+          </div>
+          <div class="slot-board-date-summary">
+            <strong>${item.totalRemaining}</strong>
+            <span>${item.openServiceCount} service${item.openServiceCount === 1 ? "" : "s"} open</span>
+          </div>
+        </div>
+        <div class="slot-board-service-list">
+          ${visibleServices.map(serviceEntry => `
+            <div class="slot-board-service-row ${getSlotBoardEntryClass(serviceEntry)}">
+              <strong>${escapeHtml(formatCompactServiceName(serviceEntry.service))}</strong>
+              <span>${escapeHtml(getSlotBoardEntryLabel(serviceEntry))}</span>
+            </div>
+          `).join("")}
+        </div>
+        ${overflowCount > 0 ? `<div class="slot-board-service-overflow">+${overflowCount} more service schedule${overflowCount === 1 ? "" : "s"}</div>` : ""}
+      </button>
+    `;
+  }).join("");
+
+  if (slotBoardState.detailLoading && selectedEntry) {
+    detailEl.innerHTML = `
+      <div class="slot-board-detail-head">
+        <div>
+          <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
+          <p>Loading the latest per-time-slot capacity for the selected schedule.</p>
+        </div>
+        <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+      </div>
+      <div class="slot-board-empty">Refreshing live slot detail for ${escapeHtml(formatDate(selectedEntry.date))}.</div>
+    `;
+    return;
+  }
+
+  if (!selectedEntry) {
+    detailEl.innerHTML = `
+      <div class="slot-board-detail-head">
+        <div>
+          <h4>Select a Schedule Date</h4>
+          <p>Choose any open date card to view per-service and per-time-slot availability.</p>
+        </div>
+        <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+      </div>
+      <div class="slot-board-empty">Detailed slot availability will appear here after selecting a date.</div>
+    `;
+    return;
+  }
+
+  detailEl.innerHTML = `
+    <div class="slot-board-detail-head">
+      <div>
+        <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
+        <p>Live capacity by service and appointment time. The booking list below is synced to this date for faster client lookup.</p>
+      </div>
+      <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+    </div>
+    <div class="slot-board-detail-list">
+      ${slotBoardState.detailServices.map(serviceEntry => `
+        <div class="slot-board-service-card ${serviceEntry.open ? "" : "is-closed"}">
+          <div class="slot-board-service-card-head">
+            <div>
+              <h5>${escapeHtml(serviceEntry.service)}</h5>
+              <p>
+                ${serviceEntry.open
+                  ? `${Number(serviceEntry.booked || 0)} booked out of ${Number(serviceEntry.max || 0)} total capacity.`
+                  : escapeHtml(serviceEntry.reason || "This schedule is currently closed.")}
+              </p>
+            </div>
+            <div class="slot-board-service-pill">${escapeHtml(getSlotBoardEntryLabel(serviceEntry))}</div>
+          </div>
+          <div class="slot-board-time-grid">
+            ${serviceEntry.items.map(timeItem => {
+              const timeClass = !timeItem.open
+                ? "is-closed"
+                : Number(timeItem.remaining || 0) <= 0
+                  ? "is-full"
+                  : isLowAvailability(timeItem.remaining, timeItem.max)
+                    ? "is-low"
+                    : "";
+              const timeLabel = !timeItem.open
+                ? (timeItem.reason || "Closed")
+                : Number(timeItem.remaining || 0) <= 0
+                  ? "Full"
+                  : `${Number(timeItem.remaining || 0)} remaining`;
+
+              return `
+                <div class="slot-board-time-chip ${timeClass}">
+                  <strong>${escapeHtml(formatTime(timeItem.time))}</strong>
+                  <span>${escapeHtml(timeLabel)}</span>
+                  <small>${escapeHtml(!timeItem.open ? (timeItem.reason || "Booking is closed on this date.") : `Maximum ${Number(timeItem.max || 0)} client${Number(timeItem.max || 0) === 1 ? "" : "s"} in this time slot.`)}</small>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+async function loadSlotBoardDetail(date, options = {}) {
+  const { silent = false, syncBookingFilter = false } = options;
+  if (!date) return;
+
+  const selectedEntry = slotBoardState.monthlyDates.find(item => item.date === date) || null;
+  const activeServices = getSlotBoardSelectedServices();
+
+  slotBoardState.selectedDate = date;
+  slotBoardState.detailLoading = true;
+  renderSlotBoard();
+
+  if (syncBookingFilter) {
+    const filterDateInput = document.getElementById("filterDate");
+    if (filterDateInput) {
+      filterDateInput.value = date;
+      renderBookingsTable();
+    }
+  }
+
+  try {
+    const responses = await Promise.all(activeServices.map(serviceName => apiRequest({
+      action: "slotsForDate",
+      date,
+      service: serviceName
+    })));
+
+    slotBoardState.detailServices = activeServices.map((serviceName, index) => {
+      const response = responses[index];
+      if (response.status === "error") {
+        throw new Error(response.message || `Unable to load slot detail for ${serviceName}.`);
+      }
+
+      const summary = selectedEntry?.services.find(item => item.service === serviceName) || {
+        service: serviceName,
+        booked: 0,
+        max: 0,
+        remaining: 0,
+        open: false,
+        reason: ""
+      };
+
+      return {
+        ...summary,
+        items: Array.isArray(response.items) ? response.items : []
+      };
+    });
+
+    slotBoardState.detailLoading = false;
+    renderSlotBoard();
+  } catch (err) {
+    slotBoardState.detailLoading = false;
+    slotBoardState.detailServices = [];
+    renderSlotBoard();
+
+    if (!silent) {
+      showNotice(err.message || "Unable to load slot detail.", "error");
+    }
+  }
+}
+
+async function loadSlotBoardData(options = {}) {
+  const { silent = false, preserveSelectedDate = true } = options;
+  const monthSelect = document.getElementById("slotBoardMonth");
+  const serviceSelect = document.getElementById("slotBoardService");
+
+  syncSlotBoardControls();
+
+  slotBoardState.month = monthSelect?.value || slotBoardState.month || getTodayIso().slice(0, 7);
+  slotBoardState.service = serviceSelect?.value || "";
+  if (!preserveSelectedDate) {
+    slotBoardState.selectedDate = "";
+  }
+
+  slotBoardState.loading = true;
+  slotBoardState.monthlyDates = [];
+  slotBoardState.detailLoading = false;
+  slotBoardState.detailServices = [];
+  renderSlotBoard();
+
+  try {
+    const activeServices = getSlotBoardSelectedServices();
+    const responses = await Promise.all(activeServices.map(serviceName => apiRequest({
+      action: "monthlySlots",
+      service: serviceName,
+      month: slotBoardState.month
+    })));
+
+    const dateMap = new Map();
+
+    activeServices.forEach((serviceName, index) => {
+      const response = responses[index];
+      if (response.status === "error") {
+        throw new Error(response.message || `Unable to load monthly slots for ${serviceName}.`);
+      }
+
+      const slots = response.slots || {};
+
+      Object.keys(slots).sort().forEach(date => {
+        const raw = slots[date] || {};
+        const booked = Number(raw.booked || 0);
+        const max = Number(raw.max || 0);
+        const remaining = Math.max(0, Number(raw.remaining ?? (max - booked)));
+        const open = raw.open !== false;
+        const reason = String(raw.reason || "");
+
+        if (!dateMap.has(date)) {
+          dateMap.set(date, {
+            date,
+            services: []
+          });
+        }
+
+        dateMap.get(date).services.push({
+          service: serviceName,
+          booked,
+          max,
+          remaining,
+          open,
+          reason
+        });
+      });
+    });
+
+    slotBoardState.monthlyDates = Array.from(dateMap.values())
+      .map(item => {
+        const sortedServices = item.services.slice().sort((a, b) => services.indexOf(a.service) - services.indexOf(b.service));
+        const openServices = sortedServices.filter(serviceEntry => serviceEntry.open);
+
+        return {
+          date: item.date,
+          services: sortedServices,
+          openServiceCount: openServices.length,
+          totalRemaining: openServices.reduce((sum, serviceEntry) => sum + Number(serviceEntry.remaining || 0), 0)
+        };
+      })
+      .filter(item => item.openServiceCount > 0)
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+    slotBoardState.loading = false;
+
+    const todayIso = getTodayIso();
+    const nextSelectedDate = slotBoardState.monthlyDates.some(item => item.date === slotBoardState.selectedDate) && preserveSelectedDate
+      ? slotBoardState.selectedDate
+      : (slotBoardState.monthlyDates.find(item => item.date === todayIso)?.date || slotBoardState.monthlyDates[0]?.date || "");
+
+    slotBoardState.selectedDate = nextSelectedDate;
+    renderSlotBoard();
+
+    if (nextSelectedDate) {
+      await loadSlotBoardDetail(nextSelectedDate, { silent: true, syncBookingFilter: false });
+    } else {
+      slotBoardState.detailLoading = false;
+      slotBoardState.detailServices = [];
+      renderSlotBoard();
+    }
+  } catch (err) {
+    slotBoardState.loading = false;
+    slotBoardState.detailLoading = false;
+    slotBoardState.monthlyDates = [];
+    slotBoardState.detailServices = [];
+    renderSlotBoard();
+
+    if (!silent) {
+      showNotice(err.message || "Unable to load realtime availability.", "error");
+    }
+  }
+}
+
 function formatStatusBreakdown(counts = {}) {
   return Object.entries(counts)
     .filter(([, count]) => Number(count || 0) > 0)
@@ -2808,6 +3758,7 @@ function formatStatusBreakdown(counts = {}) {
 function renderAll() {
   renderMetrics();
   renderRecentBookings(filterQuickSearch());
+  renderSlotBoard();
   renderBookingsTable();
   renderSlotLists();
   renderAvailabilityTable();
@@ -2982,6 +3933,10 @@ function resetAdminState() {
   users = [];
   archiveRecordCount = 0;
   weekendSettings = defaultWeekendSettings();
+  slotBoardState.monthlyDates = [];
+  slotBoardState.detailServices = [];
+  slotBoardState.loading = false;
+  slotBoardState.detailLoading = false;
 }
 
 function rerenderState() {
@@ -3186,9 +4141,12 @@ async function loadAdminData(options = {}) {
     }
 
     setAdminState(data);
+    syncSlotBoardControls();
     rerenderState();
+    await loadSlotBoardData({ silent: true, preserveSelectedDate: true });
   } catch (err) {
     resetAdminState();
+    syncSlotBoardControls();
     rerenderState();
 
     if (!silent) {
@@ -3228,6 +4186,8 @@ async function saveWeekendSetting() {
     };
 
     renderWeekendSettings();
+    syncSlotBoardControls();
+    await loadSlotBoardData({ silent: true, preserveSelectedDate: false });
     showNotice("System settings updated.");
   } catch (err) {
     showNotice(err.message || "Unable to save system settings.", "error");
@@ -3947,6 +4907,14 @@ window.runPersonnelProcessAction = async function(actionId) {
 };
 
 function handleDelegatedActionClick(event) {
+  const slotBoardDateButton = event.target.closest("button[data-slot-board-date]");
+  if (slotBoardDateButton) {
+    loadSlotBoardDetail(slotBoardDateButton.dataset.slotBoardDate, {
+      syncBookingFilter: true
+    });
+    return;
+  }
+
   const rowActionButton = event.target.closest("button[data-row-action]");
   if (rowActionButton) {
     const { rowAction, refCode, slotKey, date, username, sourceSheet } = rowActionButton.dataset;
@@ -4164,7 +5132,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!requireLogin()) return;
 
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = getTodayIso();
 
   renderSidebarProfile();
 
@@ -4213,6 +5181,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   fillServiceOptions();
+  syncSlotBoardControls();
   renderAll();
 
   validateSessionOnLoad()
@@ -4228,6 +5197,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("dashboardDate")?.addEventListener("change", renderMetrics);
+  document.getElementById("slotBoardMonth")?.addEventListener("change", () => {
+    loadSlotBoardData({ silent: false, preserveSelectedDate: false });
+  });
+  document.getElementById("slotBoardService")?.addEventListener("change", () => {
+    loadSlotBoardData({ silent: false, preserveSelectedDate: false });
+  });
+  document.getElementById("slotBoardRefreshBtn")?.addEventListener("click", () => {
+    loadSlotBoardData({ silent: false, preserveSelectedDate: true });
+  });
   document.getElementById("refreshBtn")?.addEventListener("click", () => {
     if (!requireLogin()) return;
     loadAdminData({ silent: false });
