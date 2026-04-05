@@ -4157,6 +4157,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!requireLogin()) return;
 
+  const todayIso = new Date().toISOString().slice(0, 10);
+
   renderSidebarProfile();
 
   if (userRole === "personnel") {
@@ -4184,7 +4186,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (brandTitle) brandTitle.textContent = "Personnel Desk";
     if (brandDesc) brandDesc.textContent = "National ID Appointment System";
     if (document.getElementById("filterScope")) {
-      document.getElementById("filterScope").value = "all";
+      document.getElementById("filterScope").value = "active";
+    }
+    if (document.getElementById("filterDate")) {
+      document.getElementById("filterDate").value = todayIso;
     }
 
     switchSection("bookings");
@@ -4192,12 +4197,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const dashboardDateInput = document.getElementById("dashboardDate");
   if (dashboardDateInput) {
-    dashboardDateInput.value = new Date().toISOString().slice(0, 10);
+    dashboardDateInput.value = todayIso;
   }
 
   const archiveBeforeDateInput = document.getElementById("archiveBeforeDate");
   if (archiveBeforeDateInput) {
-    archiveBeforeDateInput.value = new Date().toISOString().slice(0, 10);
+    archiveBeforeDateInput.value = todayIso;
   }
 
   fillServiceOptions();
@@ -4269,8 +4274,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
     document.getElementById("filterService").value = "";
     document.getElementById("filterStatus").value = "";
-    document.getElementById("filterScope").value = userRole === "personnel" ? "all" : "active";
-    document.getElementById("filterDate").value = "";
+    document.getElementById("filterScope").value = "active";
+    document.getElementById("filterDate").value = userRole === "personnel" ? todayIso : "";
     document.getElementById("filterSearch").value = "";
     renderBookingsTable();
   });
