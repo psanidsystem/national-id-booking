@@ -703,6 +703,17 @@ function showSystemMessageAuto(title, message, callback, delay = 1400) {
   }, delay);
 }
 
+function isLockTimeoutMessage(message) {
+  const text = String(message || "").toLowerCase();
+  const mentionsLock = text.includes("lock") || text.includes("naka-lock");
+  const mentionsTimeout =
+    text.includes("timeout") ||
+    text.includes("timed out") ||
+    text.includes("masyadong matagal");
+
+  return mentionsLock && mentionsTimeout;
+}
+
 function agreePrivacy() {
   closeModal("privacyModal");
   setFormDisabled(false);
@@ -2017,6 +2028,10 @@ window.submitForm = async function() {
     resetConfirmButtons();
 
     if (r.status === "error") {
+      if (isLockTimeoutMessage(r.message)) {
+        return showSystemMessage("Please Try Again", "The system is processing another appointment request. Please try again in a few seconds.");
+      }
+
       return showSystemMessage("Notice", r.message || "System error.");
     }
 
