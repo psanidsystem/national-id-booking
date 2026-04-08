@@ -3674,15 +3674,18 @@ function getSlotBoardMonths() {
   return result;
 }
 
-function syncSlotBoardControls() {
+function syncSlotBoardControls(preferred = {}) {
   const monthSelect = document.getElementById("slotBoardMonth");
   const serviceSelect = document.getElementById("slotBoardService");
   const availableMonths = getSlotBoardMonths();
   const defaultMonth = getTodayIso().slice(0, 7);
 
   if (monthSelect) {
-    const nextMonth = availableMonths.includes(slotBoardState.month)
-      ? slotBoardState.month
+    const requestedMonth = String(
+      preferred.month ?? monthSelect.value ?? slotBoardState.month ?? ""
+    ).trim();
+    const nextMonth = availableMonths.includes(requestedMonth)
+      ? requestedMonth
       : (availableMonths.includes(defaultMonth) ? defaultMonth : (availableMonths[0] || defaultMonth));
 
     monthSelect.innerHTML = availableMonths.map(monthValue => `
@@ -3693,7 +3696,10 @@ function syncSlotBoardControls() {
   }
 
   if (serviceSelect) {
-    const nextService = services.includes(slotBoardState.service) ? slotBoardState.service : "";
+    const requestedService = String(
+      preferred.service ?? serviceSelect.value ?? slotBoardState.service ?? ""
+    ).trim();
+    const nextService = services.includes(requestedService) ? requestedService : "";
     serviceSelect.value = nextService;
     slotBoardState.service = nextService;
   }
@@ -4025,8 +4031,13 @@ async function loadSlotBoardData(options = {}) {
   const { silent = false, preserveSelectedDate = true } = options;
   const monthSelect = document.getElementById("slotBoardMonth");
   const serviceSelect = document.getElementById("slotBoardService");
+  const requestedMonth = monthSelect?.value || slotBoardState.month || getTodayIso().slice(0, 7);
+  const requestedService = serviceSelect?.value || slotBoardState.service || "";
 
-  syncSlotBoardControls();
+  syncSlotBoardControls({
+    month: requestedMonth,
+    service: requestedService
+  });
 
   slotBoardState.month = monthSelect?.value || slotBoardState.month || getTodayIso().slice(0, 7);
   slotBoardState.service = serviceSelect?.value || "";
