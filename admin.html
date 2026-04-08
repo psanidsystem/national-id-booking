@@ -1004,13 +1004,71 @@
 
     .slot-board-card {
       margin-bottom: 18px;
-      padding: 20px;
-      border-radius: 24px;
+      padding: 22px;
+      border-radius: 28px;
       border: 1px solid #d8e7fb;
       background:
-        radial-gradient(circle at top right, rgba(94, 173, 255, 0.18) 0%, rgba(94, 173, 255, 0) 28%),
-        linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
-      box-shadow: 0 18px 36px rgba(30, 90, 168, 0.08);
+        radial-gradient(circle at top right, rgba(94, 173, 255, 0.16) 0%, rgba(94, 173, 255, 0) 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,248,255,0.98) 100%);
+      box-shadow: 0 22px 44px rgba(30, 90, 168, 0.08);
+      backdrop-filter: blur(12px);
+    }
+
+    .slot-board-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding: 24px 26px;
+      border-radius: 28px;
+      border: 1px solid #d8e7fb;
+      background:
+        radial-gradient(circle at top right, rgba(125, 179, 255, 0.18) 0%, rgba(125, 179, 255, 0) 28%),
+        radial-gradient(circle at bottom left, rgba(244, 193, 67, 0.15) 0%, rgba(244, 193, 67, 0) 26%),
+        linear-gradient(135deg, #ffffff 0%, #f4f8ff 60%, #eef5ff 100%);
+      box-shadow: 0 22px 44px rgba(30, 90, 168, 0.1);
+    }
+
+    .slot-board-title {
+      max-width: 760px;
+    }
+
+    .slot-board-title h3 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      color: #103e7d;
+    }
+
+    .slot-board-title p {
+      margin: 0;
+      color: #4f647f;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .slot-board-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .slot-board-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(30, 90, 168, 0.12);
+      background: rgba(255,255,255,0.84);
+      color: #1e5aa8;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .slot-board-header {
@@ -1019,7 +1077,7 @@
       align-items: flex-start;
       gap: 18px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .slot-board-copy {
@@ -1030,10 +1088,10 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
-      padding: 7px 11px;
+      margin-bottom: 12px;
+      padding: 6px 11px;
       border-radius: 999px;
-      background: rgba(30, 90, 168, 0.1);
+      background: rgba(30, 90, 168, 0.08);
       color: #1e5aa8;
       font-size: 11px;
       font-weight: 800;
@@ -1042,18 +1100,18 @@
     }
 
     .slot-board-copy h3 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       color: #103e7d;
-      font-size: 24px;
+      font-size: 26px;
       letter-spacing: -0.03em;
     }
 
     .slot-board-copy p {
       margin: 0;
       color: #53657d;
-      line-height: 1.65;
-      font-size: 14px;
-      max-width: 680px;
+      line-height: 1.6;
+      font-size: 13px;
+      max-width: 520px;
     }
 
     .slot-board-controls {
@@ -1073,14 +1131,14 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     .slot-board-stat {
-      padding: 16px;
-      border-radius: 18px;
+      padding: 17px;
+      border-radius: 20px;
       border: 1px solid rgba(216, 227, 240, 0.95);
-      background: rgba(255,255,255,0.92);
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.98) 100%);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
     }
 
@@ -1094,7 +1152,7 @@
     }
 
     .slot-board-stat-value {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 800;
       line-height: 1;
       color: #103e7d;
@@ -1105,7 +1163,7 @@
     .slot-board-stat-meta {
       color: #5d6e84;
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .slot-board-layout {
@@ -1117,20 +1175,20 @@
 
     .slot-board-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
     }
 
     .slot-board-date-btn {
       width: 100%;
       border: 1px solid #d8e3f0;
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 16px;
       background: rgba(255,255,255,0.94);
       cursor: pointer;
       text-align: left;
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
     }
 
     .slot-board-date-btn:hover {
@@ -1143,6 +1201,16 @@
       border-color: #1e5aa8;
       background: linear-gradient(180deg, #eef5ff 0%, #ffffff 100%);
       box-shadow: 0 18px 34px rgba(30, 90, 168, 0.16);
+    }
+
+    .slot-board-date-btn.is-low {
+      border-color: #f3cf8d;
+      background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%);
+    }
+
+    .slot-board-date-btn.is-full {
+      border-color: #fecaca;
+      background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
     }
 
     .slot-board-date-top {
@@ -1177,7 +1245,7 @@
 
     .slot-board-date-summary strong {
       display: block;
-      font-size: 18px;
+      font-size: 20px;
       color: #103e7d;
       line-height: 1;
       margin-bottom: 6px;
@@ -1195,12 +1263,52 @@
       gap: 8px;
     }
 
+    .slot-board-date-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+      color: #5d6e84;
+      font-size: 12px;
+    }
+
+    .slot-board-date-meta strong {
+      color: #103e7d;
+      font-size: 12px;
+      letter-spacing: 0.01em;
+    }
+
+    .slot-board-date-meter {
+      position: relative;
+      height: 8px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: #e9f0fa;
+      overflow: hidden;
+    }
+
+    .slot-board-date-meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1e5aa8 0%, #6ea8ff 100%);
+    }
+
+    .slot-board-date-btn.is-low .slot-board-date-meter span {
+      background: linear-gradient(90deg, #f59e0b 0%, #f9c45b 100%);
+    }
+
+    .slot-board-date-btn.is-full .slot-board-date-meter span {
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+    }
+
     .slot-board-service-row {
       display: flex;
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      padding: 9px 11px;
+      padding: 10px 12px;
       border-radius: 14px;
       background: #f7fbff;
       color: #234466;
@@ -1254,15 +1362,15 @@
       margin-top: 10px;
       color: #667085;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .slot-board-detail-card {
       padding: 18px;
-      border-radius: 22px;
+      border-radius: 24px;
       border: 1px solid #d8e3f0;
-      background: rgba(255,255,255,0.96);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(249,251,255,0.98) 100%);
+      box-shadow: 0 14px 26px rgba(15, 23, 42, 0.04);
     }
 
     .slot-board-detail-head {
@@ -1310,13 +1418,23 @@
 
     .slot-board-service-card {
       padding: 16px;
-      border-radius: 18px;
+      border-radius: 20px;
       border: 1px solid #dce7f5;
       background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
     }
 
     .slot-board-service-card.is-closed {
       background: linear-gradient(180deg, #fbfcfd 0%, #f5f7fa 100%);
+    }
+
+    .slot-board-service-card.is-low {
+      background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%);
+      border-color: #f8ddb1;
+    }
+
+    .slot-board-service-card.is-full {
+      background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+      border-color: #fecaca;
     }
 
     .slot-board-service-card-head {
@@ -1338,6 +1456,34 @@
       color: #667085;
       font-size: 12px;
       line-height: 1.5;
+    }
+
+    .slot-board-service-meter {
+      position: relative;
+      height: 8px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: #e9f0fa;
+      overflow: hidden;
+    }
+
+    .slot-board-service-meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1e5aa8 0%, #6ea8ff 100%);
+    }
+
+    .slot-board-time-chip.is-low {
+      background: #fffaf0;
+    }
+
+    .slot-board-service-card.is-low .slot-board-service-meter span {
+      background: linear-gradient(90deg, #f59e0b 0%, #facc15 100%);
+    }
+
+    .slot-board-service-card.is-full .slot-board-service-meter span {
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
     }
 
     .slot-board-service-pill {
@@ -1366,11 +1512,17 @@
 
     .slot-board-time-chip {
       padding: 12px;
-      border-radius: 14px;
+      border-radius: 16px;
       border: 1px solid #d8e3f0;
       background: #ffffff;
       display: grid;
       gap: 4px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .slot-board-time-chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(30, 90, 168, 0.08);
     }
 
     .slot-board-time-chip strong {
@@ -1429,7 +1581,7 @@
 
     .slot-board-page {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
+      grid-template-columns: minmax(0, 1fr) 300px;
       gap: 18px;
       align-items: start;
     }
@@ -1469,21 +1621,26 @@
     }
 
     .slot-board-side-card {
-      border-radius: 22px;
+      border-radius: 24px;
     }
 
-    .slot-board-side-list {
+    .slot-board-side-list,
+    .slot-board-side-card .settings-info-list {
       display: grid;
       gap: 12px;
     }
 
+    .slot-board-side-card .settings-info-item,
     .slot-board-side-item {
+      display: grid;
+      gap: 4px;
       padding: 14px 15px;
       border-radius: 16px;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     }
 
+    .slot-board-side-card .settings-info-item strong,
     .slot-board-side-item strong {
       display: block;
       margin-bottom: 5px;
@@ -1491,11 +1648,13 @@
       font-size: 14px;
     }
 
+    .slot-board-side-card .settings-info-item span,
     .slot-board-side-item p {
       margin: 0;
       color: #667085;
       font-size: 13px;
       line-height: 1.6;
+      text-align: left;
     }
 
     .settings-grid {
@@ -1702,12 +1861,17 @@
         grid-template-columns: 1fr;
       }
 
-      .slot-board-hero {
+      .slot-board-topbar {
         padding: 22px 20px;
+        align-items: flex-start;
       }
 
-      .slot-board-hero h3 {
-        font-size: 25px;
+      .slot-board-title h3 {
+        font-size: 26px;
+      }
+
+      .slot-board-badges {
+        justify-content: flex-start;
       }
 
       .slot-board-date-top,
@@ -2104,18 +2268,24 @@
       <section id="slotBoardSection" class="hidden">
         <div class="slot-board-page">
           <div class="slot-board-page-main">
-            <div class="slot-board-hero">
-              <div class="slot-board-kicker">Realtime Availability</div>
-              <h3>Live Schedule Board</h3>
-              <p>Use this dedicated workspace to review open appointment dates, remaining daily capacity, and live per-time-slot availability without crowding the bookings table.</p>
+            <div class="slot-board-topbar">
+              <div class="slot-board-title">
+                <div class="slot-board-kicker">Live availability</div>
+                <h3>Live Schedule Board</h3>
+                <p>Open dates, remaining capacity, and time windows in one clean workspace.</p>
+              </div>
+              <div class="slot-board-badges">
+                <span class="slot-board-badge">Realtime</span>
+                <span class="slot-board-badge">Synced to Bookings</span>
+              </div>
             </div>
 
             <div class="slot-board-card">
               <div class="slot-board-header">
                 <div class="slot-board-copy">
-                  <div class="slot-board-kicker">Open Schedules</div>
-                  <h3>Remaining Slots by Date</h3>
-                  <p>Select a date card to inspect service-level capacity in real time. The Bookings workspace is also synced to the selected date for faster client lookup.</p>
+                  <div class="slot-board-kicker">Schedule</div>
+                  <h3>Open Dates</h3>
+                  <p>Pick a date to inspect services and time windows.</p>
                 </div>
 
                 <div class="slot-board-controls">
@@ -2124,12 +2294,12 @@
                     <select id="slotBoardMonth"></select>
                   </div>
                   <div class="field">
-                    <label for="slotBoardService">Service View</label>
+                    <label for="slotBoardService">Service</label>
                     <select id="slotBoardService"></select>
                   </div>
                   <div class="field">
                     <label>&nbsp;</label>
-                    <button class="btn btn-secondary slot-board-refresh" id="slotBoardRefreshBtn" type="button">Refresh Availability</button>
+                    <button class="btn btn-secondary slot-board-refresh" id="slotBoardRefreshBtn" type="button">Refresh</button>
                   </div>
                 </div>
               </div>
@@ -2146,44 +2316,44 @@
           <div class="slot-board-page-side">
             <div class="card slot-board-side-card">
               <div class="panel-title">
-                <h3>Focus Snapshot</h3>
+                <h3>Current View</h3>
               </div>
               <div class="settings-info-list">
                 <div class="settings-info-item">
                   <strong>Month</strong>
-                  <span id="slotBoardFocusMonth">—</span>
+                  <span id="slotBoardFocusMonth">--</span>
                 </div>
                 <div class="settings-info-item">
-                  <strong>Service View</strong>
+                  <strong>Service</strong>
                   <span id="slotBoardFocusService">All services</span>
                 </div>
                 <div class="settings-info-item">
-                  <strong>Selected Date</strong>
-                  <span id="slotBoardFocusDate">Choose a date</span>
+                  <strong>Focus Date</strong>
+                  <span id="slotBoardFocusDate">No date selected</span>
                 </div>
                 <div class="settings-info-item">
-                  <strong>Remaining Capacity</strong>
-                  <span id="slotBoardFocusRemaining">—</span>
+                  <strong>Free Slots</strong>
+                  <span id="slotBoardFocusRemaining">--</span>
                 </div>
               </div>
             </div>
 
             <div class="card slot-board-side-card">
               <div class="panel-title">
-                <h3>How To Use</h3>
+                <h3>Status Guide</h3>
               </div>
               <div class="slot-board-side-list">
                 <div class="slot-board-side-item">
-                  <strong>Check open dates first</strong>
-                  <p>Each date card summarizes the remaining daily capacity still available for service across the selected month.</p>
+                  <strong>Open</strong>
+                  <p>Healthy remaining capacity.</p>
                 </div>
                 <div class="slot-board-side-item">
-                  <strong>Inspect time-slot detail</strong>
-                  <p>Select a date to reveal the live per-time-slot breakdown on the right side of the board.</p>
+                  <strong>Low</strong>
+                  <p>Slots are running down.</p>
                 </div>
                 <div class="slot-board-side-item">
-                  <strong>Continue to Bookings</strong>
-                  <p>When you click a date card, the Bookings page filter is prepared with that date so staff can continue assisting clients quickly.</p>
+                  <strong>Full or closed</strong>
+                  <p>No available capacity.</p>
                 </div>
               </div>
             </div>
@@ -2836,7 +3006,7 @@ const personnelServiceGuides = {
 
 const sectionMap = {
   dashboard: ["dashboardSection", "Dashboard Overview", "Review appointments, update records, and manage available slots."],
-  liveSlots: ["slotBoardSection", "Live Slot Availability", "Track open schedules and remaining capacity in a dedicated realtime workspace."],
+  liveSlots: ["slotBoardSection", "Live Schedule Board", "Open dates, remaining capacity, and time windows in one clean view."],
   bookings: ["bookingsSection", "Booking Management", "Check in clients, guide the service flow, and record the final result from one process modal."],
   slots: ["slotsSection", "Slot Management", "Adjust custom daily slot capacity for specific services and appointment dates."],
   availability: ["availabilitySection", "Availability Management", "Open, close, or override booking availability for selected service dates."],
@@ -3553,6 +3723,19 @@ function getSlotBoardEntryLabel(entry) {
   return `${Number(entry.remaining || 0)} left`;
 }
 
+function getCapacityPercent(booked, max) {
+  const cleanMax = Math.max(0, Number(max || 0));
+  if (!cleanMax) return 0;
+  const cleanBooked = Math.max(0, Number(booked || 0));
+  return Math.max(0, Math.min(100, Math.round((cleanBooked / cleanMax) * 100)));
+}
+
+function getSlotBoardDateClass(entry) {
+  if (Number(entry.totalRemaining || 0) <= 0) return "is-full";
+  if (isLowAvailability(entry.totalRemaining, entry.totalMax)) return "is-low";
+  return "";
+}
+
 function renderSlotBoard() {
   const summaryEl = document.getElementById("slotBoardSummary");
   const gridEl = document.getElementById("slotBoardGrid");
@@ -3571,31 +3754,31 @@ function renderSlotBoard() {
 
   if (focusMonthEl) focusMonthEl.textContent = monthLabel;
   if (focusServiceEl) focusServiceEl.textContent = serviceViewLabel;
-  if (focusDateEl) focusDateEl.textContent = selectedEntry ? formatDate(selectedEntry.date) : "Choose a date";
+  if (focusDateEl) focusDateEl.textContent = selectedEntry ? formatDate(selectedEntry.date) : "No date selected";
   if (focusRemainingEl) {
     focusRemainingEl.textContent = selectedEntry
-      ? `${selectedEntry.totalRemaining} slot${selectedEntry.totalRemaining === 1 ? "" : "s"}`
-      : "Waiting for selection";
+      ? `${selectedEntry.totalRemaining} free`
+      : "--";
   }
 
   if (slotBoardState.loading && !monthlyDates.length) {
     summaryEl.innerHTML = `
-      <div class="slot-board-stat"><div class="slot-board-stat-label">Open Schedule Dates</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Loading ${escapeHtml(monthLabel)}.</div></div>
-      <div class="slot-board-stat"><div class="slot-board-stat-label">Remaining Slots</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Checking live capacity.</div></div>
-      <div class="slot-board-stat"><div class="slot-board-stat-label">Nearly Full Services</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Preparing availability alerts.</div></div>
-      <div class="slot-board-stat"><div class="slot-board-stat-label">Selected Date</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Loading schedule detail.</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Open Dates</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">${escapeHtml(monthLabel)}</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Open Slots</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Checking capacity</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Watchlist</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Scanning low-capacity services</div></div>
+      <div class="slot-board-stat"><div class="slot-board-stat-label">Focus</div><div class="slot-board-stat-value">...</div><div class="slot-board-stat-meta">Preparing detail</div></div>
     `;
 
-    gridEl.innerHTML = `<div class="slot-board-empty">Loading live availability for ${escapeHtml(monthLabel)}.</div>`;
+    gridEl.innerHTML = `<div class="slot-board-empty">Loading availability for ${escapeHtml(monthLabel)}.</div>`;
     detailEl.innerHTML = `
       <div class="slot-board-detail-head">
         <div>
           <h4>Schedule Detail</h4>
-          <p>Fetching realtime slot availability.</p>
+          <p>Fetching live slot data.</p>
         </div>
         <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
       </div>
-      <div class="slot-board-empty">Please wait while the schedule board refreshes.</div>
+      <div class="slot-board-empty">Refreshing the board.</div>
     `;
     return;
   }
@@ -3611,38 +3794,38 @@ function renderSlotBoard() {
 
   summaryEl.innerHTML = `
     <div class="slot-board-stat">
-      <div class="slot-board-stat-label">Open Schedule Dates</div>
+      <div class="slot-board-stat-label">Open Dates</div>
       <div class="slot-board-stat-value">${monthlyDates.length}</div>
-      <div class="slot-board-stat-meta">${escapeHtml(monthLabel)} filtered by ${escapeHtml(serviceViewLabel.toLowerCase())}.</div>
+      <div class="slot-board-stat-meta">${escapeHtml(monthLabel)} | ${escapeHtml(serviceViewLabel)}</div>
     </div>
     <div class="slot-board-stat">
-      <div class="slot-board-stat-label">Remaining Slots</div>
+      <div class="slot-board-stat-label">Open Slots</div>
       <div class="slot-board-stat-value">${totalRemaining}</div>
-      <div class="slot-board-stat-meta">Live capacity still available for booking and assistance.</div>
+      <div class="slot-board-stat-meta">Remaining booking capacity</div>
     </div>
     <div class="slot-board-stat">
-      <div class="slot-board-stat-label">Nearly Full Services</div>
+      <div class="slot-board-stat-label">Watchlist</div>
       <div class="slot-board-stat-value">${nearlyFullCount}</div>
-      <div class="slot-board-stat-meta">Service schedules with low remaining capacity.</div>
+      <div class="slot-board-stat-meta">Low-capacity service schedules</div>
     </div>
     <div class="slot-board-stat">
-      <div class="slot-board-stat-label">Selected Date</div>
-      <div class="slot-board-stat-value">${selectedEntry ? escapeHtml(String(new Date(`${selectedEntry.date}T00:00:00`).getDate())) : "0"}</div>
-      <div class="slot-board-stat-meta">${selectedEntry ? escapeHtml(formatDate(selectedEntry.date)) : "Choose a date card below."}</div>
+      <div class="slot-board-stat-label">Focus</div>
+      <div class="slot-board-stat-value">${selectedEntry ? selectedEntry.totalRemaining : "--"}</div>
+      <div class="slot-board-stat-meta">${selectedEntry ? `${escapeHtml(formatDate(selectedEntry.date))} | free slots` : "Select a date card"}</div>
     </div>
   `;
 
   if (!monthlyDates.length) {
-    gridEl.innerHTML = `<div class="slot-board-empty">No open schedules are available for ${escapeHtml(monthLabel)} in the current service view. Try another month or broaden the service filter.</div>`;
+    gridEl.innerHTML = `<div class="slot-board-empty">No open dates found for ${escapeHtml(monthLabel)} in this view.</div>`;
     detailEl.innerHTML = `
       <div class="slot-board-detail-head">
         <div>
-          <h4>No Schedule Selected</h4>
-          <p>Open schedule detail will appear here once an available date is found.</p>
+          <h4>No Open Dates</h4>
+          <p>Change the month or broaden the service filter.</p>
         </div>
         <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
       </div>
-      <div class="slot-board-empty">This month currently has no open schedules in the selected view.</div>
+      <div class="slot-board-empty">This view has no open schedule detail yet.</div>
     `;
     return;
   }
@@ -3651,9 +3834,14 @@ function renderSlotBoard() {
     const visibleServices = item.services.slice(0, slotBoardState.service ? 1 : 3);
     const overflowCount = Math.max(0, item.services.length - visibleServices.length);
     const selectedClass = item.date === slotBoardState.selectedDate ? "is-selected" : "";
+    const dateStateClass = getSlotBoardDateClass(item);
+    const utilizationPercent = getCapacityPercent(item.totalBooked, item.totalMax);
+    const focusMeta = item.totalRemaining <= 0
+      ? "No free slots"
+      : `${item.totalRemaining} free`;
 
     return `
-      <button class="slot-board-date-btn ${selectedClass}" type="button" data-slot-board-date="${escapeHtml(item.date)}">
+      <button class="slot-board-date-btn ${selectedClass} ${dateStateClass}" type="button" data-slot-board-date="${escapeHtml(item.date)}">
         <div class="slot-board-date-top">
           <div class="slot-board-date-label">
             <strong>${escapeHtml(String(new Date(`${item.date}T00:00:00`).getDate()))}</strong>
@@ -3661,8 +3849,15 @@ function renderSlotBoard() {
           </div>
           <div class="slot-board-date-summary">
             <strong>${item.totalRemaining}</strong>
-            <span>${item.openServiceCount} service${item.openServiceCount === 1 ? "" : "s"} open</span>
+            <span>${item.openServiceCount} open</span>
           </div>
+        </div>
+        <div class="slot-board-date-meta">
+          <strong>${escapeHtml(focusMeta)}</strong>
+          <span>${utilizationPercent}% used</span>
+        </div>
+        <div class="slot-board-date-meter">
+          <span style="width:${utilizationPercent}%;"></span>
         </div>
         <div class="slot-board-service-list">
           ${visibleServices.map(serviceEntry => `
@@ -3672,7 +3867,7 @@ function renderSlotBoard() {
             </div>
           `).join("")}
         </div>
-        ${overflowCount > 0 ? `<div class="slot-board-service-overflow">+${overflowCount} more service schedule${overflowCount === 1 ? "" : "s"}</div>` : ""}
+        ${overflowCount > 0 ? `<div class="slot-board-service-overflow">+${overflowCount} more</div>` : ""}
       </button>
     `;
   }).join("");
@@ -3682,11 +3877,11 @@ function renderSlotBoard() {
       <div class="slot-board-detail-head">
         <div>
           <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
-          <p>Loading the latest per-time-slot capacity for the selected schedule.</p>
+          <p>Refreshing service and time-window detail.</p>
         </div>
         <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
       </div>
-      <div class="slot-board-empty">Refreshing live slot detail for ${escapeHtml(formatDate(selectedEntry.date))}.</div>
+      <div class="slot-board-empty">Refreshing detail for ${escapeHtml(formatDate(selectedEntry.date))}.</div>
     `;
     return;
   }
@@ -3695,12 +3890,26 @@ function renderSlotBoard() {
     detailEl.innerHTML = `
       <div class="slot-board-detail-head">
         <div>
-          <h4>Select a Schedule Date</h4>
-          <p>Choose any open date card to view per-service and per-time-slot availability.</p>
+          <h4>Select a Date</h4>
+          <p>Choose a card to open service and time detail.</p>
         </div>
         <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
       </div>
-      <div class="slot-board-empty">Detailed slot availability will appear here after selecting a date.</div>
+      <div class="slot-board-empty">Detailed availability appears here after selection.</div>
+    `;
+    return;
+  }
+
+  if (!slotBoardState.detailServices.length) {
+    detailEl.innerHTML = `
+      <div class="slot-board-detail-head">
+        <div>
+          <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
+          <p>Detail is not available yet for this date.</p>
+        </div>
+        <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
+      </div>
+      <div class="slot-board-empty">Refresh the board or select another date.</div>
     `;
     return;
   }
@@ -3709,24 +3918,29 @@ function renderSlotBoard() {
     <div class="slot-board-detail-head">
       <div>
         <h4>${escapeHtml(formatDate(selectedEntry.date))}</h4>
-        <p>Live capacity by service and appointment time. The Bookings workspace is synced to this date for faster client lookup.</p>
+        <p>Live service capacity and one-hour time windows.</p>
       </div>
       <div class="slot-board-detail-badge">${escapeHtml(serviceViewLabel)}</div>
     </div>
     <div class="slot-board-detail-list">
       ${slotBoardState.detailServices.map(serviceEntry => `
-        <div class="slot-board-service-card ${serviceEntry.open ? "" : "is-closed"}">
+        <div class="slot-board-service-card ${getSlotBoardEntryClass(serviceEntry)}">
           <div class="slot-board-service-card-head">
             <div>
               <h5>${escapeHtml(serviceEntry.service)}</h5>
               <p>
                 ${serviceEntry.open
-                  ? `${Number(serviceEntry.booked || 0)} booked out of ${Number(serviceEntry.max || 0)} total capacity.`
-                  : escapeHtml(serviceEntry.reason || "This schedule is currently closed.")}
+                  ? `${Number(serviceEntry.remaining || 0)} free of ${Number(serviceEntry.max || 0)} total`
+                  : escapeHtml(serviceEntry.reason || "Closed for this date.")}
               </p>
             </div>
             <div class="slot-board-service-pill">${escapeHtml(getSlotBoardEntryLabel(serviceEntry))}</div>
           </div>
+          ${serviceEntry.open ? `
+            <div class="slot-board-service-meter">
+              <span style="width:${getCapacityPercent(serviceEntry.booked, serviceEntry.max)}%;"></span>
+            </div>
+          ` : ""}
           <div class="slot-board-time-grid">
             ${serviceEntry.items.map(timeItem => {
               const timeClass = !timeItem.open
@@ -3740,13 +3954,13 @@ function renderSlotBoard() {
                 ? (timeItem.reason || "Closed")
                 : Number(timeItem.remaining || 0) <= 0
                   ? "Full"
-                  : `${Number(timeItem.remaining || 0)} remaining`;
+                  : `${Number(timeItem.remaining || 0)} free`;
 
               return `
                 <div class="slot-board-time-chip ${timeClass}">
                   <strong>${escapeHtml(formatTime(timeItem.time))}</strong>
                   <span>${escapeHtml(timeLabel)}</span>
-                  <small>${escapeHtml(!timeItem.open ? (timeItem.reason || "Booking is closed on this date.") : `Maximum ${Number(timeItem.max || 0)} client${Number(timeItem.max || 0) === 1 ? "" : "s"} in this time slot.`)}</small>
+                  <small>${escapeHtml(!timeItem.open ? (timeItem.reason || "Closed for this date.") : `${Number(timeItem.max || 0)} max`)}</small>
                 </div>
               `;
             }).join("")}
@@ -3884,11 +4098,15 @@ async function loadSlotBoardData(options = {}) {
       .map(item => {
         const sortedServices = item.services.slice().sort((a, b) => services.indexOf(a.service) - services.indexOf(b.service));
         const openServices = sortedServices.filter(serviceEntry => serviceEntry.open);
+        const totalBooked = openServices.reduce((sum, serviceEntry) => sum + Number(serviceEntry.booked || 0), 0);
+        const totalMax = openServices.reduce((sum, serviceEntry) => sum + Number(serviceEntry.max || 0), 0);
 
         return {
           date: item.date,
           services: sortedServices,
           openServiceCount: openServices.length,
+          totalBooked: totalBooked,
+          totalMax: totalMax,
           totalRemaining: openServices.reduce((sum, serviceEntry) => sum + Number(serviceEntry.remaining || 0), 0)
         };
       })
