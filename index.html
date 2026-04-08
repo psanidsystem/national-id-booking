@@ -844,6 +844,147 @@ function setCalendarLoadingHint(isLoading, message = "Loading schedule...") {
   el.style.display = isLoading ? "inline-flex" : "none";
 }
 
+function isAutoSelectableDate(
+  dateStr,
+  service,
+  monthSlots = monthlyBooked,
+  settings = systemSettings,
+  windowEndDate = bookingWindowEndDate
+) {
+  if (!dateStr || !service) return false;
+
+  const parts = String(dateStr).split("-");
+  if (parts.length !== 3) return false;
+
+  const year = Number(parts[0]);
+  const monthIndex = Number(parts[1]) - 1;
+  const day = Number(parts[2]);
+  const dateObj = new Date(year, monthIndex, day);
+
+  if (Number.isNaN(dateObj.getTime())) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (dateObj < today) return false;
+  if (windowEndDate && dateStr > windowEndDate) return false;
+
+  const dayOfWeek = dateObj.getDay();
+  if (dayOfWeek === 6 && !settings.saturdayOpen) return false;
+  if (dayOfWeek === 0 && !settings.sundayOpen) return false;
+
+  const dayData = monthSlots[dateStr] || null;
+  let booked = 0;
+  let max = Number(DEFAULT_SLOTS[service] || 0);
+  let open = true;
+
+  if (dayData) {
+    booked = Number(dayData.booked || 0);
+    max = Number(dayData.max || 0);
+    open = dayData.open !== false;
+  }
+
+  return open && max > 0 && (max - booked) > 0;
+}
+
+function findFirstAvailableDateInMonth(
+  service,
+  year,
+  monthIndexZeroBased,
+  monthSlots = monthlyBooked,
+  settings = systemSettings,
+  windowEndDate = bookingWindowEndDate
+) {
+  if (!service) return "";
+
+  const lastDay = new Date(year, monthIndexZeroBased + 1, 0).getDate();
+
+  for (let day = 1; day <= lastDay; day++) {
+    const dateStr = `${year}-${String(monthIndexZeroBased + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    if (isAutoSelectableDate(dateStr, service, monthSlots, settings, windowEndDate)) {
+      return dateStr;
+    }
+  }
+
+  return "";
+}
+
+async function loadMonthlySlotData(service, year, monthIndexZeroBased) {
+  const monthKey = normalizeMonthString(year, monthIndexZeroBased);
+  const cacheKey = `${service}__${monthKey}`;
+
+  if (monthlySlotCache[cacheKey]) {
+    return monthlySlotCache[cacheKey];
+  }
+
+  const res = await postJson({
+    action: "monthlySlots",
+    service,
+    month: monthKey
+  });
+  const data = await res.json();
+
+  if (data.status === "error") {
+    throw new Error(data.message || `Unable to load slots for ${monthKey}.`);
+  }
+
+  monthlySlotCache[cacheKey] = data;
+  return data;
+}
+
+async function autoLoadFirstAvailableSchedule(instance, requestId = null) {
+  const service = document.getElementById("service")?.value || "";
+  const currentDate = document.getElementById("date")?.value || "";
+
+  if (!instance || !service || currentDate) return false;
+
+  const monthsToCheck = Math.max(1, Number(systemSettings.bookingWindowMonths || 1));
+
+  for (let offset = 0; offset < monthsToCheck; offset++) {
+    if (requestId !== null && requestId !== activeCalendarRequestId) return false;
+
+    const monthDate = new Date(instance.currentYear, instance.currentMonth + offset, 1);
+    const probeYear = monthDate.getFullYear();
+    const probeMonth = monthDate.getMonth();
+
+    const monthData = offset === 0
+      ? {
+          slots: monthlyBooked,
+          systemSettings,
+          bookingWindowEndDate
+        }
+      : await loadMonthlySlotData(service, probeYear, probeMonth);
+
+    const probeSlots = monthData.slots || {};
+    const probeSettings = monthData.systemSettings || systemSettings;
+    const probeBookingWindowEndDate = monthData.bookingWindowEndDate || bookingWindowEndDate;
+
+    const firstAvailableDate = findFirstAvailableDateInMonth(
+      service,
+      probeYear,
+      probeMonth,
+      probeSlots,
+      probeSettings,
+      probeBookingWindowEndDate
+    );
+
+    if (!firstAvailableDate) continue;
+
+    if (requestId !== null && requestId !== activeCalendarRequestId) return false;
+
+    monthlyBooked = probeSlots;
+    systemSettings = probeSettings;
+    bookingWindowEndDate = probeBookingWindowEndDate;
+    updateWeekendNotice();
+    updateBookingWindowBadge();
+
+    instance.setDate(firstAvailableDate, true);
+    return true;
+  }
+
+  return false;
+}
+
 function getServiceGuide(service) {
   const guides = {
     "National ID Registration": {
@@ -2119,7 +2260,7 @@ window.submitForm = async function() {
 
 /* ================= MONTHLY CALENDAR DATA ================= */
 
-function fetchMonthlyData(instance, options = {}) {
+async function fetchMonthlyData(instance, options = {}) {
   const service = document.getElementById("service").value;
   const keepOpen = !!options.keepOpen;
   const wasOpen = !!(instance && instance.isOpen);
@@ -2153,20 +2294,44 @@ function fetchMonthlyData(instance, options = {}) {
   const calendarEl = instance && instance.calendarContainer ? instance.calendarContainer : null;
   if (calendarEl) calendarEl.classList.add("calendar-loading");
 
-  if (monthlySlotCache[cacheKey]) {
-    const cached = monthlySlotCache[cacheKey];
+  try {
+    let data = monthlySlotCache[cacheKey];
 
-    monthlyBooked = cached.slots || {};
-    systemSettings = cached.systemSettings || systemSettings;
-    bookingWindowEndDate = cached.bookingWindowEndDate || bookingWindowEndDate;
+    if (!data) {
+      const res = await postJson({
+        action: "monthlySlots",
+        service,
+        month: currentMonth
+      });
+      data = await res.json();
+
+      if (requestId !== activeCalendarRequestId) return;
+
+      if (data.status === "error") {
+        throw new Error(data.message || "Unable to load monthly slots.");
+      }
+
+      monthlySlotCache[cacheKey] = data;
+    }
+
+    monthlyBooked = data.slots || {};
+    systemSettings = data.systemSettings || systemSettings;
+    bookingWindowEndDate = data.bookingWindowEndDate || bookingWindowEndDate;
 
     updateWeekendNotice();
     updateBookingWindowBadge();
     instance.redraw();
 
     setDateInputDisabled(false);
-    setTimeInputDisabled(!document.getElementById("date").value);
-    setAvailabilityInfo("");
+    const didAutoLoadSchedule = await autoLoadFirstAvailableSchedule(instance, requestId);
+
+    if (requestId !== activeCalendarRequestId) return;
+
+    if (!didAutoLoadSchedule) {
+      setTimeInputDisabled(!document.getElementById("date").value);
+      setAvailabilityInfo("");
+    }
+
     if (calendarEl) calendarEl.classList.remove("calendar-loading");
     setCalendarLoadingHint(false);
     if (keepOpen || wasOpen) {
@@ -2175,65 +2340,28 @@ function fetchMonthlyData(instance, options = {}) {
       });
     }
     updateStepState();
-    return;
+  } catch (err) {
+    if (requestId !== activeCalendarRequestId) return;
+
+    console.error("Monthly fetch error:", err);
+    updateWeekendNotice();
+    updateBookingWindowBadge();
+    instance.redraw();
+
+    setDateInputDisabled(false);
+    setTimeInputDisabled(true);
+    setApplicantFieldsDisabled(true);
+    renderTimeGrid([]);
+    setAvailabilityInfo("Unable to load available dates. Please try again.", "#b42318");
+    if (calendarEl) calendarEl.classList.remove("calendar-loading");
+    setCalendarLoadingHint(false);
+    if (keepOpen || wasOpen) {
+      requestAnimationFrame(() => {
+        try { instance.open(); } catch (e) {}
+      });
+    }
+    updateStepState();
   }
-
-  postJson({
-    action: "monthlySlots",
-    service: service,
-    month: currentMonth
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (requestId !== activeCalendarRequestId) return;
-
-      if (data.status === "error") {
-        throw new Error(data.message || "Unable to load monthly slots.");
-      }
-
-      monthlySlotCache[cacheKey] = data;
-      monthlyBooked = data.slots || {};
-      systemSettings = data.systemSettings || systemSettings;
-      bookingWindowEndDate = data.bookingWindowEndDate || bookingWindowEndDate;
-
-      updateWeekendNotice();
-      updateBookingWindowBadge();
-      instance.redraw();
-
-      setDateInputDisabled(false);
-      setTimeInputDisabled(!document.getElementById("date").value);
-      setAvailabilityInfo("");
-      if (calendarEl) calendarEl.classList.remove("calendar-loading");
-      setCalendarLoadingHint(false);
-      if (keepOpen || wasOpen) {
-        requestAnimationFrame(() => {
-          try { instance.open(); } catch (e) {}
-        });
-      }
-      updateStepState();
-    })
-    .catch(err => {
-      if (requestId !== activeCalendarRequestId) return;
-
-      console.error("Monthly fetch error:", err);
-      updateWeekendNotice();
-      updateBookingWindowBadge();
-      instance.redraw();
-
-      setDateInputDisabled(false);
-      setTimeInputDisabled(true);
-      setApplicantFieldsDisabled(true);
-      renderTimeGrid([]);
-      setAvailabilityInfo("Unable to load available dates. Please try again.", "#b42318");
-      if (calendarEl) calendarEl.classList.remove("calendar-loading");
-      setCalendarLoadingHint(false);
-      if (keepOpen || wasOpen) {
-        requestAnimationFrame(() => {
-          try { instance.open(); } catch (e) {}
-        });
-      }
-      updateStepState();
-    });
 }
 
 /* ================= DOM READY ================= */
