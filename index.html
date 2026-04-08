@@ -78,36 +78,31 @@
       <div class="form-section step-section" data-step="2" data-step-label="Step 2 · Schedule">
         <h3 class="section-title">Schedule</h3>
 
-        <div class="two-col">
-          <div>
+        <div class="two-col schedule-grid">
+          <div class="schedule-input-card schedule-date-card">
             <label for="date">Preferred Date <span class="req">*</span></label>
             <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
             <div id="selectedDateBadge" class="selected-date-badge" style="display:none;"></div>
-            <div class="calendar-note">Only available dates can be selected. Choose the exact time below.</div>
-            <div id="calendarLoadingHint" class="calendar-loading-hint" style="display:none;">Loading calendar availability...</div>
+            <div class="calendar-note">Only available dates can be selected. Once you choose a date, the one-hour appointment windows will appear below.</div>
+            <div id="calendarLoadingHint" class="calendar-loading-hint" style="display:none;">Loading appointment availability...</div>
           </div>
 
-          <div>
+          <div class="schedule-input-card schedule-time-card">
             <label for="time">Preferred Time <span class="req">*</span></label>
             <select id="time" required>
               <option value="">-- Select Time --</option>
-              <option>8:00 AM</option>
-              <option>9:00 AM</option>
-              <option>10:00 AM</option>
-              <option>11:00 AM</option>
-              <option>1:00 PM</option>
-              <option>2:00 PM</option>
-              <option>3:00 PM</option>
-              <option>4:00 PM</option>
             </select>
+            <div id="selectedTimeBadge" class="selected-date-badge selected-time-badge" style="display:none;"></div>
+            <div class="calendar-note time-select-note">Each option below covers one appointment window without changing the total daily capacity.</div>
           </div>
         </div>
-<div class="service-info">
+
+        <div class="service-info schedule-service-info">
           <small id="serviceInfoText"></small>
         </div>
 
         <div class="time-grid" id="timeGrid"></div>
-        <p class="soft-note schedule-tip">Select a time below.</p>
+        <p class="soft-note schedule-tip">Choose a one-hour appointment window below.</p>
       </div>
 
       <div class="form-section step-section" data-step="3" data-step-label="Step 3 · Applicant Details">
@@ -722,6 +717,56 @@ function normalizeMonthString(year, monthIndexZeroBased) {
   return year + "-" + String(monthIndexZeroBased + 1).padStart(2, "0");
 }
 
+function formatCalendarMonthLabel(year, monthIndexZeroBased) {
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  return `${monthNames[monthIndexZeroBased]} ${year}`;
+}
+
+function parseTimeLabelToMinutes(timeLabel) {
+  const match = String(timeLabel || "").trim().match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+  if (!match) return NaN;
+
+  let hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const meridian = match[3].toUpperCase();
+
+  if (meridian === "AM" && hour === 12) hour = 0;
+  if (meridian === "PM" && hour !== 12) hour += 12;
+
+  return (hour * 60) + minute;
+}
+
+function formatCompactClockLabel(totalMinutes) {
+  const safeMinutes = Number(totalMinutes);
+  if (!Number.isFinite(safeMinutes)) return "";
+
+  let hour24 = Math.floor(safeMinutes / 60) % 24;
+  const minute = safeMinutes % 60;
+  const meridian = hour24 >= 12 ? "PM" : "AM";
+
+  if (hour24 === 0) hour24 = 12;
+  else if (hour24 > 12) hour24 -= 12;
+
+  if (minute === 0) return `${hour24}${meridian}`;
+  return `${hour24}:${String(minute).padStart(2, "0")}${meridian}`;
+}
+
+function formatTimeRangeLabel(timeLabel) {
+  const startMinutes = parseTimeLabelToMinutes(timeLabel);
+  if (!Number.isFinite(startMinutes)) return timeLabel || "Not selected";
+
+  return `${formatCompactClockLabel(startMinutes)}-${formatCompactClockLabel(startMinutes + 60)}`;
+}
+
+function formatAvailableSlotText(remaining) {
+  const count = Math.max(0, Number(remaining || 0));
+  return `${count} slot${count === 1 ? "" : "s"} available`;
+}
+
 function updateWeekendNotice() {
   const el = document.getElementById("weekendNotice");
   if (!el) return;
@@ -764,7 +809,23 @@ function updateSelectedDateBadge() {
   badge.innerHTML = `<span class="badge-dot"></span><span>Selected: ${formatPrettyDate(rawDate)}</span>`;
 }
 
-function setCalendarLoadingHint(isLoading, message = "Loading calendar availability...") {
+function updateSelectedTimeBadge() {
+  const badge = document.getElementById("selectedTimeBadge");
+  const rawTime = document.getElementById("time")?.value || "";
+
+  if (!badge) return;
+
+  if (!rawTime) {
+    badge.style.display = "none";
+    badge.innerHTML = "";
+    return;
+  }
+
+  badge.style.display = "inline-flex";
+  badge.innerHTML = `<span class="badge-dot"></span><span>Window: ${formatTimeRangeLabel(rawTime)}</span>`;
+}
+
+function setCalendarLoadingHint(isLoading, message = "Loading appointment availability...") {
   const el = document.getElementById("calendarLoadingHint");
   if (!el) return;
   el.textContent = message;
@@ -944,11 +1005,11 @@ function renderTimeGrid(items = [], loading = false) {
 
   if (loading) {
     grid.innerHTML = `
-      <div class="loading-panel" aria-live="polite">
+      <div class="loading-panel schedule-loading-panel" aria-live="polite">
         <span class="formal-spinner dark"></span>
         <div>
-          <strong>Loading available time slots</strong>
-          <small>Please wait while the schedule is being prepared.</small>
+          <strong>Loading appointment windows</strong>
+          <small>Please wait while we prepare the available one-hour schedules for your selected date.</small>
         </div>
       </div>
     `;
@@ -996,8 +1057,8 @@ function renderTimeGrid(items = [], loading = false) {
         class="time-chip available ${selected === normalizedTime ? "selected" : ""}"
         data-time="${normalizedTime}"
         onclick="selectTimeSlot('${normalizedTime.replace(/'/g, "\'")}')">
-        <strong>${normalizedTime}</strong>
-        <small>${remaining} slot${remaining > 1 ? "s" : ""} available</small>
+        <strong>${formatTimeRangeLabel(normalizedTime)}</strong>
+        <small>${formatAvailableSlotText(remaining)}</small>
       </button>
     `;
   }).join("");
@@ -1014,12 +1075,13 @@ function populateTimeSelect(items = []) {
     const option = document.createElement("option");
     option.value = item.time;
     const remaining = Number(item.remaining ?? 0);
-    option.textContent = `${item.time} — ${remaining} slot${remaining > 1 ? "s" : ""} available`;
+    option.textContent = `${formatTimeRangeLabel(item.time)} — ${formatAvailableSlotText(remaining)}`;
     timeSelect.appendChild(option);
   });
 
   const stillExists = [...timeSelect.options].some(opt => opt.value === current && !opt.disabled);
   timeSelect.value = stillExists ? current : "";
+  updateSelectedTimeBadge();
 }
 
 async function fetchSlotByTime(service, date, time) {
@@ -1214,11 +1276,12 @@ function updateSummary() {
 
   document.getElementById("summaryService").textContent = service;
   document.getElementById("summaryDate").textContent = rawDate ? formatPrettyDate(rawDate) : "Not selected";
-  document.getElementById("summaryTime").textContent = time;
+  document.getElementById("summaryTime").textContent = time === "Not selected" ? time : formatTimeRangeLabel(time);
 
   updateServiceGuide();
   updateBookingWindowBadge();
   updateSelectedDateBadge();
+  updateSelectedTimeBadge();
   updateStepState();
 }
 
@@ -1311,6 +1374,9 @@ function resetForm() {
 function renderSlotInfo(data, info) {
   if (!info) return;
 
+  const selectedTime = document.getElementById("time")?.value || "";
+  const selectedWindowLabel = selectedTime ? ` for <strong>${formatTimeRangeLabel(selectedTime)}</strong>` : "";
+
   if (data.status === "error") {
     info.innerHTML = (data.message || "Unable to check availability.");
     info.style.color = "#b42318";
@@ -1324,7 +1390,7 @@ function renderSlotInfo(data, info) {
   }
 
   const remaining = Number(data.remaining ?? 0);
-  info.innerHTML = `Available slots: <strong>${remaining}</strong>`;
+  info.innerHTML = `Available slots${selectedWindowLabel}: <strong>${remaining}</strong>`;
   info.style.color = remaining <= 0 ? "#b42318" : "#137333";
 }
 
@@ -1356,14 +1422,14 @@ function openSlipWithReference(refCode, fullname, service, date, time) {
   document.getElementById("sName").textContent = fullname.toUpperCase();
   document.getElementById("sService").textContent = service;
   document.getElementById("sDate").textContent = formatAppointmentDate(date);
-  document.getElementById("sTime").textContent = time;
+  document.getElementById("sTime").textContent = formatTimeRangeLabel(time);
 
   const qrPayload =
     "Reference: " + refCode + "\n" +
     "Name: " + fullname.toUpperCase() + "\n" +
     "Service: " + service + "\n" +
     "Date: " + formatAppointmentDate(date) + "\n" +
-    "Time: " + time;
+    "Time: " + formatTimeRangeLabel(time);
 
   drawSlipQR(qrPayload);
   openModal("slipModal");
@@ -1466,7 +1532,7 @@ function openConfirmModal() {
   document.getElementById("cName").textContent = fullname;
   document.getElementById("cService").textContent = service;
   document.getElementById("cDate").textContent = formatPrettyDate(date);
-  document.getElementById("cTime").textContent = time;
+  document.getElementById("cTime").textContent = formatTimeRangeLabel(time);
 
   resetConfirmButtons();
   openModal("confirmModal");
@@ -2057,6 +2123,7 @@ function fetchMonthlyData(instance, options = {}) {
   }
 
   const currentMonth = normalizeMonthString(instance.currentYear, instance.currentMonth);
+  const currentMonthLabel = formatCalendarMonthLabel(instance.currentYear, instance.currentMonth);
   const cacheKey = `${service}__${currentMonth}`;
   const requestId = ++activeCalendarRequestId;
 
@@ -2064,8 +2131,8 @@ function fetchMonthlyData(instance, options = {}) {
   // while the next month is loading.
   setTimeInputDisabled(true);
   setApplicantFieldsDisabled(true);
-  setAvailabilityInfo("Loading calendar...", "#475467");
-  setCalendarLoadingHint(true, "Loading calendar availability...");
+  setAvailabilityInfo(`Loading open dates for ${currentMonthLabel}...`, "#475467");
+  setCalendarLoadingHint(true, `Loading ${currentMonthLabel} appointment availability...`);
 
   const calendarEl = instance && instance.calendarContainer ? instance.calendarContainer : null;
   if (calendarEl) calendarEl.classList.add("calendar-loading");
@@ -2083,7 +2150,7 @@ function fetchMonthlyData(instance, options = {}) {
 
     setDateInputDisabled(false);
     setTimeInputDisabled(!document.getElementById("date").value);
-    setAvailabilityInfo("Select a date to load available time slots.");
+    setAvailabilityInfo("Select a date to view the available one-hour appointment windows.");
     if (calendarEl) calendarEl.classList.remove("calendar-loading");
     setCalendarLoadingHint(false);
     if (keepOpen || wasOpen) {
@@ -2119,7 +2186,7 @@ function fetchMonthlyData(instance, options = {}) {
 
       setDateInputDisabled(false);
       setTimeInputDisabled(!document.getElementById("date").value);
-      setAvailabilityInfo("Select a date to load available time slots.");
+      setAvailabilityInfo("Select a date to view the available one-hour appointment windows.");
       if (calendarEl) calendarEl.classList.remove("calendar-loading");
       setCalendarLoadingHint(false);
       if (keepOpen || wasOpen) {
@@ -2204,8 +2271,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     onMonthChange: function(selectedDates, dateStr, instance) {
       const badge = document.getElementById("bookingWindowBadge");
-      if (badge) badge.textContent = "Loading calendar...";
-      setCalendarLoadingHint(true, "Loading next month availability...");
+      const nextMonthLabel = formatCalendarMonthLabel(instance.currentYear, instance.currentMonth);
+      if (badge) badge.textContent = `Loading ${nextMonthLabel}...`;
+      setCalendarLoadingHint(true, `Loading ${nextMonthLabel} appointment availability...`);
       fetchMonthlyData(instance, { keepOpen: true });
     },
 
