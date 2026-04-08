@@ -877,14 +877,22 @@ function isAutoSelectableDate(
   let booked = 0;
   let max = Number(DEFAULT_SLOTS[service] || 0);
   let open = true;
+  let remaining = max;
 
   if (dayData) {
     booked = Number(dayData.booked || 0);
     max = Number(dayData.max || 0);
     open = dayData.open !== false;
+    remaining = Math.max(0, Number(
+      dayData.remaining !== undefined && dayData.remaining !== null
+        ? dayData.remaining
+        : (max - booked)
+    ));
+  } else {
+    remaining = Math.max(0, max - booked);
   }
 
-  return open && max > 0 && (max - booked) > 0;
+  return open && max > 0 && remaining > 0;
 }
 
 function findFirstAvailableDateInMonth(
@@ -2489,15 +2497,21 @@ document.addEventListener("DOMContentLoaded", function() {
       let max = DEFAULT_SLOTS[service] || 0;
       let open = true;
       let reason = "";
+      let remaining = Math.max(0, max - booked);
 
       if (dayData) {
         booked = Number(dayData.booked || 0);
         max = Number(dayData.max || 0);
         open = dayData.open !== false;
         reason = dayData.reason || "";
+        remaining = Math.max(0, Number(
+          dayData.remaining !== undefined && dayData.remaining !== null
+            ? dayData.remaining
+            : (max - booked)
+        ));
+      } else {
+        remaining = Math.max(0, max - booked);
       }
-
-      const remaining = max - booked;
 
       if (!open || max <= 0) {
         dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
@@ -2513,7 +2527,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (remaining <= 0) {
         dayElem.classList.add("flatpickr-disabled", "calendar-full-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
-        dayElem.setAttribute("data-tooltip", "Fully booked");
+        dayElem.setAttribute("data-tooltip", reason || "Fully booked");
 
         const dot = document.createElement("span");
         dot.className = "slot-dot full";
