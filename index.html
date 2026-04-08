@@ -169,7 +169,7 @@
           <div class="submit-subtext">Please review the details before submitting.</div>
           <div class="booking-reminder-box">
             <strong>Reminder</strong>
-            <span>Not all clients may receive an email notification. If your Appointment Slip is generated, your booking was recorded successfully.</span>
+            <span>Email notifications are disabled. If your Appointment Slip is generated, your booking was recorded successfully.</span>
           </div>
         </div>
       </div>
@@ -1346,43 +1346,6 @@ function applySlotAvailabilityResult(data) {
   updateStepState();
 }
 
-function sendConfirmationEmailInBackground(payload) {
-  const email = String(payload.email || "").trim();
-  if (!email) return;
-
-  fetch(EXEC_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=UTF-8"
-    },
-    body: JSON.stringify({
-      action: "sendConfirmationEmail",
-      refCode: payload.refCode || "",
-      fullname: payload.fullname || "",
-      service: payload.service || "",
-      date: payload.date || "",
-      time: payload.time || "",
-      email: email
-    })
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Email background response:", data);
-
-      if (data.status === "quota_exceeded") {
-        console.warn("Booking saved, but email not sent because daily email quota is exhausted.");
-        return;
-      }
-
-      if (data.status !== "success") {
-        console.error("Background email failed:", data.message || data);
-      }
-    })
-    .catch(err => {
-      console.error("Background email fetch error:", err);
-    });
-}
-
 function openSlipWithReference(refCode, fullname, service, date, time) {
   closeModal("confirmModal");
 
@@ -1990,6 +1953,10 @@ window.submitForm = async function() {
       return showSystemMessage("Notice", r.message || "System error.");
     }
 
+    if (r.status === "duplicate_existing_booking") {
+      return showSystemMessage("Existing Booking Found", r.message || "An active booking already exists for this client.");
+    }
+
     if (r.status === "duplicate_name") {
       return showSystemMessage("Duplicate Appointment", "You already have an appointment on this date.");
     }
@@ -2016,18 +1983,6 @@ window.submitForm = async function() {
 
     if (r.status === "success") {
       openSlipWithReference(r.refCode, fullname, service, date, time);
-
-      if (email) {
-        sendConfirmationEmailInBackground({
-          refCode: r.refCode,
-          fullname: fullname.toUpperCase(),
-          service: service,
-          date: date,
-          time: time,
-          email: email
-        });
-      }
-
       return;
     }
 
