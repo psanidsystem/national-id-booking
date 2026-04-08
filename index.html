@@ -83,8 +83,7 @@
             <label for="date">Preferred Date <span class="req">*</span></label>
             <input type="text" id="date" placeholder="Choose preferred appointment date" readonly>
             <div id="selectedDateBadge" class="selected-date-badge" style="display:none;"></div>
-            <div class="calendar-note">Only available dates can be selected. Once you choose a date, the one-hour appointment windows will appear below.</div>
-            <div id="calendarLoadingHint" class="calendar-loading-hint" style="display:none;">Loading appointment availability...</div>
+            <div id="calendarLoadingHint" class="calendar-loading-hint" style="display:none;">Loading schedule...</div>
           </div>
 
           <div class="schedule-input-card schedule-time-card">
@@ -93,16 +92,14 @@
               <option value="">-- Select Time --</option>
             </select>
             <div id="selectedTimeBadge" class="selected-date-badge selected-time-badge" style="display:none;"></div>
-            <div class="calendar-note time-select-note">Each option below covers one appointment window without changing the total daily capacity.</div>
           </div>
         </div>
 
-        <div class="service-info schedule-service-info">
+        <div class="service-info schedule-service-info" style="display:none;">
           <small id="serviceInfoText"></small>
         </div>
 
         <div class="time-grid" id="timeGrid"></div>
-        <p class="soft-note schedule-tip">Choose a one-hour appointment window below.</p>
       </div>
 
       <div class="form-section step-section" data-step="3" data-step-label="Step 3 · Applicant Details">
@@ -664,9 +661,13 @@ function setApplicantFieldsDisabled(disabled) {
 
 function setAvailabilityInfo(message, color = "#4b5563") {
   const info = document.getElementById("serviceInfoText");
+  const infoWrap = info ? info.closest(".service-info") : null;
   if (!info) return;
   info.innerHTML = message || "";
   info.style.color = color;
+  if (infoWrap) {
+    infoWrap.style.display = message ? "block" : "none";
+  }
 }
 
 function openModal(id) {
@@ -709,7 +710,7 @@ function agreePrivacy() {
   setDateInputDisabled(true);
   setTimeInputDisabled(true);
   setApplicantFieldsDisabled(true);
-  setAvailabilityInfo("Select a service to continue.");
+  setAvailabilityInfo("");
   updateSummary();
 }
 
@@ -825,7 +826,7 @@ function updateSelectedTimeBadge() {
   badge.innerHTML = `<span class="badge-dot"></span><span>Window: ${formatTimeRangeLabel(rawTime)}</span>`;
 }
 
-function setCalendarLoadingHint(isLoading, message = "Loading appointment availability...") {
+function setCalendarLoadingHint(isLoading, message = "Loading schedule...") {
   const el = document.getElementById("calendarLoadingHint");
   if (!el) return;
   el.textContent = message;
@@ -1162,7 +1163,7 @@ async function prefetchTimeSlotsForDate() {
 
   setTimeInputDisabled(true);
   renderTimeGrid([], true);
-  setAvailabilityInfo("Loading available time slots...", "#475467");
+  setAvailabilityInfo("");
 
   try {
     let results = dateSlotCache[dateCacheKey];
@@ -1205,7 +1206,7 @@ async function prefetchTimeSlotsForDate() {
     } else if (document.getElementById("time").value) {
       checkSlots();
     } else {
-      setAvailabilityInfo("Select a time below.", "#475467");
+      setAvailabilityInfo("");
     }
 
     updateStepState();
@@ -1366,7 +1367,7 @@ function resetForm() {
   setDateInputDisabled(true);
   setTimeInputDisabled(true);
   setApplicantFieldsDisabled(true);
-  setAvailabilityInfo("Select a service first to load available dates.");
+  setAvailabilityInfo("");
 
   ["nidModal", "updateModal", "ephilidModal", "trnModal"].forEach(id => closeModal(id));
 }
@@ -1553,17 +1554,17 @@ function checkSlots() {
   setApplicantFieldsDisabled(true);
 
   if (!service) {
-    setAvailabilityInfo("Select a service to continue.");
+    setAvailabilityInfo("");
     return;
   }
 
   if (!date) {
-    setAvailabilityInfo("Select a date first.");
+    setAvailabilityInfo("");
     return;
   }
 
   if (!time) {
-    setAvailabilityInfo("Select a time to continue.");
+    setAvailabilityInfo("");
     return;
   }
 
@@ -1590,7 +1591,7 @@ function checkSlots() {
     }
   }
 
-  setAvailabilityInfo("Checking slot availability...", "#475467");
+  setAvailabilityInfo("");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20000);
@@ -2116,7 +2117,7 @@ function fetchMonthlyData(instance, options = {}) {
     setDateInputDisabled(true);
     setTimeInputDisabled(true);
     setApplicantFieldsDisabled(true);
-    setAvailabilityInfo("Select a service first.");
+    setAvailabilityInfo("");
     if (instance && instance.calendarContainer) instance.calendarContainer.classList.remove("calendar-loading");
     setCalendarLoadingHint(false);
     return;
@@ -2131,8 +2132,8 @@ function fetchMonthlyData(instance, options = {}) {
   // while the next month is loading.
   setTimeInputDisabled(true);
   setApplicantFieldsDisabled(true);
-  setAvailabilityInfo(`Loading open dates for ${currentMonthLabel}...`, "#475467");
-  setCalendarLoadingHint(true, `Loading ${currentMonthLabel} appointment availability...`);
+  setAvailabilityInfo("");
+  setCalendarLoadingHint(true, `Loading ${currentMonthLabel}...`);
 
   const calendarEl = instance && instance.calendarContainer ? instance.calendarContainer : null;
   if (calendarEl) calendarEl.classList.add("calendar-loading");
@@ -2150,7 +2151,7 @@ function fetchMonthlyData(instance, options = {}) {
 
     setDateInputDisabled(false);
     setTimeInputDisabled(!document.getElementById("date").value);
-    setAvailabilityInfo("Select a date to view the available one-hour appointment windows.");
+    setAvailabilityInfo("");
     if (calendarEl) calendarEl.classList.remove("calendar-loading");
     setCalendarLoadingHint(false);
     if (keepOpen || wasOpen) {
@@ -2186,7 +2187,7 @@ function fetchMonthlyData(instance, options = {}) {
 
       setDateInputDisabled(false);
       setTimeInputDisabled(!document.getElementById("date").value);
-      setAvailabilityInfo("Select a date to view the available one-hour appointment windows.");
+      setAvailabilityInfo("");
       if (calendarEl) calendarEl.classList.remove("calendar-loading");
       setCalendarLoadingHint(false);
       if (keepOpen || wasOpen) {
@@ -2273,7 +2274,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const badge = document.getElementById("bookingWindowBadge");
       const nextMonthLabel = formatCalendarMonthLabel(instance.currentYear, instance.currentMonth);
       if (badge) badge.textContent = `Loading ${nextMonthLabel}...`;
-      setCalendarLoadingHint(true, `Loading ${nextMonthLabel} appointment availability...`);
+      setCalendarLoadingHint(true, `Loading ${nextMonthLabel}...`);
       fetchMonthlyData(instance, { keepOpen: true });
     },
 
@@ -2390,12 +2391,12 @@ document.addEventListener("DOMContentLoaded", function() {
       setApplicantFieldsDisabled(true);
 
       if (dateStr) {
-        setAvailabilityInfo("Loading available time slots...", "#475467");
+        setAvailabilityInfo("");
         prefetchTimeSlotsForDate();
       } else {
         setTimeInputDisabled(true);
         renderTimeGrid([]);
-        setAvailabilityInfo("Select a date first.");
+        setAvailabilityInfo("");
       }
 
       updateSummary();
@@ -2426,7 +2427,7 @@ document.addEventListener("DOMContentLoaded", function() {
       setDateInputDisabled(true);
       setTimeInputDisabled(true);
       setApplicantFieldsDisabled(true);
-      setAvailabilityInfo("Select a service to continue.");
+      setAvailabilityInfo("");
       updateStepState();
       return;
     }
@@ -2434,7 +2435,7 @@ document.addEventListener("DOMContentLoaded", function() {
     setDateInputDisabled(true);
     setTimeInputDisabled(true);
     setApplicantFieldsDisabled(true);
-    setAvailabilityInfo("⏳ Loading available dates...", "#555");
+    setAvailabilityInfo("");
 
     fetchMonthlyData(calendar);
   });
