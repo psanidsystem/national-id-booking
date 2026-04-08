@@ -703,6 +703,10 @@ function showSystemMessageAuto(title, message, callback, delay = 1400) {
   }, delay);
 }
 
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function isLockTimeoutMessage(message) {
   const text = String(message || "").toLowerCase();
   const mentionsLock = text.includes("lock") || text.includes("naka-lock");
@@ -2128,6 +2132,7 @@ window.submitForm = async function() {
   const btn = document.getElementById("submitBtn");
   const btnText = document.getElementById("btnText");
   const loader = document.getElementById("btnLoader");
+  const maxBusyRetries = 2;
 
   const service = document.getElementById("service").value;
   const fullname = document.getElementById("fullname").value.trim();
@@ -2156,19 +2161,35 @@ window.submitForm = async function() {
   const timeoutId = setTimeout(() => controller.abort(), 60000);
 
   try {
-    const res = await postJson({
-      action: "submitAppointment",
-      service,
-      fullname,
-      email,
-      phone,
-      date,
-      time
-    }, {
-      signal: controller.signal
-    });
+    let r = null;
 
-    const r = await res.json();
+    for (let attempt = 0; attempt <= maxBusyRetries; attempt++) {
+      const res = await postJson({
+        action: "submitAppointment",
+        service,
+        fullname,
+        email,
+        phone,
+        date,
+        time
+      }, {
+        signal: controller.signal
+      });
+
+      r = await res.json();
+
+      const shouldRetryBusy =
+        r.status === "busy" ||
+        (r.status === "error" && isLockTimeoutMessage(r.message));
+
+      if (!shouldRetryBusy || attempt === maxBusyRetries) {
+        break;
+      }
+
+      setConfirmLoading(true, "System is busy. Retrying appointment request...");
+      await wait(1200 + (attempt * 600));
+    }
+
     clearTimeout(timeoutId);
 
     btn.disabled = false;
