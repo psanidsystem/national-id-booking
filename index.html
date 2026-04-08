@@ -1605,7 +1605,7 @@ function openSlipWithReference(refCode, fullname, service, date, time) {
   }
 }
 
-async function verifyTimedOutBooking(payload, retries = 4, delayMs = 2000) {
+async function verifyTimedOutBooking(payload, retries = 8, delayMs = 2500) {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const res = await postJson({
@@ -2132,7 +2132,7 @@ window.submitForm = async function() {
   const btn = document.getElementById("submitBtn");
   const btnText = document.getElementById("btnText");
   const loader = document.getElementById("btnLoader");
-  const maxBusyRetries = 2;
+  const maxBusyRetries = 3;
 
   const service = document.getElementById("service").value;
   const fullname = document.getElementById("fullname").value.trim();
