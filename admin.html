@@ -2590,7 +2590,7 @@
               <div class="empty-icon">🧹</div>
               <div>
                 <strong>Clean Duplicate Bookings</strong>
-                <p>Scan the live <code>Appointments</code> sheet, move duplicate active bookings into <code>Duplicate Booking Attempts</code>, and keep the oldest valid booking in the live list.</p>
+                <p>Scan the live <code>Appointments</code> sheet, move later duplicate active bookings into <code>Duplicate Booking Attempts</code>, and keep only the earliest scheduled booking in the live list.</p>
               </div>
             </div>
 
@@ -4690,7 +4690,7 @@ async function cleanupDuplicateBookings() {
   }
 
   const confirmed = confirm(
-    "Move duplicate active bookings from Appointments to Duplicate Booking Attempts and remove them from the live Appointments sheet?"
+    "Move all later duplicate active bookings from Appointments to Duplicate Booking Attempts and keep only the earliest scheduled booking for each person?"
   );
 
   if (!confirmed) return;
@@ -4711,12 +4711,12 @@ async function cleanupDuplicateBookings() {
     const duplicateSheet = result.duplicateSheet || "Duplicate Booking Attempts";
 
     if (movedCount <= 0) {
-      showNotice(`No duplicate active bookings were found. ${duplicateSheet} currently contains ${duplicateRecordCount} record${duplicateRecordCount === 1 ? "" : "s"}.`);
+      showNotice(`No later duplicate active bookings were found. ${duplicateSheet} currently contains ${duplicateRecordCount} record${duplicateRecordCount === 1 ? "" : "s"}.`);
       return;
     }
 
     showNotice(
-      `Moved ${movedCount} duplicate booking${movedCount === 1 ? "" : "s"} from Appointments to ${duplicateSheet}. It now contains ${duplicateRecordCount} record${duplicateRecordCount === 1 ? "" : "s"}.`
+      `Moved ${movedCount} later duplicate booking${movedCount === 1 ? "" : "s"} from Appointments to ${duplicateSheet}. The earliest schedule for each person was kept. ${duplicateSheet} now contains ${duplicateRecordCount} record${duplicateRecordCount === 1 ? "" : "s"}.`
     );
   } catch (err) {
     showNotice(err.message || "Unable to clean duplicate bookings.", "error");
