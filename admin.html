@@ -646,6 +646,65 @@
       align-items: start;
     }
 
+    .schedule-admin-shell {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .schedule-admin-intro {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .schedule-admin-intro-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .schedule-admin-intro-card {
+      padding: 18px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .schedule-admin-intro-card span {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eef5ff;
+      color: #1e5aa8;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .schedule-admin-intro-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 17px;
+      color: #111827;
+      letter-spacing: -0.02em;
+    }
+
+    .schedule-admin-intro-card p {
+      margin: 0;
+      color: #667085;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .schedule-admin-note {
+      margin: 0 0 16px;
+      color: #667085;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -1803,6 +1862,10 @@
         grid-template-columns: 1fr;
       }
 
+      .schedule-admin-intro-grid {
+        grid-template-columns: 1fr;
+      }
+
       .slot-board-page {
         grid-template-columns: 1fr;
       }
@@ -2122,12 +2185,7 @@
 
           <button class="nav-btn" data-section="slots">
             <span class="nav-icon">🗓️</span>
-            <span>Slot Management</span>
-          </button>
-
-          <button class="nav-btn" data-section="availability">
-            <span class="nav-icon">📅</span>
-            <span>Availability</span>
+            <span>Schedule Controls</span>
           </button>
 
           <button class="nav-btn" data-section="users">
@@ -2429,59 +2487,74 @@
       </section>
 
       <section id="slotsSection" class="hidden">
-        <div class="panel-grid">
+        <div class="schedule-admin-shell">
+          <div class="card schedule-admin-intro">
+            <div class="panel-title">
+              <h3>Schedule Controls</h3>
+            </div>
+            <div class="schedule-admin-intro-grid">
+              <div class="schedule-admin-intro-card">
+                <span>Slot Management</span>
+                <strong>Set the exact number of bookable slots.</strong>
+                <p>Add or edit slot rules per service and date when you need more or fewer appointments than the default daily capacity.</p>
+              </div>
+              <div class="schedule-admin-intro-card">
+                <span>Date Availability</span>
+                <strong>Open or close appointment dates.</strong>
+                <p>Use availability rules only to allow or block appointments for a specific date. Slot counts are managed separately above.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <div class="card">
+              <div class="panel-title">
+                <h3>Slot Management</h3>
+                <button class="btn btn-primary" id="openSlotModalBtn">Add Slot Rule</button>
+              </div>
+              <p class="schedule-admin-note">Choose the service, date, and exact number of slots the admin wants to make available.</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Service</th>
+                      <th>Available Slots</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="slotsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="panel-title">
+                <h3>Default Slot Limits</h3>
+              </div>
+              <div class="slot-list" id="defaultSlotList"></div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="panel-title">
-              <h3>Slot Management</h3>
-              <button class="btn btn-primary" id="openSlotModalBtn">Add Slot Rule</button>
+              <h3>Date Availability</h3>
+              <button class="btn btn-primary" id="openAvailabilityModalBtn">Add Availability Rule</button>
             </div>
+            <p class="schedule-admin-note">Use this table only to open or close selected dates. It does not change the number of slots for a service.</p>
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Service</th>
-                    <th>Available Slots</th>
+                    <th>Status</th>
+                    <th>Reason</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody id="slotsTableBody"></tbody>
+                <tbody id="availabilityTableBody"></tbody>
               </table>
             </div>
-          </div>
-
-          <div class="card">
-            <div class="panel-title">
-              <h3>Default Slot Limits</h3>
-            </div>
-            <div class="slot-list" id="defaultSlotList"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="availabilitySection" class="hidden">
-        <div class="card">
-          <div class="panel-title">
-            <h3>Availability Management</h3>
-            <button class="btn btn-primary" id="openAvailabilityModalBtn">Add Availability Rule</button>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Reason</th>
-                  <th>NID Registration</th>
-                  <th>Correction</th>
-                  <th>ePhilID</th>
-                  <th>TRN</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="availabilityTableBody"></tbody>
-            </table>
           </div>
         </div>
       </section>
@@ -2793,7 +2866,7 @@
   <div class="modal" id="availabilityModal">
     <div class="modal-card">
       <div class="modal-head">
-        <h3 id="availabilityModalTitle">Add Availability</h3>
+        <h3 id="availabilityModalTitle">Add Date Availability</h3>
         <button class="btn btn-secondary" data-close="availabilityModal">Close</button>
       </div>
 
@@ -2814,26 +2887,7 @@
         <div class="field full">
           <label for="availabilityReason">Reason</label>
           <input type="text" id="availabilityReason" placeholder="Holiday, maintenance, local event, etc.">
-        </div>
-
-        <div class="field">
-          <label for="slotNidReg">NID Registration</label>
-          <input type="number" id="slotNidReg" min="0">
-        </div>
-
-        <div class="field">
-          <label for="slotCorrection">Correction</label>
-          <input type="number" id="slotCorrection" min="0">
-        </div>
-
-        <div class="field">
-          <label for="slotEphilid">ePhilID</label>
-          <input type="number" id="slotEphilid" min="0">
-        </div>
-
-        <div class="field">
-          <label for="slotTrn">TRN</label>
-          <input type="number" id="slotTrn" min="0">
+          <div class="hint-text">Use slot management for the number of slots. Availability only opens or closes the selected date.</div>
         </div>
       </div>
 
@@ -3001,8 +3055,7 @@ const sectionMap = {
   dashboard: ["dashboardSection", "Dashboard Overview", "Review appointments, update records, and manage available slots."],
   liveSlots: ["slotBoardSection", "Live Schedule Board", "Open dates, remaining capacity, and time windows in one clean view."],
   bookings: ["bookingsSection", "Booking Management", "Check in clients, guide the service flow, and record the final result from one process modal."],
-  slots: ["slotsSection", "Slot Management", "Adjust custom daily slot capacity for specific services and appointment dates."],
-  availability: ["availabilitySection", "Availability Management", "Open, close, or override booking availability for selected service dates."],
+  slots: ["slotsSection", "Schedule Controls", "Set custom slot counts by service and date, then open or close specific appointment dates."],
   users: ["usersSection", "User Management", "Maintain personnel accounts, access levels, and account status."],
   settings: ["settingsSection", "System Settings", "Control weekend booking rules, booking window, and archive behavior."]
 };
@@ -3566,10 +3619,6 @@ function renderAvailabilityTable() {
       <td>${escapeHtml(formatDate(rule.date))}</td>
       <td>${escapeHtml(rule.status)}</td>
       <td>${escapeHtml(rule.reason || "—")}</td>
-      <td>${escapeHtml(rule.nidReg ?? "—")}</td>
-      <td>${escapeHtml(rule.updateDemo ?? "—")}</td>
-      <td>${escapeHtml(rule.ephilid ?? "—")}</td>
-      <td>${escapeHtml(rule.trn ?? "—")}</td>
       <td>
         <div class="row-actions">
           ${actionButtonHtml("Delete", "mini-btn mini-delete", {
@@ -3583,7 +3632,7 @@ function renderAvailabilityTable() {
   });
 
   if (!tbody.innerHTML) {
-    tbody.innerHTML = `<tr><td colspan="8">No availability rules.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4">No date availability rules have been configured yet.</td></tr>`;
   }
 }
 
@@ -4189,10 +4238,6 @@ function resetAvailabilityForm() {
   document.getElementById("availabilityDate").value = "";
   document.getElementById("availabilityStatus").value = "OPEN";
   document.getElementById("availabilityReason").value = "";
-  document.getElementById("slotNidReg").value = "";
-  document.getElementById("slotCorrection").value = "";
-  document.getElementById("slotEphilid").value = "";
-  document.getElementById("slotTrn").value = "";
 }
 
 function resetUserForm() {
@@ -4734,11 +4779,7 @@ async function saveAvailability() {
     action: "adminSaveAvailability",
     date: document.getElementById("availabilityDate").value,
     status: document.getElementById("availabilityStatus").value,
-    reason: document.getElementById("availabilityReason").value,
-    nidReg: document.getElementById("slotNidReg").value,
-    updateDemo: document.getElementById("slotCorrection").value,
-    ephilid: document.getElementById("slotEphilid").value,
-    trn: document.getElementById("slotTrn").value
+    reason: document.getElementById("availabilityReason").value
   };
 
   if (!payload.date) {
@@ -4756,11 +4797,7 @@ async function saveAvailability() {
     upsertAvailabilityLocal({
       date: payload.date,
       status: payload.status,
-      reason: payload.reason || "",
-      nidReg: payload.nidReg === "" ? null : Number(payload.nidReg),
-      updateDemo: payload.updateDemo === "" ? null : Number(payload.updateDemo),
-      ephilid: payload.ephilid === "" ? null : Number(payload.ephilid),
-      trn: payload.trn === "" ? null : Number(payload.trn)
+      reason: payload.reason || ""
     });
 
     rerenderState();
