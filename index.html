@@ -867,17 +867,18 @@ function isAutoSelectableDate(
 
   if (Number.isNaN(dateObj.getTime())) return false;
 
+  const dayData = monthSlots[dateStr] || null;
+  const hasAvailabilityRule = !!(dayData && dayData.hasAvailabilityRule);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   if (dateObj < today) return false;
-  if (windowEndDate && dateStr > windowEndDate) return false;
+  if (!hasAvailabilityRule && windowEndDate && dateStr > windowEndDate) return false;
 
   const dayOfWeek = dateObj.getDay();
-  if (dayOfWeek === 6 && !settings.saturdayOpen) return false;
-  if (dayOfWeek === 0 && !settings.sundayOpen) return false;
+  if (!hasAvailabilityRule && dayOfWeek === 6 && !settings.saturdayOpen) return false;
+  if (!hasAvailabilityRule && dayOfWeek === 0 && !settings.sundayOpen) return false;
 
-  const dayData = monthSlots[dateStr] || null;
   let booked = 0;
   let max = Number(DEFAULT_SLOTS[service] || 0);
   let open = true;
@@ -921,6 +922,30 @@ function findFirstAvailableDateInMonth(
   return "";
 }
 
+function getAutoLoadMonthSpan(
+  instance,
+  settings = systemSettings,
+  windowEndDate = bookingWindowEndDate
+) {
+  const defaultCount = Math.max(1, Number(settings.bookingWindowMonths || 1));
+  if (!instance || !windowEndDate) return defaultCount;
+
+  const parts = String(windowEndDate).split("-");
+  if (parts.length !== 3) return defaultCount;
+
+  const endYear = Number(parts[0]);
+  const endMonthIndex = Number(parts[1]) - 1;
+
+  if (Number.isNaN(endYear) || Number.isNaN(endMonthIndex) || endMonthIndex < 0 || endMonthIndex > 11) {
+    return defaultCount;
+  }
+
+  const startMonthNumber = (instance.currentYear * 12) + instance.currentMonth;
+  const endMonthNumber = (endYear * 12) + endMonthIndex;
+
+  return Math.max(defaultCount, Math.max(1, endMonthNumber - startMonthNumber + 1));
+}
+
 async function loadMonthlySlotData(service, year, monthIndexZeroBased) {
   const monthKey = normalizeMonthString(year, monthIndexZeroBased);
   const cacheKey = `${service}__${monthKey}`;
@@ -950,7 +975,7 @@ async function autoLoadFirstAvailableSchedule(instance, requestId = null) {
 
   if (!instance || !service || currentDate) return false;
 
-  const monthsToCheck = Math.max(1, Number(systemSettings.bookingWindowMonths || 1));
+  const monthsToCheck = getAutoLoadMonthSpan(instance);
 
   for (let offset = 0; offset < monthsToCheck; offset++) {
     if (requestId !== null && requestId !== activeCalendarRequestId) return false;
@@ -2469,6 +2494,8 @@ document.addEventListener("DOMContentLoaded", function() {
       const dayOfWeek = dayElem.dateObj.getDay();
       const isSaturday = dayOfWeek === 6;
       const isSunday = dayOfWeek === 0;
+      const dayData = service ? (monthlyBooked[date] || null) : null;
+      const hasAvailabilityRule = !!(dayData && dayData.hasAvailabilityRule);
 
       const oldDot = dayElem.querySelector(".slot-dot");
       if (oldDot) oldDot.remove();
@@ -2477,7 +2504,7 @@ document.addEventListener("DOMContentLoaded", function() {
       dayElem.removeAttribute("data-tooltip");
       dayElem.style.pointerEvents = "";
 
-      if (bookingWindowEndDate && date > bookingWindowEndDate) {
+      if (!hasAvailabilityRule && bookingWindowEndDate && date > bookingWindowEndDate) {
         dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", "Outside booking window");
@@ -2488,7 +2515,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
 
-      if (isSaturday && !systemSettings.saturdayOpen) {
+      if (!hasAvailabilityRule && isSaturday && !systemSettings.saturdayOpen) {
         dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", "Saturday closed");
@@ -2499,7 +2526,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
 
-      if (isSunday && !systemSettings.sundayOpen) {
+      if (!hasAvailabilityRule && isSunday && !systemSettings.sundayOpen) {
         dayElem.classList.add("flatpickr-disabled", "calendar-closed-day", "has-tooltip");
         dayElem.style.pointerEvents = "none";
         dayElem.setAttribute("data-tooltip", "Sunday closed");
@@ -2511,8 +2538,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       if (!service) return;
-
-      const dayData = monthlyBooked[date] || null;
 
       let booked = 0;
       let max = DEFAULT_SLOTS[service] || 0;
