@@ -1715,6 +1715,26 @@
       gap: 18px;
     }
 
+    /* Desktop: keep the sidebar (and the signed-in card at its bottom) fixed in
+       view while the page scrolls. Below 820px the sidebar stacks above the
+       content and scrolls normally. */
+    @media (min-width: 821px) {
+      .sidebar {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      }
+
+      .sidebar-user-card {
+        flex-shrink: 0;
+      }
+    }
+
     .sidebar::before,
     .sidebar::after,
     .brand::before,
@@ -2384,6 +2404,46 @@
       background: #fdecee;
       color: #a3172b;
       border: 1px solid #f6cdd3;
+    }
+
+    /* Short laptop screens: tighten the sidebar so the signed-in card fits. */
+    @media (min-width: 821px) and (max-height: 760px) {
+      .sidebar {
+        padding-top: 18px;
+        gap: 12px;
+      }
+
+      .sidebar-top {
+        gap: 12px;
+      }
+
+      .brand {
+        padding-bottom: 12px;
+      }
+
+      .brand img {
+        width: 42px;
+        height: 42px;
+      }
+
+      .nav-btn {
+        padding: 6px 12px;
+      }
+
+      .nav-icon {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+      }
+
+      .sidebar-user-card {
+        padding: 10px 12px;
+        gap: 8px;
+      }
+
+      .sidebar-logout-label span {
+        display: none;
+      }
     }
 
     @media (max-width: 1200px) {
