@@ -2609,6 +2609,11 @@
                 <strong>Booking Window</strong>
                 <span id="bookingWindowLabel">Loading...</span>
               </div>
+
+              <div class="settings-info-item">
+                <strong>Last Booking Date</strong>
+                <span id="lastBookingDateLabel">Loading...</span>
+              </div>
             </div>
 
             <div class="field" style="margin-bottom:16px;">
@@ -2637,8 +2642,14 @@
               </select>
             </div>
 
+            <div class="field" style="margin-bottom:16px;">
+              <label for="lastBookingDate">Last Booking Date</label>
+              <input type="date" id="lastBookingDate" />
+              <div class="hint-text">Online booking closes after this date, even on dates marked OPEN. Leave blank for no end date.</div>
+            </div>
+
             <div class="row-actions" style="margin-bottom:16px;">
-              <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Weekend Setting</button>
+              <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Settings</button>
             </div>
 
             <div class="empty-state" style="margin-bottom:16px;">
@@ -2954,6 +2965,13 @@ let userTitle = sessionStorage.getItem("nid_title") || "";
 
 let bookings = [];
 let archivedBookings = [];
+// Archived records are fetched only when the Record Scope shows them.
+let archivedLoaded = false;
+let archivedLoadFailed = false;
+let archivedLoadingPromise = null;
+// The bookings table renders this many rows at a time ("Show more" adds another page).
+const BOOKINGS_TABLE_PAGE_SIZE = 200;
+let bookingsTableLimit = BOOKINGS_TABLE_PAGE_SIZE;
 let slotRules = [];
 let availabilityRules = [];
 let users = [];
@@ -2964,7 +2982,8 @@ let weekendSettings = {
   apiVersion: "Unknown",
   saturdayOpen: false,
   sundayOpen: false,
-  bookingWindowMonths: 1
+  bookingWindowMonths: 1,
+  lastBookingDate: ""
 };
 let archivePreviewState = {
   beforeDate: "",
@@ -3478,10 +3497,23 @@ function renderBookingsTable() {
   const tbody = document.getElementById("bookingsTableBody");
   if (!tbody) return;
 
-  const filtered = applyBookingFilters();
-  tbody.innerHTML = "";
+  if (scopeNeedsArchive() && !archivedLoaded) {
+    tbody.innerHTML = archivedLoadFailed
+      ? `<tr><td colspan="11">Unable to load archived records. Click Refresh to try again.</td></tr>`
+      : `<tr><td colspan="11">Loading archived records...</td></tr>`;
+    if (!archivedLoadFailed) {
+      ensureArchivedLoaded().then(() => {
+        if (archivedLoaded || archivedLoadFailed) renderBookingsTable();
+      });
+    }
+    return;
+  }
 
-  filtered.forEach(item => {
+  const filtered = applyBookingFilters();
+  const visible = filtered.slice(0, bookingsTableLimit);
+  const rowsHtml = [];
+
+  visible.forEach(item => {
     const actionHtml = canEditBookings()
       ? `
         <div class="row-actions">
@@ -3499,8 +3531,7 @@ function renderBookingsTable() {
       `
       : getPersonnelActionButtons(item);
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    rowsHtml.push(`<tr>
       <td>${escapeHtml(item.refCode)}</td>
       <td>${escapeHtml(item.fullname)}</td>
       <td>${escapeHtml(item.service)}</td>
@@ -3517,13 +3548,30 @@ function renderBookingsTable() {
         </div>
       </td>
       <td>${actionHtml}</td>
-    `;
-    tbody.appendChild(tr);
+    </tr>`);
   });
 
-  if (!tbody.innerHTML) {
-    tbody.innerHTML = `<tr><td colspan="11">No bookings match the current filters.</td></tr>`;
+  if (filtered.length > visible.length) {
+    rowsHtml.push(`<tr><td colspan="11">
+      Showing ${visible.length} of ${filtered.length} bookings. Use the filters to narrow the list, or
+      <button class="mini-btn" type="button" id="bookingsShowMoreBtn">Show ${Math.min(BOOKINGS_TABLE_PAGE_SIZE, filtered.length - visible.length)} more</button>
+    </td></tr>`);
   }
+
+  // One DOM write for the whole table instead of one per row.
+  tbody.innerHTML = rowsHtml.length
+    ? rowsHtml.join("")
+    : `<tr><td colspan="11">No bookings match the current filters.</td></tr>`;
+
+  document.getElementById("bookingsShowMoreBtn")?.addEventListener("click", () => {
+    bookingsTableLimit += BOOKINGS_TABLE_PAGE_SIZE;
+    renderBookingsTable();
+  });
+}
+
+function onBookingFiltersChanged() {
+  bookingsTableLimit = BOOKINGS_TABLE_PAGE_SIZE;
+  renderBookingsTable();
 }
 
 function renderSlotLists() {
@@ -3701,6 +3749,18 @@ function renderWeekendSettings() {
     months === 2 ? "Current + next month" :
     months === 3 ? "Current + 2 months" :
     `Current + ${months - 1} months`;
+
+  const lastBookingDate = String(weekendSettings.lastBookingDate || "");
+  const lastBookingDateInput = document.getElementById("lastBookingDate");
+  const lastBookingDateLabel = document.getElementById("lastBookingDateLabel");
+  if (lastBookingDateInput) lastBookingDateInput.value = lastBookingDate;
+  if (lastBookingDateLabel) {
+    lastBookingDateLabel.textContent = !lastBookingDate
+      ? "No end date"
+      : lastBookingDate < getTodayIso()
+        ? `${formatDate(lastBookingDate)} (online booking closed)`
+        : formatDate(lastBookingDate);
+  }
 }
 
 function isLowAvailability(remaining, max) {
@@ -4318,7 +4378,8 @@ function defaultWeekendSettings() {
     apiVersion: "Unknown",
     saturdayOpen: false,
     sundayOpen: false,
-    bookingWindowMonths: 1
+    bookingWindowMonths: 1,
+    lastBookingDate: ""
   };
 }
 
@@ -4359,6 +4420,9 @@ function renderSidebarProfile() {
 function setAdminState(data) {
   bookings = Array.isArray(data?.bookings) ? data.bookings.map(normalizeBookingItem) : [];
   archivedBookings = Array.isArray(data?.archivedBookings) ? data.archivedBookings.map(normalizeBookingItem) : [];
+  // Older backends always include the archive and do not send archivedIncluded.
+  archivedLoaded = data?.archivedIncluded !== false;
+  archivedLoadFailed = false;
   sortBookingsLocal();
   slotRules = Array.isArray(data?.slotRules) ? data.slotRules : [];
   availabilityRules = Array.isArray(data?.availabilityRules) ? data.availabilityRules : [];
@@ -4370,6 +4434,8 @@ function setAdminState(data) {
 function resetAdminState() {
   bookings = [];
   archivedBookings = [];
+  archivedLoaded = false;
+  archivedLoadFailed = false;
   slotRules = [];
   availabilityRules = [];
   users = [];
@@ -4570,12 +4636,45 @@ function removeUserLocal(usernameToDelete) {
   users = users.filter(user => String(user?.username || "").trim().toLowerCase() !== target);
 }
 
+function scopeNeedsArchive() {
+  const scope = String(document.getElementById("filterScope")?.value || "active").trim().toLowerCase();
+  return scope === "archived" || scope === "all";
+}
+
+function ensureArchivedLoaded() {
+  if (archivedLoaded) return Promise.resolve();
+
+  if (!archivedLoadingPromise) {
+    archivedLoadingPromise = apiRequest({ action: "adminListArchived" })
+      .then(data => {
+        if (data.status === "error") {
+          throw new Error(data.message || "Unable to load archived records.");
+        }
+
+        archivedBookings = Array.isArray(data.archivedBookings) ? data.archivedBookings.map(normalizeBookingItem) : [];
+        archivedBookings.sort(compareBookingsForDisplay);
+        archivedLoaded = true;
+        archivedLoadFailed = false;
+      })
+      .catch(err => {
+        archivedLoadFailed = true;
+        showNotice(err.message || "Unable to load archived records.", "error");
+      })
+      .finally(() => {
+        archivedLoadingPromise = null;
+      });
+  }
+
+  return archivedLoadingPromise;
+}
+
 async function loadAdminData(options = {}) {
   const { silent = false } = options;
 
   try {
     const data = await apiRequest({
-      action: "adminList"
+      action: "adminList",
+      includeArchived: scopeNeedsArchive()
     });
 
     if (data.status === "error") {
@@ -4609,23 +4708,28 @@ async function saveWeekendSetting() {
 
   if (!saturdayToggle || !sundayToggle || !bookingWindowSelect) return;
 
+  const lastBookingDateInput = document.getElementById("lastBookingDate");
+  const lastBookingDate = lastBookingDateInput ? lastBookingDateInput.value : undefined;
+
+  if (lastBookingDate && lastBookingDate < getTodayIso() &&
+      !confirm(`The last booking date (${formatDate(lastBookingDate)}) is in the past. This closes online booking immediately. Continue?`)) {
+    return;
+  }
+
   try {
     const result = await apiRequest({
       action: "adminSaveSystemSettings",
       saturdayOpen: saturdayToggle.value,
       sundayOpen: sundayToggle.value,
-      bookingWindowMonths: bookingWindowSelect.value
+      bookingWindowMonths: bookingWindowSelect.value,
+      lastBookingDate
     });
 
     if (result.status === "error") {
       throw new Error(result.message || "Unable to save system settings.");
     }
 
-    weekendSettings = result.systemSettings || {
-      saturdayOpen: false,
-      sundayOpen: false,
-      bookingWindowMonths: 1
-    };
+    weekendSettings = result.systemSettings || defaultWeekendSettings();
 
     renderWeekendSettings();
     syncSlotBoardControls();
@@ -5727,8 +5831,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   ["filterService", "filterStatus", "filterScope", "filterDate", "filterSearch"].forEach(id => {
-    document.getElementById(id)?.addEventListener("input", renderBookingsTable);
-    document.getElementById(id)?.addEventListener("change", renderBookingsTable);
+    document.getElementById(id)?.addEventListener("input", onBookingFiltersChanged);
+    document.getElementById(id)?.addEventListener("change", onBookingFiltersChanged);
   });
 
   document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
@@ -5737,7 +5841,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filterScope").value = "active";
     document.getElementById("filterDate").value = userRole === "personnel" ? todayIso : "";
     document.getElementById("filterSearch").value = "";
-    renderBookingsTable();
+    onBookingFiltersChanged();
   });
 
   document.querySelectorAll("[data-close]").forEach(btn => {

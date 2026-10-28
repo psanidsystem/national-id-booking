@@ -812,16 +812,35 @@ function updateWeekendNotice() {
     months === 2 ? "Booking window: current + next month" :
     `Booking window: current + ${months - 1} months`;
 
-  el.textContent = `${parts.join(" • ")} • ${bookingWindowText}`;
+  const lastBookingDate = String(systemSettings.lastBookingDate || "");
+
+  if (lastBookingDate && lastBookingDate < getLocalTodayIso()) {
+    el.textContent = "Online appointment booking is currently closed. Please check back for announcements.";
+    el.style.color = "#b42318";
+    return;
+  }
+
+  const lastBookingText = lastBookingDate
+    ? ` • Online booking available until ${formatPrettyDate(lastBookingDate)}`
+    : "";
+
+  el.textContent = `${parts.join(" • ")} • ${bookingWindowText}${lastBookingText}`;
   el.style.color = "#475467";
+}
+
+function getLocalTodayIso() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
 function updateBookingWindowBadge() {
   const badge = document.getElementById("bookingWindowBadge");
   if (!badge) return;
-  badge.textContent = bookingWindowEndDate
-    ? `Booking until ${formatPrettyDate(bookingWindowEndDate)}`
-    : "Loading booking window...";
+  badge.textContent = !bookingWindowEndDate
+    ? "Loading booking window..."
+    : bookingWindowEndDate < getLocalTodayIso()
+      ? "Online booking closed"
+      : `Booking until ${formatPrettyDate(bookingWindowEndDate)}`;
 }
 
 function updateSelectedDateBadge() {
