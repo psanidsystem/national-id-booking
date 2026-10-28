@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>National ID Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #f3f6fb;
@@ -1632,6 +1635,757 @@
       border-color: #fecaca;
     }
 
+    /* ================================================================
+       PSA THEME
+       Visual layer only: colours, type, borders, shadows and radii.
+       Layout rules above (and the responsive rules below) are untouched.
+       Palette: PSA navy, Philippine-flag royal blue, sun gold and red.
+       ================================================================ */
+    :root {
+      --psa-navy: #0b2a5b;
+      --psa-navy-deep: #071d42;
+      --psa-blue: #0038a8;
+      --psa-blue-hover: #002c86;
+      --psa-red: #ce1126;
+      --psa-gold: #f2b705;
+      --psa-gold-soft: #fff6d6;
+      --ink: #0f1d33;
+      --ink-soft: #3d4b63;
+      --muted: #6a7790;
+      --line: #e3e8f0;
+      --line-strong: #d3dbe7;
+      --surface: #ffffff;
+      --surface-alt: #f6f8fc;
+      --bg: #f2f5fa;
+      --primary: var(--psa-blue);
+      --primary-dark: var(--psa-navy);
+      --primary-soft: #eaf0fb;
+      --text: var(--ink);
+      --border: var(--line);
+      --shadow: 0 1px 2px rgba(11, 42, 91, 0.04), 0 8px 24px rgba(11, 42, 91, 0.06);
+      --shadow-soft: 0 1px 2px rgba(11, 42, 91, 0.05);
+      --radius: 16px;
+    }
+
+    body {
+      font-family: "Public Sans", "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "tnum" 1;
+    }
+
+    /* Philippine flag stripe along the top edge */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 4px;
+      z-index: 50;
+      background: linear-gradient(90deg, var(--psa-blue) 0 50%, var(--psa-red) 50% 100%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 50%;
+      width: 64px;
+      height: 4px;
+      transform: translateX(-50%);
+      z-index: 51;
+      background: var(--psa-gold);
+      pointer-events: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      background: linear-gradient(180deg, var(--psa-navy) 0%, var(--psa-navy-deep) 100%);
+      border-right: none;
+      box-shadow: none;
+      padding: 28px 16px 18px;
+      gap: 18px;
+    }
+
+    .sidebar::before,
+    .sidebar::after,
+    .brand::before,
+    .brand::after,
+    .sidebar-user-card::before,
+    .sidebar-user-card::after {
+      display: none;
+    }
+
+    .brand {
+      padding: 4px 6px 20px;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      gap: 12px;
+    }
+
+    .brand img {
+      width: 52px;
+      height: 52px;
+      padding: 4px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(242, 183, 5, 0.85), 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .brand-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--psa-gold);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin: 0;
+      color: #fff;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.62);
+    }
+
+    .nav-group {
+      padding: 0;
+      border: none;
+      background: none;
+      box-shadow: none;
+      gap: 4px;
+    }
+
+    .sidebar-section-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: rgba(255, 255, 255, 0.45);
+      padding: 0 12px 6px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.78);
+      box-shadow: none;
+      letter-spacing: 0;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-btn::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      bottom: 9px;
+      width: 3px;
+      height: auto;
+      margin: 0;
+      border: none;
+      border-radius: 0 3px 3px 0;
+      background: var(--psa-gold);
+      transform: none;
+      opacity: 0;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .nav-btn:hover::after {
+      opacity: 0;
+      transform: none;
+    }
+
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.11);
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .nav-btn.active::after {
+      opacity: 1;
+      transform: none;
+    }
+
+    .nav-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.85);
+      box-shadow: none;
+      font-size: 0;
+      opacity: 1;
+    }
+
+    .nav-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .nav-btn.active .nav-icon {
+      background: var(--psa-gold);
+      color: var(--psa-navy);
+      box-shadow: none;
+    }
+
+    .sidebar-user-card {
+      position: relative;
+      z-index: 1;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: none;
+      backdrop-filter: none;
+      gap: 12px;
+    }
+
+    .sidebar-user-name-label {
+      font-size: 10.5px;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .sidebar-user-name-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sidebar-user-role {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--psa-gold);
+    }
+
+    .sidebar-logout-btn {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: transparent;
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .sidebar-logout-btn:hover {
+      background: rgba(206, 17, 38, 0.22);
+      border-color: rgba(206, 17, 38, 0.5);
+      transform: none;
+    }
+
+    .sidebar-logout-btn .nav-icon {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+    }
+
+    .sidebar-logout-label strong {
+      font-size: 13.5px;
+    }
+
+    .sidebar-logout-label span {
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ---------- Page header ---------- */
+    .content {
+      padding: 30px 32px 36px;
+      gap: 22px;
+    }
+
+    .topbar {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      align-items: flex-end;
+    }
+
+    .title-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--psa-blue);
+      margin-bottom: 6px;
+    }
+
+    .title-wrap h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--psa-navy);
+      margin: 0;
+    }
+
+    .title-wrap p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 18px;
+      letter-spacing: 0;
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--psa-blue);
+      border: 1px solid var(--psa-blue);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 56, 168, 0.25), 0 4px 12px rgba(0, 56, 168, 0.18);
+    }
+
+    .btn-primary:hover {
+      background: var(--psa-blue-hover);
+      border-color: var(--psa-blue-hover);
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      color: var(--psa-navy);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-alt);
+      border-color: #bcc7d8;
+      transform: none;
+    }
+
+    .mini-btn {
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 6px 11px;
+      border: 1px solid transparent;
+    }
+
+    .mini-edit,
+    .mini-slot {
+      background: #eaf0fb;
+      color: var(--psa-blue);
+      border-color: #d4e0f6;
+    }
+
+    .mini-delete {
+      background: #fdeef0;
+      color: #b0152a;
+      border-color: #f7d3d8;
+    }
+
+    /* ---------- Cards and panels ---------- */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-title h3,
+    .dashboard-filter-bar h3,
+    .slot-board-copy h3 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--psa-navy);
+    }
+
+    .slot-board-copy h3 {
+      font-size: 20px;
+    }
+
+    .dashboard-filter-card {
+      background: var(--surface);
+    }
+
+    /* ---------- Metric cards ---------- */
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 20px 18px;
+    }
+
+    .metric-card::before {
+      height: 3px;
+      border-radius: 0;
+    }
+
+    .metric-card:hover {
+      transform: none;
+      box-shadow: 0 1px 2px rgba(11, 42, 91, 0.05), 0 12px 28px rgba(11, 42, 91, 0.09);
+    }
+
+    .metric-total,
+    .metric-today,
+    .metric-pending,
+    .metric-slots {
+      background: var(--surface);
+    }
+
+    .metric-total::before { background: var(--psa-navy); }
+    .metric-today::before { background: var(--psa-blue); }
+    .metric-pending::before { background: var(--psa-gold); }
+    .metric-slots::before { background: var(--psa-red); }
+
+    .metric-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .metric-total .metric-value { color: var(--psa-navy); }
+    .metric-today .metric-value { color: var(--psa-blue); }
+    .metric-pending .metric-value { color: #a87800; }
+    .metric-slots .metric-value { color: var(--psa-red); }
+
+    .metric-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    /* ---------- Forms ---------- */
+    .field label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      letter-spacing: 0;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 14px;
+      box-shadow: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--psa-blue);
+      box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.14);
+    }
+
+    .hint-text {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    /* ---------- Tables ---------- */
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    th {
+      background: var(--surface-alt);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      font-size: 13.5px;
+      color: var(--ink);
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fff;
+    }
+
+    tbody tr:hover {
+      background: #f5f8fe;
+    }
+
+    /* Short values (reference, date, time, phone, status) stay on one line;
+       the name and service columns may wrap. */
+    td {
+      padding: 13px 14px;
+      white-space: nowrap;
+    }
+
+    td:nth-child(2),
+    td:nth-child(3),
+    td[colspan] {
+      white-space: normal;
+    }
+
+    td:nth-child(2),
+    td:nth-child(3) {
+      min-width: 140px;
+    }
+
+    .dashboard-left .table-wrap table {
+      min-width: 0;
+    }
+
+    /* Recent Bookings is narrow: let the date wrap, keep reference, time and status on one line. */
+    .dashboard-left td {
+      padding: 12px 12px;
+      white-space: normal;
+    }
+
+    .dashboard-left td:nth-child(2),
+    .dashboard-left td:nth-child(3) {
+      min-width: 0;
+    }
+
+    .dashboard-left td:nth-child(1),
+    .dashboard-left td:nth-child(5),
+    .dashboard-left td:nth-child(6) {
+      white-space: nowrap;
+    }
+
+    /* The bookings table is wide: keep its Actions column in view while scrolling. */
+    #bookingsSection th:last-child,
+    #bookingsSection td:last-child:not([colspan]) {
+      position: sticky;
+      right: 0;
+      background: #fff;
+      box-shadow: -12px 0 14px -12px rgba(11, 42, 91, 0.22);
+    }
+
+    #bookingsSection th:last-child {
+      background: var(--surface-alt);
+    }
+
+    #bookingsSection tbody tr:hover td:last-child:not([colspan]) {
+      background: #f5f8fe;
+    }
+
+    td .row-actions {
+      flex-wrap: nowrap;
+    }
+
+    /* ---------- Status badges ---------- */
+    .badge {
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+    }
+
+    .badge-confirmed {
+      background: #e7f6ee;
+      color: #17663f;
+      border-color: #c9ebd8;
+    }
+
+    .badge-pending {
+      background: var(--psa-gold-soft);
+      color: #7a5600;
+      border-color: #f7e3a3;
+    }
+
+    .badge-cancelled {
+      background: #fdecee;
+      color: #a3172b;
+      border-color: #f6cdd3;
+    }
+
+    .badge-record-live {
+      background: #eaf0fb;
+      color: var(--psa-blue);
+      border-color: #d4e0f6;
+    }
+
+    .badge-record-archived {
+      background: #f0f2f6;
+      color: #56627a;
+      border-color: #e1e5ec;
+    }
+
+    /* ---------- Lists, pills and info rows ---------- */
+    .slot-item,
+    .settings-info-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .slot-item:hover {
+      border-color: var(--line-strong);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .slot-item strong,
+    .settings-info-item strong {
+      color: var(--psa-navy);
+    }
+
+    .slot-pill {
+      background: #eaf0fb;
+      color: var(--psa-blue);
+      border: 1px solid #d4e0f6;
+      font-weight: 700;
+    }
+
+    .service-breakdown .slot-item {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+
+    /* ---------- Live schedule board ---------- */
+    .slot-board-card,
+    .slot-board-detail-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .slot-board-stat,
+    .slot-board-date-btn,
+    .slot-board-service-card,
+    .slot-board-time-chip,
+    .slot-board-side-item {
+      background: #fff;
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .slot-board-stat-label {
+      color: var(--muted);
+    }
+
+    .slot-board-stat-value,
+    .slot-board-date-label strong,
+    .slot-board-detail-head h4 {
+      color: var(--psa-navy);
+    }
+
+    .slot-board-date-btn:hover {
+      border-color: var(--line-strong);
+      transform: none;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .slot-board-date-btn.is-selected {
+      border-color: var(--psa-blue);
+      box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.12);
+      background: #fbfcff;
+    }
+
+    .slot-board-date-meter span,
+    .slot-board-service-meter span {
+      background: var(--psa-blue);
+    }
+
+    .slot-board-detail-badge {
+      background: #eaf0fb;
+      color: var(--psa-blue);
+    }
+
+    /* ---------- Modals and notices ---------- */
+    .modal {
+      background: rgba(7, 29, 66, 0.5);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-card {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(7, 29, 66, 0.28);
+    }
+
+    .modal-head {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .modal-head h3 {
+      color: var(--psa-navy);
+      font-weight: 800;
+    }
+
+    .notice {
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .notice.success {
+      background: #e7f6ee;
+      color: #17663f;
+      border: 1px solid #c9ebd8;
+    }
+
+    .notice.error {
+      background: #fdecee;
+      color: #a3172b;
+      border: 1px solid #f6cdd3;
+    }
+
     @media (max-width: 1200px) {
       .cards,
       .filters,
@@ -1892,67 +2646,67 @@
         <div class="brand">
           <img src="logo-psa.png" alt="PSA logo">
           <div>
+            <div class="brand-eyebrow">Philippine Statistics Authority</div>
             <h1>Admin Dashboard</h1>
             <p>National ID Appointment System</p>
-          </div>
-        </div>
-
-        <div class="sidebar-user-card">
-          <div class="sidebar-user-top">
-            <div class="sidebar-user-copy">
-              <div class="sidebar-user-block">
-                <span class="sidebar-user-name-label">Personnel Name</span>
-                <div class="sidebar-user-name">
-                  <span class="sidebar-user-name-value" id="sidebarUserGreeting">User</span>
-                </div>
-              </div>
-              <div class="sidebar-user-block">
-                <span class="sidebar-user-name-label">Designation</span>
-                <div class="sidebar-user-role" id="sidebarUserRole">Registration Kit Operator</div>
-              </div>
-            </div>
-          </div>
-          <div class="sidebar-user-actions">
-            <button class="sidebar-logout-btn" id="sidebarLogoutBtn" type="button">
-              <span class="nav-icon">↩</span>
-              <span class="sidebar-logout-label">
-                <strong>Log Out</strong>
-                <span>End this session</span>
-              </span>
-            </button>
           </div>
         </div>
 
         <div class="nav-group">
           <div class="sidebar-section-label">Workspace</div>
           <button class="nav-btn active" data-section="dashboard">
-            <span class="nav-icon">📊</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
             <span>Dashboard</span>
           </button>
 
           <button class="nav-btn" data-section="bookings">
-            <span class="nav-icon">📋</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h6M9 18h4"/></svg></span>
             <span>Bookings</span>
           </button>
 
           <button class="nav-btn" data-section="liveSlots">
-            <span class="nav-icon">📡</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>
             <span>Live Slots</span>
           </button>
 
           <button class="nav-btn" data-section="slots">
-            <span class="nav-icon">🗓️</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
             <span>Schedule Controls</span>
           </button>
 
           <button class="nav-btn" data-section="users">
-            <span class="nav-icon">👥</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.6 5.2"/></svg></span>
             <span>Users</span>
           </button>
 
           <button class="nav-btn" data-section="settings">
-            <span class="nav-icon">⚙️</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
             <span>Settings</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-user-card">
+        <div class="sidebar-user-top">
+          <div class="sidebar-user-copy">
+            <div class="sidebar-user-block">
+              <span class="sidebar-user-name-label">Signed in as</span>
+              <div class="sidebar-user-name">
+                <span class="sidebar-user-name-value" id="sidebarUserGreeting">User</span>
+              </div>
+            </div>
+            <div class="sidebar-user-block">
+              <div class="sidebar-user-role" id="sidebarUserRole">Registration Kit Operator</div>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-user-actions">
+          <button class="sidebar-logout-btn" id="sidebarLogoutBtn" type="button">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg></span>
+            <span class="sidebar-logout-label">
+              <strong>Log Out</strong>
+              <span>End this session</span>
+            </span>
           </button>
         </div>
       </div>
@@ -1961,6 +2715,7 @@
     <main class="content">
       <div class="topbar">
         <div class="title-wrap">
+          <div class="title-eyebrow">Philippine Statistics Authority · National ID System</div>
           <h2 id="sectionTitle">Dashboard Overview</h2>
           <p>Review appointments, update records, and manage available slots.</p>
         </div>
