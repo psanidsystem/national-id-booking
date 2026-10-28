@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <title>National ID Appointment System</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
@@ -574,17 +574,20 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script>
 const EXEC_URL = "https://script.google.com/macros/s/AKfycbxX_0IvUJD9bf1W71hPYUOsv59cnVSzlwMOenXnEQIiwlzcL8f8XWtk-l4mE5cMjXlN/exec";
 const TIME_OPTIONS = ["08:00 AM","09:00 AM","10:00 AM","11:00 AM","01:00 PM","02:00 PM","03:00 PM","04:00 PM"];
 
 const DEFAULT_SLOTS = {
-  "National ID Registration": 32,
-  "Correction/Updating of Demographic Information": 16,
+  "National ID Registration": 25,
+  "Correction/Updating of Demographic Information": 5,
   "Request National ID in Paper Format (ePhilID)": 50,
-  "Retrieval of TRN / Other Concern": 50
+  "Retrieval of TRN / Other Concern": 0
 };
+
+// Calendar and time-slot requests give up after this long instead of spinning forever.
+const SLOT_REQUEST_TIMEOUT_MS = 45000;
 
 let monthlyBooked = {};
 let dailySlotCache = {};
@@ -611,6 +614,18 @@ function postJson(payload, options = {}) {
     body: JSON.stringify(payload),
     ...options
   });
+}
+
+async function postJsonWithTimeout(payload, timeoutMs = SLOT_REQUEST_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await postJson(payload, { signal: controller.signal });
+    return await res.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function setFormDisabled(disabled) {
@@ -954,12 +969,11 @@ async function loadMonthlySlotData(service, year, monthIndexZeroBased) {
     return monthlySlotCache[cacheKey];
   }
 
-  const res = await postJson({
+  const data = await postJsonWithTimeout({
     action: "monthlySlots",
     service,
     month: monthKey
   });
-  const data = await res.json();
 
   if (data.status === "error") {
     throw new Error(data.message || `Unable to load slots for ${monthKey}.`);
@@ -1274,64 +1288,26 @@ function populateTimeSelect(items = []) {
   updateSelectedTimeBadge();
 }
 
-async function fetchSlotByTime(service, date, time) {
-  try {
-    const res = await postJson({
-      action: "slots",
-      date,
-      service,
-      time
-    });
-    const data = await res.json();
-
-    return {
-      time,
-      open: data.open !== false,
-      reason: data.reason || "",
-      remaining: Number(data.remaining ?? 0),
-      max: Number(data.max ?? 0)
-    };
-  } catch (err) {
-    console.warn("fetchSlotByTime fallback error:", err);
-    return {
-      time,
-      open: false,
-      reason: "Unable to load slot information.",
-      remaining: 0,
-      max: 0
-    };
-  }
-}
-
+// Errors propagate to prefetchTimeSlotsForDate, which shows a "try again" message.
+// (No per-time fallback: firing 8 extra requests at a struggling server made it slower.)
 async function loadSlotsForDate(service, date) {
-  try {
-    const res = await postJson({
-      action: "slotsForDate",
-      date,
-      service
-    });
-    const data = await res.json();
+  const data = await postJsonWithTimeout({
+    action: "slotsForDate",
+    date,
+    service
+  });
 
-    if (data.status === "success" && Array.isArray(data.items)) {
-      return data.items.map(item => ({
-        time: item.time,
-        open: item.open,
-        reason: item.reason || "",
-        remaining: Number(item.remaining ?? 0),
-        max: Number(item.max ?? 0)
-      }));
-    }
-
-    console.warn("slotsForDate fallback triggered:", data);
-  } catch (err) {
-    console.warn("slotsForDate request failed, falling back to individual slots:", err);
+  if (data.status !== "success" || !Array.isArray(data.items)) {
+    throw new Error(data.message || "Unable to load available time slots.");
   }
 
-  const slotResults = await Promise.all(
-    TIME_OPTIONS.map(time => fetchSlotByTime(service, date, time))
-  );
-
-  return slotResults;
+  return data.items.map(item => ({
+    time: item.time,
+    open: item.open,
+    reason: item.reason || "",
+    remaining: Number(item.remaining ?? 0),
+    max: Number(item.max ?? 0)
+  }));
 }
 
 async function prefetchTimeSlotsForDate() {
@@ -2352,12 +2328,11 @@ async function fetchMonthlyData(instance, options = {}) {
     let data = monthlySlotCache[cacheKey];
 
     if (!data) {
-      const res = await postJson({
+      data = await postJsonWithTimeout({
         action: "monthlySlots",
         service,
         month: currentMonth
       });
-      data = await res.json();
 
       if (requestId !== activeCalendarRequestId) return;
 
