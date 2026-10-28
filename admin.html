@@ -2275,6 +2275,17 @@
             <div class="row-actions">
               <button class="btn btn-primary" id="saveWeekendSettingBtn">Save Settings</button>
             </div>
+
+            <div class="field" style="margin:24px 0 12px;">
+              <label for="closeMonthInput">Closed Months</label>
+              <div class="row-actions">
+                <input type="month" id="closeMonthInput" style="flex:1; min-width:160px;" />
+                <button class="btn btn-secondary" id="closeMonthBtn" type="button">Close Month</button>
+              </div>
+              <div class="hint-text">No date in a closed month can be booked until you reopen it. Takes effect immediately. Existing bookings are kept.</div>
+            </div>
+
+            <div class="slot-list" id="closedMonthsList"></div>
           </div>
 
           <div class="card settings-card">
@@ -2597,7 +2608,8 @@ let weekendSettings = {
   saturdayOpen: false,
   sundayOpen: false,
   bookingWindowMonths: 1,
-  lastBookingDate: ""
+  lastBookingDate: "",
+  closedMonths: []
 };
 let archivePreviewState = {
   beforeDate: "",
@@ -3313,6 +3325,72 @@ function renderWeekendSettings() {
 
   if (backendVersionLabel) backendVersionLabel.textContent = weekendSettings.apiVersion || "Unknown";
   if (archiveCountLabel) archiveCountLabel.textContent = `${archivedCount} record${archivedCount === 1 ? "" : "s"}`;
+
+  renderClosedMonths();
+}
+
+function renderClosedMonths() {
+  const list = document.getElementById("closedMonthsList");
+  const monthInput = document.getElementById("closeMonthInput");
+  if (monthInput) monthInput.min = getTodayIso().slice(0, 7);
+  if (!list) return;
+
+  const currentMonth = getTodayIso().slice(0, 7);
+  const closedMonths = (Array.isArray(weekendSettings.closedMonths) ? weekendSettings.closedMonths : [])
+    .filter(month => month >= currentMonth);
+
+  list.innerHTML = closedMonths.length
+    ? closedMonths.map(month => `
+      <div class="slot-item">
+        <div>
+          <strong>${escapeHtml(formatMonthLabel(month))}</strong>
+          <div class="slot-meta">Online booking closed</div>
+        </div>
+        ${actionButtonHtml("Reopen", "mini-btn mini-slot", {
+          "data-row-action": "reopen-month",
+          "data-month": month
+        })}
+      </div>
+    `).join("")
+    : `<div class="hint-text">No months are closed.</div>`;
+}
+
+async function setMonthClosed(month, closed) {
+  if (!isAdmin()) {
+    showNotice("Only admin can close or reopen months.", "error");
+    return;
+  }
+
+  const label = formatMonthLabel(month);
+  const question = closed
+    ? `Close online booking for every date in ${label}? Existing bookings in that month are kept.`
+    : `Reopen online booking for ${label}? Dates will follow the normal booking window and rules again.`;
+  if (!confirm(question)) return;
+
+  try {
+    const result = await apiRequest({
+      action: "adminSetMonthClosed",
+      month,
+      closed
+    });
+
+    if (result.status === "error") {
+      throw new Error(result.message || "Unable to update the month.");
+    }
+
+    weekendSettings = result.systemSettings || weekendSettings;
+    renderWeekendSettings();
+    syncSlotBoardControls();
+    loadSlotBoardData({ silent: true, preserveSelectedDate: false });
+
+    const existing = Number(result.existingBookings || 0);
+    showNotice(closed
+      ? `${label} is now closed for online booking.` +
+        (existing ? ` ${existing} existing booking${existing === 1 ? " is" : "s are"} in that month and ${existing === 1 ? "was" : "were"} kept; contact the client${existing === 1 ? "" : "s"} if needed.` : "")
+      : `${label} is open for online booking again.`);
+  } catch (err) {
+    showNotice(err.message || "Unable to update the month.", "error");
+  }
 }
 
 function isLowAvailability(remaining, max) {
@@ -3909,7 +3987,8 @@ function defaultWeekendSettings() {
     saturdayOpen: false,
     sundayOpen: false,
     bookingWindowMonths: 1,
-    lastBookingDate: ""
+    lastBookingDate: "",
+    closedMonths: []
   };
 }
 
@@ -5030,6 +5109,11 @@ function handleDelegatedActionClick(event) {
       window.deleteUser(username);
       return;
     }
+
+    if (rowAction === "reopen-month") {
+      setMonthClosed(rowActionButton.dataset.month, false);
+      return;
+    }
   }
 
   const processActionButton = event.target.closest("button[data-process-action]");
@@ -5305,6 +5389,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("saveAvailabilityBtn")?.addEventListener("click", saveAvailability);
   document.getElementById("saveUserBtn")?.addEventListener("click", saveUser);
   document.getElementById("saveWeekendSettingBtn")?.addEventListener("click", saveWeekendSetting);
+  document.getElementById("closeMonthBtn")?.addEventListener("click", () => {
+    const month = document.getElementById("closeMonthInput")?.value || "";
+    if (!/^\d{4}-\d{2}$/.test(month)) {
+      showNotice("Choose a month to close.", "error");
+      return;
+    }
+    setMonthClosed(month, true);
+  });
   document.getElementById("archivePastBookingsBtn")?.addEventListener("click", archivePastBookings);
   document.getElementById("cleanupDuplicateBookingsBtn")?.addEventListener("click", cleanupDuplicateBookings);
   document.getElementById("confirmArchiveBtn")?.addEventListener("click", confirmArchivePastBookings);

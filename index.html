@@ -824,8 +824,24 @@ function updateWeekendNotice() {
     ? ` • Online booking available until ${formatPrettyDate(lastBookingDate)}`
     : "";
 
-  el.textContent = `${parts.join(" • ")} • ${bookingWindowText}${lastBookingText}`;
+  const currentMonth = getLocalTodayIso().slice(0, 7);
+  const closedMonths = (Array.isArray(systemSettings.closedMonths) ? systemSettings.closedMonths : [])
+    .filter(month => month >= currentMonth && (!lastBookingDate || month <= lastBookingDate.slice(0, 7)));
+  const closedMonthsText = closedMonths.length
+    ? ` • No online booking in ${closedMonths.map(formatMonthName).join(", ")}`
+    : "";
+
+  el.textContent = `${parts.join(" • ")} • ${bookingWindowText}${lastBookingText}${closedMonthsText}`;
   el.style.color = "#475467";
+}
+
+function formatMonthName(month) {
+  const [year, monthNumber] = String(month).split("-").map(Number);
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  return months[monthNumber - 1] ? `${months[monthNumber - 1]} ${year}` : month;
 }
 
 function getLocalTodayIso() {
